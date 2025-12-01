@@ -17,6 +17,8 @@ import {
   uploadCompanyImages,
   deleteCompanyImage,
   searchCandidate,
+  getFollowing,
+  getFollowers,
 } from "../controllers/userController.js";
 import express from "express";
 import multer from "multer";
@@ -80,7 +82,6 @@ const uploadResume = multer({
 userRouter.post('/updateresume', userAuth, uploadResume.single('resume'), updateResume);
 userRouter.post("/updateprofilepicture", userAuth, upload.single("profilePicture"), updateProfilePicture);
 userRouter.post("/updatebanner", userAuth, upload.single("banner"), updateBanner);
-// userRouter.post("/updatecoverimage", userAuth, upload.single("coverImage"), updateCoverImage); // Temporarily disabled - function not implemented
 
 // Jobs
 userRouter.post("/savejob", userAuth, saveJob);
@@ -90,11 +91,13 @@ userRouter.get("/fetchapplicants", userAuth, fetchApplicants);
 // Users & recruiters
 userRouter.get("/allusers", getAllUsers);
 userRouter.get("/allrecruiters", getAllRecruiters);
-
+ 
 // Social & company
 userRouter.post("/follow-unfollow-acc", userAuth, followUnfollowAccount);
 userRouter.post("/getcompanydetails", userAuth, getCompanyDetails);
 userRouter.get("/followedaccounts", userAuth, followedAccountsDetails);
+userRouter.get("/getFollowing", userAuth, getFollowing );
+userRouter.get("/getFollowers", userAuth, getFollowers);
 
 // Company images
 userRouter.post("/upload-company-images", userAuth, upload.array("companyImages", 10), uploadCompanyImages);

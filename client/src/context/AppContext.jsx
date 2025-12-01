@@ -19,18 +19,20 @@ export const AppContextProvider = (props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // follow company 
-  async function followUnfollowCompany(companyId) {
+  async function followUnfollow({ followedAccountId }) {
+    const toastId = toast.loading("Processing...")
     try {
-      const { data } = await axios.post(`${backendUrl}/api/user/follow-unfollow-acc`, { companyId })
+      const { data } = await axios.post(`${backendUrl}/api/user/follow-unfollow-acc`, { followedAccountId })
       if (data.success) {
-        toast.success(data.message)
+        toast.update(toastId, { render: data.message, type: "success", isLoading: false })
       } else {
-        toast.error(data.message)
+        toast.update(toastId, { render: data.message, type: "error", isLoading: false })
       }
     } catch (error) {
-      toast.error(error?.message || "Something went wrong")
+      toast.update(toastId, { render: error.response.data.message, type: "error", isLoading: false })
     }
   }
+
 
   axios.defaults.withCredentials = true;
 
@@ -157,7 +159,7 @@ export const AppContextProvider = (props) => {
     setSavedJobs,
     toggleSaveJob,
     sendNotification,
-    followUnfollowCompany,
+    followUnfollow,
     isSidebarOpen,
     setIsSidebarOpen,
     isSearchOpen,
@@ -171,7 +173,7 @@ export const AppContextProvider = (props) => {
     loading,
     jobId,
     savedJobs,
-    followUnfollowCompany,
+    followUnfollow,
     isSidebarOpen,
     setIsSidebarOpen,
     isSearchOpen,

@@ -61,7 +61,7 @@ const ChatBotBubble = () => {
         className="w-16 p-3 h-16 cursor-pointer fixed bottom-5 right-5 
              flex items-center justify-center rounded-full 
              border-2 border-[var(--primary-color)] 
-             bg-white shadow-lg"
+             bg-white shadow-lg z-999"
         animate={{ y: [0, -6, 0] }}
         transition={{
           duration: 2,
@@ -84,7 +84,7 @@ const ChatBotBubble = () => {
       </motion.div>
 
       <div
-        className={`w-80 fixed bottom-15 right-15 z-50 -h-100 rounded-2xl rounded-br-none border border-[var(--primary-color)] bg-white shadow-xl transform transition-all overflow-y-auto duration-300 origin-bottom-right ${showChat ? "scale-100 opacity-100" : "scale-0 opacity-0"
+        className={`w-80 fixed bottom-15 right-15 z-999 -h-100 rounded-2xl rounded-br-none border border-[var(--primary-color)] bg-white shadow-xl transform transition-all overflow-y-auto duration-300 origin-bottom-right ${showChat ? "scale-100 opacity-100" : "scale-0 opacity-0"
           }`}
       >
         <div id='chatbox' className='flex-1 p-2 pb-14 w-full flex flex-col justify-end gap-2 text-xs overflow-y-auto'>

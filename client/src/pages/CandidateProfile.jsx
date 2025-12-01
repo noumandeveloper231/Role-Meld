@@ -1,4 +1,3 @@
-import React from 'react'
 import Navbar from '../components/Navbar'
 import Img from '../components/Image'
 import { DollarSign, File, MapPin, Plus } from 'lucide-react'
@@ -64,7 +63,7 @@ const CandidateProfile = () => {
                                 <div className="flex space-x-3 mt-8">
 
                                     {/* Follow Button */}
-                                    <button className="secondary-btn flex items-center gap-2">
+                                    <button  className="secondary-btn flex items-center gap-2">
                                         <Plus />
                                         <span>Follow</span>
                                     </button>

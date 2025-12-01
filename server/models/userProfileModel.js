@@ -16,12 +16,11 @@ const userProfileSchema = new mongoose.Schema({
   address: { type: String, default: "" },
   postal: { type: String, default: "" },
   appliedJobs: { type: Array, default: [] },
-  followedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "RecruiterProfile" }],
   skills: { type: Array, default: [] },
   isBanned: { type: Boolean, default: false },
   currency: { type: String, default: "USD" },
-  followers: [{ type: mongoose.Schema.Types.ObjectId }],
-  following: [{ type: mongoose.Schema.Types.ObjectId }],
+  followersAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  followedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
   // 🆕 Resume & extra fields
   resume: { type: String, default: "" },   // file URL (PDF/Doc)

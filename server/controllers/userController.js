@@ -10,7 +10,7 @@ import cloudinary from '../config/cloudinary.js';
 export const getAllUsers = async (req, res) => {
     try {
         const users = await userProfileModel.find({})
-        return res.json({ success: true, users })
+        return res.json({ success: true, users, length: users.length })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Server Error" })
     }
@@ -18,10 +18,10 @@ export const getAllUsers = async (req, res) => {
 
 export const getAllRecruiters = async (req, res) => {
     try {
-        const recruiters = (await recruiterProfileModel.find({})).populate('sentJobs', "isActive approved")
-        return res.json({ success: true, recruiters })
+        const recruiters = await recruiterProfileModel.find({}).populate('sentJobs')
+        return res.json({ success: true, recruiters, length: recruiters.length })
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Server Error" })
+        return res.status(500).json({ success: false, message: error.message })
     }
 }
 
@@ -199,8 +199,6 @@ function calculateProfileScore(user) {
 
     return Math.min(score, 100);
 }
-
-
 
 function calculateRecruiterProfileScore(user) {
     let score = 0;
@@ -522,61 +520,83 @@ export const fetchApplicants = async (req, res) => {
 
 
 export const followUnfollowAccount = async (req, res) => {
-    const { companyId, followerId } = req.body;
+    const { followedAccountId } = req.body;
+    const userId = req.user._id;
 
-    console.log('companyId:', companyId, 'followerId:', followerId);
-
-    if (!companyId || !followerId) {
+    if (!followedAccountId) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
     try {
-        // Try to find company by authId first
-        let company = await recruiterProfileModel.findOne({ authId: companyId });
+        // 1. Fetch both accounts from authModel
+        const followedAccount = await authModel.findById(followedAccountId);
+        const followerAccount = await authModel.findById(userId);
 
-        // If not found by authId, try by _id (in case companyId is the profile _id)
-        if (!company) {
-            company = await recruiterProfileModel.findById(companyId);
-        }
-
-        console.log('Found company:', company);
-
-        if (!company) {
-            return res.status(404).json({ success: false, message: 'Company not found' });
-        }
-
-        const user = await userProfileModel.findById(followerId);
-
-        if (!user) {
+        if (!followedAccount || !followerAccount) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        let message;
-        const followerIdStr = followerId.toString();
+        let followerProfile;
+        let followedProfile;
+        if (followerAccount.role === 'user') {
+            followerProfile = await userProfileModel.findOne({ authId: userId });
+        } else if (followerAccount.role === 'recruiter') {
+            followerProfile = await recruiterProfileModel.findOne({ authId: userId });
+        }
 
-        // Check if already following (convert to strings for comparison)
-        const isFollowing = company.followersId.some(id => id.toString() === followerIdStr);
+        // Then, get the followed account's profile
+        if (followedAccount.role === 'user') {
+            followedProfile = await userProfileModel.findOne({ authId: followedAccountId });
+        } else if (followedAccount.role === 'recruiter') {
+            followedProfile = await recruiterProfileModel.findOne({ authId: followedAccountId });
+        }
+
+
+        if (!followerProfile || !followedProfile) {
+            return res.status(404).json({ success: false, message: 'Profile not found', followedProfile, followerProfile, userId, followedAccountId });
+        }
+
+        // 3. Logic: Follow or Unfollow
+        const followerProfileId = followerProfile._id.toString(); // Use profile _id for consistency
+        const followedProfileId = followedProfile._id.toString(); // Use profile _id for consistency
+
+        const isFollowing = followedProfile.followersAccounts.some(
+            id => id.toString() === followerProfileId
+        );
+
+        let message;
 
         if (!isFollowing) {
-            // Follow
-            company.followersId.push(followerId);
-            company.followers = (company.followers || 0) + 1;
-            user.followedAccounts.push(companyId);
+            // FOLLOW
+            followedProfile.followersAccounts.push(followerProfileId);
+            followerProfile.followedAccounts.push(followedProfileId);
             message = "Followed";
         } else {
-            // Unfollow
-            company.followersId = company.followersId.filter(id => id.toString() !== followerIdStr);
-            company.followers = Math.max((company.followers || 1) - 1, 0);
-            user.followedAccounts = user.followedAccounts.filter(id => id.toString() !== companyId.toString());
+            // UNFOLLOW
+            followedProfile.followersAccounts = followedProfile.followersAccounts.filter(
+                id => id.toString() !== followerProfileId
+            );
+
+            followerProfile.followedAccounts = followerProfile.followedAccounts.filter(
+                id => id.toString() !== followedProfileId
+            );
+
             message = "Unfollowed";
         }
 
-        await company.save();
-        await user.save();
+        // 4. Save profiles
+        await followedProfile.save();
+        await followerProfile.save();
 
-        return res.json({ success: true, message: `Successfully ${message}`, company });
+        return res.json({
+            success: true,
+            message: `Successfully ${message}`,
+            followerProfile,
+            followedProfile
+        });
+
     } catch (error) {
-        console.error('Follow/Unfollow error:', error);
+        console.error("Follow/Unfollow Error:", error);
         return res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -620,6 +640,142 @@ export const followedAccountsDetails = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 }
+
+export const getFollowing = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const user = await authModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Get user's own profile
+        let profile;
+        if (user.role === "user") {
+            profile = await userProfileModel.findOne({ authId: userId });
+        } else {
+            profile = await recruiterProfileModel.findOne({ authId: userId });
+        }
+
+        if (!profile) {
+            return res.status(404).json({ success: false, message: "Profile not found" });
+        }
+
+        // These are PROFILE IDs, not auth IDs
+        const followedProfileIds = profile.followedAccounts;
+
+        const followingData = await Promise.all(
+            followedProfileIds.map(async (pid) => {
+
+                // Try userProfile first
+                let prof = await userProfileModel.findById(pid)
+                    .select("name profilePicture headline city country authId");
+
+                let role = "user";
+
+                // If not found → try recruiterProfile
+                if (!prof) {
+                    prof = await recruiterProfileModel.findById(pid)
+                        .select("name profilePicture tagline company city country authId");
+                    role = "recruiter";
+                }
+
+                if (!prof) return null;
+
+                // Fetch base user data
+                const authUser = await authModel.findById(prof.authId)
+                    .select("email role");
+
+                return {
+                    ...prof.toObject(),
+                    email: authUser?.email || null,
+                    role: authUser?.role || role
+                };
+            })
+        );
+
+        const filteredFollowing = followingData.filter(f => f !== null);
+
+        return res.json({
+            success: true,
+            count: filteredFollowing.length,
+            following: filteredFollowing,
+            followingIds: followedProfileIds
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getFollowers = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const user = await authModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Fetch the logged-in user's profile
+        let profile;
+        if (user.role === "user") {
+            profile = await userProfileModel.findOne({ authId: userId });
+        } else {
+            profile = await recruiterProfileModel.findOne({ authId: userId });
+        }
+
+        if (!profile) {
+            return res.status(404).json({ success: false, message: "Profile not found" });
+        }
+
+        // Followers = array of PROFILE IDs
+        const followerProfileIds = profile.followersId || [];
+
+        const followersData = await Promise.all(
+            followerProfileIds.map(async (pid) => {
+                // First look in user profiles
+                let prof = await userProfileModel.findById(pid)
+                    .select("name profilePicture category city country authId");
+
+                let role = "user";
+
+                // If not found, try recruiter profile
+                if (!prof) {
+                    prof = await recruiterProfileModel.findById(pid)
+                        .select("name profilePicture tagline company city country authId");
+                    role = "recruiter";
+                }
+
+                if (!prof) return null;
+
+                // Fetch base auth info
+                const authUser = await authModel.findById(prof.authId)
+                    .select("email role");
+
+                return {
+                    ...prof.toObject(),
+                    email: authUser?.email || null,
+                    role: authUser?.role || role
+                };
+            })
+        );
+
+        const cleanFollowers = followersData.filter(f => f !== null);
+
+        return res.json({
+            success: true,
+            count: cleanFollowers.length,
+            followers: cleanFollowers,
+            followerIds: followerProfileIds
+        });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 export const uploadCompanyImages = async (req, res) => {
     const userId = req.user._id;
