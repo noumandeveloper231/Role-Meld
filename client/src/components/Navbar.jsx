@@ -435,12 +435,12 @@ const Navbar = ({ className }) => {
     group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
   "
         >
-          <ul className="px-6 py-3">
+          <ul className="space-y-1 px-6 py-3">
             {navLinks.map((item) => (
               <li key={item.key}>
                 <span
                   onClick={() => handleNavClick(item)}
-                  className={`flex items-center gap-2 px-4 w-40 py-2 rounded-3xl text-left transition-colors cursor-pointer text-gray-600 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]`}
+                  className={`flex items-center gap-4 px-4 w-40 py-1.5 rounded-3xl text-left transition-colors cursor-pointer text-gray-600 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]`}
                 >
                   <span className="flex-shrink-0">
                     {item.icon}

@@ -7,6 +7,7 @@ import { AppContext } from '../context/AppContext';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading';
+import { toast } from 'react-toastify';
 
 const CompanyProfile = () => {
   const { id } = useParams()
@@ -14,7 +15,9 @@ const CompanyProfile = () => {
 
   const { backendUrl, userData, followUnfollow } = useContext(AppContext);
 
-  const [companyData, setCompanyData] = useState(null)
+  const [companyData, setCompanyData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 5;
 
   const getCompanyDetails = async () => {
     try {
@@ -35,7 +38,17 @@ const CompanyProfile = () => {
     getCompanyDetails();
   }, []);
 
+  // Reset to first page whenever company data changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [companyData]);
+
   console.log('companyData', companyData)
+
+  // Pagination calculations
+  const totalJobs = companyData?.sentJobs?.length || 0;
+  const totalPages = Math.ceil(totalJobs / jobsPerPage);
+  const displayedJobs = companyData?.sentJobs?.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
 
   if (!companyData) {
     return <Loading />
@@ -88,13 +101,22 @@ const CompanyProfile = () => {
                     </div>
 
                     <div className="flex items-center gap-3 w-full md:w-auto">
-                      <button className="secondary-btn flex items-center">
-                        <Plus size={18} /> Following
-                      </button>
-                      <button className="flex-1 md:flex-none bg-white border border-gray-200 text-gray-700 px-6 py-2.5 rounded-full font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                      {
+                        userData?.role === "user" &&
+                        <button
+                          className="secondary-btn flex items-center">
+                          <Plus size={18} /> {userData?.followedAccounts?.includes(companyData._id) ? "Unfollow" : "Follow"}
+                        </button>
+                      }
+                      <a
+                        title='Visit Website'
+                        href={companyData?.website} target="_blank" className="flex-1 md:flex-none bg-white border border-gray-200 text-gray-700 px-6 py-2.5 rounded-full font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                         Visit website <LinkIcon size={16} />
-                      </button>
-                      <button className="flex-1 md:flex-none bg-[var(--primary-color)] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[var(--primary-color)]/90 transition-colors flex items-center justify-center gap-2">
+                      </a>
+                      <button
+                        title='Send Message'
+                        onClick={() => toast.info("This Feature is not avaible yet")}
+                        className="flex-1 md:flex-none bg-[var(--primary-color)] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[var(--primary-color)]/90 transition-colors flex items-center justify-center gap-2">
                         Send message
                       </button>
                     </div>
@@ -109,22 +131,50 @@ const CompanyProfile = () => {
               </div>
               {/* Job Listings */}
               <section className='mt-5 p-6 overflow-hidden rounded-2xl border border-gray-100 bg-white'>
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Job at {companyData.company}</h2>
-                <div className="space-y-4">
-                  {companyData.sentJobs && companyData.sentJobs.map((job) => (
-                    <JobCard key={job._id} e={job} />
-                  ))}
-                </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Jobs at {companyData.company}</h2>
+                {totalJobs === 0 ? (
+                  <p className="text-center text-gray-500">No jobs found.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {displayedJobs.map((job) => (
+                      <JobCard key={job._id} e={job} />
+                    ))}
+                  </div>
+                )}
 
-                {/* Pagination Placeholder */}
-                <div className="flex items-center gap-2 mt-8">
-                  <button className="w-8 h-8 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center font-medium">1</button>
-                  <button className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center font-medium">2</button>
-                  <button className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center font-medium">3</button>
-                  <button className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center font-medium">4</button>
-                  <span className="text-gray-400">...</span>
-                  <button className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 flex items-center justify-center font-medium">&gt;</button>
-                </div>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-2 mt-8">
+                    {/* Previous */}
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-600'}`}
+                    >
+                      &lt;
+                    </button>
+
+                    {/* Page Numbers */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${currentPage === page ? 'bg-[var(--primary-color)] text-white' : 'hover:bg-gray-100 text-gray-600'}`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    {/* Next */}
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 text-gray-600'}`}
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                )}
               </section>
             </div>
 
@@ -148,7 +198,7 @@ const CompanyProfile = () => {
                   </div>
                   <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                     <span className="text-black">Phone</span>
-                    <span className="text-gray-900 font-medium">{companyData.phone || companyData.contactNumber}</span>
+                    <span className="text-gray-900 font-medium">{companyData.phone || companyData.contactNumber || "Not Specified"}</span>
                   </div>
                   <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                     <span className="text-black">Email</span>

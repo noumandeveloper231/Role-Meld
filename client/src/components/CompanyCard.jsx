@@ -36,7 +36,11 @@ const HorizontalCompanyCard = ({ company }) => {
                 </div>
                 {userData?.role !== "recruiter" &&
                     <button
-                        onClick={() => followUnfollow({ followedAccountId: company._id })}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            followUnfollow({ followedAccountId: company._id })
+                        }
+                        }
                         className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
                         <Plus size={20} />Follow
                     </button>
@@ -46,7 +50,7 @@ const HorizontalCompanyCard = ({ company }) => {
 
             {/* About */}
             <p className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed">
-                {company?.about}
+                {company?.about || "Not Specified"}
             </p>
 
             {/* Footer: Tags + Jobs */}
@@ -132,7 +136,7 @@ const VerticalCompanyCard = ({ company }) => {
     )
 }
 
-const CompanyCard = ({ company, type = "vertical" }) => {
+const CompanyCard = ({ company, type = "horizontal" }) => {
     if (type === "horizontal") {
         return <HorizontalCompanyCard company={company} />
     } else {
