@@ -4,140 +4,18 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { FaCamera, FaPlus, FaTrash, FaVideo, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaGithub, FaTiktok } from 'react-icons/fa';
-import { User, Phone, Link as LinkIcon, MapPin, Briefcase, Save, Calendar, Globe, Award, BookOpen, Layers, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { User, Phone, Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader } from 'lucide-react'
 import LocationSelector from './LocationSelector';
-import { FaMoneyBillWave } from "react-icons/fa";
-import SearchSelect from './SelectSearch';
 import Img from './Image';
 import CustomSelect from './CustomSelect';
 import ImageCropPortal from '../portals/ImageCropPortal';
 import { useLocation } from 'react-router-dom';
 import 'react-circular-progressbar/dist/styles.css';
 
+
+
 // Predefined Skills List
-const AVAILABLE_SKILLS = [
-    'JavaScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin',
-    'React', 'Angular', 'Vue.js', 'Node.js', 'Express.js', 'Django', 'Flask', 'Spring Boot',
-    'HTML', 'CSS', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material UI',
-    'MongoDB', 'MySQL', 'PostgreSQL', 'Redis', 'Firebase', 'SQL Server',
-    'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins',
-    'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Agile', 'Scrum',
-    'UI/UX Design', 'Figma Design', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
-    'Content Editor', 'Technical Writing', 'Product Manager', 'Communication Skills',
-    'BackEnd Developer', 'FrontEnd Developer', 'Full Stack Developer', 'DevOps',
-    'Machine Learning', 'Data Science', 'Artificial Intelligence', 'Deep Learning',
-    'Mobile Development', 'iOS Development', 'Android Development', 'React Native', 'Flutter',
-    'Testing', 'Unit Testing', 'Integration Testing', 'QA', 'Selenium', 'Jest',
-    'Documentation', 'API Development', 'REST API', 'GraphQL', 'Microservices',
-    'Problem Solving', 'Team Leadership', 'Project Management', 'Critical Thinking'
-];
-
-// Skills Selector Component
-const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const dropdownRef = React.useRef(null);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const addSkill = (skill) => {
-        if (!selectedSkills.includes(skill)) {
-            onSkillsChange([...selectedSkills, skill]);
-        }
-        setSearchTerm('');
-    };
-
-    const removeSkill = (skillToRemove) => {
-        onSkillsChange(selectedSkills.filter(skill => skill !== skillToRemove));
-    };
-
-    const filteredSkills = AVAILABLE_SKILLS.filter(skill =>
-        !selectedSkills.includes(skill) &&
-        skill.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    return (
-        <div className='space-y-4' ref={dropdownRef}>
-            <div className='space-y-2'>
-                <label className='text-lg font-semibold text-gray-800'>Select Skills</label>
-
-                {/* Input Box with Selected Skills as Chips */}
-                <div
-                    className='min-h-[60px] w-full p-3 border-2 border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all cursor-text bg-white'
-                    onClick={() => setIsDropdownOpen(true)}
-                >
-                    <div className='flex flex-wrap gap-2 items-center'>
-                        {selectedSkills.map((skill, idx) => (
-                            <span
-                                key={idx}
-                                className='bg-[var(--accent-color)] text-[var(--primary-color)] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 border border-[var(--primary-color)]/20'
-                            >
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        removeSkill(skill);
-                                    }}
-                                    className='hover:text-red-600 transition-colors'
-                                >
-                                    ×
-                                </button>
-                                {skill}
-                            </span>
-                        ))}
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setIsDropdownOpen(true);
-                            }}
-                            onFocus={() => setIsDropdownOpen(true)}
-                            placeholder={selectedSkills.length === 0 ? "Click to select skills..." : ""}
-                            className='flex-1 min-w-[200px] outline-none bg-transparent text-gray-700 placeholder-gray-400'
-                        />
-                    </div>
-                </div>
-
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                    <div className='relative'>
-                        <div className='absolute top-0 left-0 right-0 max-h-[300px] overflow-y-auto bg-white border-2 border-gray-200 rounded-lg shadow-md z-10'>
-                            {filteredSkills.length > 0 ? (
-                                filteredSkills.map((skill, idx) => (
-                                    <div
-                                        key={idx}
-                                        onClick={() => addSkill(skill)}
-                                        className='px-4 py-2 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)] cursor-pointer transition-colors text-gray-700 border-b border-gray-100 last:border-b-0'
-                                    >
-                                        {skill}
-                                    </div>
-                                ))
-                            ) : (
-                                <div className='px-4 py-3 text-gray-500 text-center'>
-                                    {searchTerm ? 'No skills found' : 'All skills selected'}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Info Text */}
-            <p className='text-sm text-gray-500'>
-                Click on the input box to see available skills. Selected skills appear as chips inside the box.
-            </p>
-        </div>
-    );
-};
+import SkillsSelector from './SkillsSelector';
 
 const MyProfile = () => {
     const { userData, backendUrl, setUserData } = useContext(AppContext);
@@ -427,12 +305,11 @@ const MyProfile = () => {
 
     return (
         <div className='w-full min-h-[calc(100vh-4.6rem)] bg-gray-50 p-6'>
-            <div className='max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8'>
+            <div className='max-w-6xl mx-auto bg-white rounded-xl border border-gray-200 p-6 md:p-8'>
                 {/* Header */}
                 <div className='flex justify-between items-center mb-6'>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
-                        <p className='text-gray-500 mt-2'>Manage your professional profile</p>
                     </div>
                     <button
                         onClick={updateProfile}
@@ -464,57 +341,58 @@ const MyProfile = () => {
 
                 {/* Content */}
                 <div className=''>
-
                     {/* 1️⃣ Basic Info Tab */}
                     {activeTab === 'basic' && (
                         <div className='space-y-8'>
                             {/* Cover Image */}
-                            <div className='relative w-full h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl overflow-hidden group'>
-                                {userData?.coverImage ? (
-                                    <>
-                                        {coverImageloading ? <div className='flex items-center justify-center'>
-                                            <Loader2 className='w-12 h-12 animate-spin' />
-                                        </div> :
-                                            <Img
-                                                src={userData.coverImage}
-                                                style="w-full h-full object-cover"
-                                            />
-                                        }
-                                    </>
-                                ) : (
-                                    <div className='w-full h-full flex items-center justify-center text-white'>
-                                        <ImageIcon size={48} className='opacity-50' />
-                                    </div>
-                                )}
-                                <label className='absolute top-4 right-4 bg-white text-gray-700 px-4 py-2 rounded-lg cursor-pointer shadow-md hover:bg-gray-50 transition flex items-center gap-2'>
-                                    <FaCamera size={16} />
-                                    Upload Cover
-                                    <input type="file" accept="image/*" className='hidden' onChange={handleCoverImageSelect} />
-                                </label>
-                            </div>
+
 
                             {/* Profile Picture & Basic Details */}
-                            <div className='flex flex-col -mt-24 relative'>
-                                <div className='flex flex-col items-center gap-4'>
-                                    <div className='relative w-32 h-32 flex items-center justify-center'>
-                                        <div className='flex items-center justify-center border-4 border-white rounded-full w-32 h-32 object-cover'>
-                                            {profilePictureLoading ? <div className='flex items-center justify-center'>
-                                                <Loader2 className='w-12 h-12 animate-spin' />
-                                            </div> :
-                                                <Img
-                                                    src={userData?.profilePicture || '/placeholder.png'}
-                                                    style="w-32 h-32 rounded-full object-cover "
-                                                />
-                                            }
+                            <div className='flex flex-col relative'>
+                                <div className='flex mb-4 items-center gap-4'>
+                                    <div>
+                                        <label htmlFor="profilePicture" className='text-sm font-medium text-gray-700'>Profile Picture</label>
+                                        <div className='mt-1 relative w-32 h-32 flex items-center justify-center'>
+                                            <div className='flex items-center justify-center border border-gray-300 w-32 h-32 object-cover'>
+                                                {profilePictureLoading ? <div className='flex items-center justify-center'>
+                                                    <Loader2 className='w-12 h-12 animate-spin' />
+                                                </div> :
+                                                    <Img
+                                                        src={userData?.profilePicture || '/placeholder.png'}
+                                                        style="w-32 h-32 rounded-full object-cover "
+                                                    />
+                                                }
+                                            </div>
+                                            <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-700 transition'>
+                                                <FaCamera size={14} />
+                                                <input type="file" accept="image/*" className='hidden' onChange={handleProfilePictureSelect} />
+                                            </label>
                                         </div>
-                                        <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-700 transition'>
-                                            <FaCamera size={14} />
-                                            <input type="file" accept="image/*" className='hidden' onChange={handleProfilePictureSelect} />
-                                        </label>
                                     </div>
-                                    <div className='text-center'>
-                                        <h3 className='font-semibold text-gray-800'>Profile Picture</h3>
-                                        <p className='text-xs text-gray-500'>Max 5MB, JPG/PNG</p>
+                                    <div>
+                                        <label className='text-sm font-medium text-gray-700 '>Cover Image</label>
+                                        <div className='mt-1 relative w-100 h-32 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
+                                            {userData?.coverImage ? (
+                                                <>
+                                                    {coverImageloading ? <div className='flex w-full h-full items-center justify-center'>
+                                                        <Loader className='w-12 h-12 animate-spin' />
+                                                    </div> :
+                                                        <Img
+                                                            src={userData.coverImage}
+                                                            style="w-full h-full object-cover"
+                                                        />
+                                                    }
+                                                </>
+                                            ) : (
+                                                <div className='w-full h-full flex items-center justify-center text-white'>
+                                                    <ImageIcon size={48} className='opacity-50' />
+                                                </div>
+                                            )}
+                                            <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-700 transition'>
+                                                <FaCamera size={14} />
+                                                <input type="file" accept="image/*" className='hidden' onChange={handleCoverImageSelect} />
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -579,7 +457,7 @@ const MyProfile = () => {
                                         name="dob"
                                         value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ''}
                                         onChange={handleChange}
-                                        className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
+                                        className='mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                     />
                                 </div>
                                 <div className='space-y-1'>
@@ -652,6 +530,7 @@ const MyProfile = () => {
                                             name="address"
                                             value={formData.address}
                                             onChange={handleChange}
+                                            placeholder='Enter Your Address here...'
                                             className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
@@ -670,6 +549,7 @@ const MyProfile = () => {
                                             name="postal"
                                             value={formData.postal}
                                             onChange={handleChange}
+                                            placeholder='Enter Your Postal Code here...'
                                             className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
@@ -685,7 +565,6 @@ const MyProfile = () => {
                                     {/* Predefined Social Links */}
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaLinkedin className='text-blue-600' />
                                             LinkedIn
                                         </label>
                                         <input
@@ -700,7 +579,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaTwitter className='text-blue-400' />
                                             Twitter
                                         </label>
                                         <input
@@ -715,7 +593,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaFacebook className='text-blue-800' />
                                             Facebook
                                         </label>
                                         <input
@@ -730,7 +607,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaInstagram className='text-pink-600' />
                                             Instagram
                                         </label>
                                         <input
@@ -745,7 +621,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaYoutube className='text-red-600' />
                                             YouTube
                                         </label>
                                         <input
@@ -760,7 +635,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaTiktok className='text-gray-800' />
                                             TikTok
                                         </label>
                                         <input
@@ -775,7 +649,6 @@ const MyProfile = () => {
 
                                     <div className='space-y-1'>
                                         <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
-                                            <FaGithub className='text-gray-800' />
                                             GitHub
                                         </label>
                                         <input
@@ -827,7 +700,7 @@ const MyProfile = () => {
                                 {/* Video URL */}
                                 <div className='mt-6 space-y-1'>
                                     <label className='text-sm font-medium text-gray-700'>Video Introduction</label>
-                                    <div className='relative '>
+                                    <div className='relative mt-1'>
                                         <FaVideo className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' />
                                         <input
                                             type="text"

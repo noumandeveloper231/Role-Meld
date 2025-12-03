@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { useContext, useEffect, useState, Suspense, lazy } from "react";
 import axios from "axios";
@@ -39,6 +39,7 @@ const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const Categories = lazy(() => import("./pages/Categories"));
 const CandidatesPage = lazy(() => import("./pages/Candidates"));
 const CompaniesPage = lazy(() => import("./pages/Companies"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 
 // Dashboard pages
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
@@ -129,6 +130,18 @@ const App = () => {
     });
   }, []);
 
+  const { userData, isLoggedIn, loading } = useContext(AppContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && isLoggedIn && userData && !userData.isOnboardingCompleted) {
+      if (location.pathname !== '/onboarding') {
+        navigate('/onboarding');
+      }
+    }
+  }, [loading, isLoggedIn, userData, location, navigate]);
+
   return (
 
     <div className="flex flex-col min-h-screen">
@@ -151,6 +164,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route
             path="/dashboard"
             element={

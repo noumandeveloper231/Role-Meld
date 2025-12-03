@@ -429,18 +429,18 @@ const Navbar = ({ className }) => {
         <div
           className="
     absolute top-full right-0 z-50 mt-1 w-50 
-    rounded-2xl shadow-xl border border-gray-100 bg-white
+    rounded shadow-xl border border-gray-100 bg-white
     transition-all duration-500 ease-in-out
     opacity-0 translate-y-6 invisible
     group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
   "
         >
-          <ul className="p-3">
+          <ul className="px-6 py-3">
             {navLinks.map((item) => (
               <li key={item.key}>
                 <span
                   onClick={() => handleNavClick(item)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-3xl text-left transition-colors cursor-pointer text-gray-600 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]`}
+                  className={`flex items-center gap-2 px-4 w-40 py-2 rounded-3xl text-left transition-colors cursor-pointer text-gray-600 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]`}
                 >
                   <span className="flex-shrink-0">
                     {item.icon}

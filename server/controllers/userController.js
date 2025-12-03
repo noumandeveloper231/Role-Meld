@@ -403,6 +403,40 @@ export const updateBanner = async (req, res) => {
     }
 };
 
+export const updateCoverImage = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "No file uploaded" });
+        }
+
+        let user = await userProfileModel.findOne({ authId: userId })
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User Not Found!" });
+        }
+
+        user.coverImage = req.file?.path;
+        user.profileScore = calculateProfileScore(user);
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Cover image updated successfully",
+            user,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message,
+        });
+    }
+};
+
 
 export const updateResume = async (req, res) => {
     try {
@@ -874,6 +908,31 @@ export const searchCandidate = async (req, res) => {
         return res.json({
             success: true,
             candidates
+        });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getCandidate = async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    if (!id) {
+        return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
+    try {
+        const candidate = await userProfileModel.findById(id);
+
+        console.log(candidate);
+
+        if (!candidate) {
+            return res.status(404).json({ success: false, message: "Candidate not found" });
+        }
+
+        return res.json({
+            success: true,
+            candidate
         });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });

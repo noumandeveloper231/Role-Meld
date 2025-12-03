@@ -19,6 +19,8 @@ import {
   searchCandidate,
   getFollowing,
   getFollowers,
+  getCandidate,
+  updateCoverImage,
 } from "../controllers/userController.js";
 import express from "express";
 import multer from "multer";
@@ -57,8 +59,6 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
-
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -82,21 +82,23 @@ const uploadResume = multer({
 userRouter.post('/updateresume', userAuth, uploadResume.single('resume'), updateResume);
 userRouter.post("/updateprofilepicture", userAuth, upload.single("profilePicture"), updateProfilePicture);
 userRouter.post("/updatebanner", userAuth, upload.single("banner"), updateBanner);
+userRouter.post("/updatecoverimage", userAuth, upload.single("coverImage"), updateCoverImage);
 
 // Jobs
 userRouter.post("/savejob", userAuth, saveJob);
 userRouter.post("/applyjob", userAuth, applyJob);
 userRouter.get("/fetchapplicants", userAuth, fetchApplicants);
+userRouter.get("/getcandidate/:id", getCandidate);
 
 // Users & recruiters
 userRouter.get("/allusers", getAllUsers);
 userRouter.get("/allrecruiters", getAllRecruiters);
- 
+
 // Social & company
 userRouter.patch("/follow-unfollow-acc/:id", userAuth, followUnfollowAccount);
 userRouter.get("/getcompanydetails/:id", userAuth, getCompanyDetails);
 userRouter.get("/followedaccounts", userAuth, followedAccountsDetails);
-userRouter.get("/getFollowing", userAuth, getFollowing );
+userRouter.get("/getFollowing", userAuth, getFollowing);
 userRouter.get("/getFollowers", userAuth, getFollowers);
 
 // Company images

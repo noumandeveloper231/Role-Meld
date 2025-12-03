@@ -26,7 +26,7 @@ export const AppContextProvider = (props) => {
 
     console.log('followedAccountId', followedAccountId)
     const toastId = toast.loading("Processing...")
-    try {x
+    try {
       const { data } = await axios.patch(`${backendUrl}/api/user/follow-unfollow-acc/${followedAccountId}`)
       if (data.success) {
         toast.update(toastId, { render: data.message, type: "success", isLoading: false })

@@ -20,6 +20,7 @@ import Announcementbar from "../components/Announcementbar";
 import CompanySection from "../components/CompanySection";
 import AnimatedText from "../components/AnimatedText";
 import Loading from "../components/Loading";
+import { getCategoryIcon } from "../utils/categoryIcons";
 
 const Home = () => {
   // Auto Scroll to Top
@@ -185,88 +186,26 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Development & IT'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
-              >
-                <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                  <Code size={24} className="text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Development & IT</h4>
-                  <p className="text-gray-500 text-sm">16 jobs</p>
-                </div>
-              </div>
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Marketing & Sales'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Briefcase size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Marketing & Sales</h4>
-                    <p className="text-gray-500 text-sm">4 jobs</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Design & Creative'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Palette size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Design & Creative</h4>
-                    <p className="text-gray-500 text-sm">5 jobs</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Writing & Translation'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                    <PenTool size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Writing & Translation</h4>
-                    <p className="text-gray-500 text-sm">1 jobs</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Customer Service'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Headphones size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Customer Service</h4>
-                    <p className="text-gray-500 text-sm">8 jobs</p>
-                  </div>
-                </div>
-              </div>
-              <div
-                onClick={() => navigate('/category-jobs?category=' + encodeURIComponent('Product Management'))}
-                className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Briefcase size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Product Management</h4>
-                    <p className="text-gray-500 text-sm">6 jobs</p>
-                  </div>
-                </div>
-              </div>
+              {
+                categories.slice(0, 6).map((category, index) => {
+                  const Icon = getCategoryIcon(category?.icon);
+                  return (
+                    <div
+                      key={category._id}
+                      onClick={() => navigate('/category-jobs?category=' + encodeURIComponent(category?.slug || category?.name))}
+                      className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
+                    >
+                      <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
+                        <Icon size={24} className="text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
+                        <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.name).length} jobs</p>
+                      </div>
+                    </div>
+                  )
+                })
+              }
             </div>
 
             {/* View All Categories Link */}

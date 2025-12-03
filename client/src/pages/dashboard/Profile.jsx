@@ -9,6 +9,6 @@ const Package = () => {
       <SavedJobs />
     </Suspense>
   );
-};a
+};
 
 export default Package;

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const userProfileSchema = new mongoose.Schema({
   authId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth", required: true },
+  isOnboardingCompleted: { type: Boolean, default: false },
   isActive: { type: Boolean, default: false },
   name: { type: String, default: '' },
   email: { type: String, default: '' },
