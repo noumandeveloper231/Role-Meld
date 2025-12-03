@@ -65,7 +65,7 @@ const Navbar = ({ className }) => {
   if (userData && userData.isAdmin) {
     navLinks.push({ name: "Admin", key: "admin", icon: <UserCircle size={20} />, path: "/admin" });
   }
-  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -452,15 +452,27 @@ const Navbar = ({ className }) => {
           </ul>
         </div>
       </div>
+      {
+        userData?.role === "recruiter" ?
+          <NavLink
+            to={"/dashboard/jobs"}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <button className="primary-btn">
+              Post a job
+            </button>
+          </NavLink>
+          :
+          <NavLink
+            to={"/dashboard/profile"}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <button className="primary-btn">
+              Update Profile
+            </button>
+          </NavLink>
 
-      <NavLink
-        to={"/dashboard/jobs"}
-        onClick={() => setIsMenuOpen(false)}
-      >
-        <button className="primary-btn">
-          Post a job
-        </button>
-      </NavLink>
+      }
 
 
       {/* Dropdown Menu */}
