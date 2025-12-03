@@ -30,14 +30,14 @@ const userProfileSchema = new mongoose.Schema({
 
   // 🆕 Expanded Profile Fields
   coverImage: { type: String, default: "" },
-  currentPosition: { type: String, default: "" },
+  currentPosition: { type: String, default: "fresh" },
   category: { type: String, default: "" },
   description: { type: String, default: "" },
-  dob: { type: Date },
+  dob: { type: Date, default: new Date() },
   languages: { type: Array, default: [] },
   qualification: { type: String, default: "" },
   experienceYears: { type: String, default: "" },
-  offeredSalary: { type: Number, default: 0 },
+  offeredSalary: { type: Number, default: 30 },
   salaryType: { type: String, default: "Monthly" },
 
   // 🌐 Predefined Social Networks

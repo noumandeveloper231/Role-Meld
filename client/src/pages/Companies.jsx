@@ -167,23 +167,23 @@ const Companies = () => {
         setIsIndustryDropdownOpen(false);
     };
 
-    // const getCompanies = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const { data } = await axios.get(`${backendUrl}/api/user/allrecruiters`);
-    //         if (data.success) {
-    //             setCompanies(data.recruiters || []);
-    //         }
-    //     } catch (error) {
-    //         toast.error(error.response?.data?.message || error.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+    const getCompanies = async () => {
+        try {
+            setLoading(true);
+            const { data } = await axios.get(`${backendUrl}/api/user/allrecruiters`);
+            if (data.success) {
+                setCompanies(data.recruiters || []);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // useEffect(() => {
-    //     getCompanies();
-    // }, []);
+    useEffect(() => {
+        getCompanies();
+    }, []);
 
     return (
         <div>

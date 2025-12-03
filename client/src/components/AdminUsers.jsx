@@ -119,15 +119,15 @@ const AdminUsers = () => {
       </div>
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <div className="p-5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg shadow-md border border-blue-200">
+        <div className="p-5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg border border-blue-200">
           <p className="text-gray-600 font-medium">Total Users</p>
           <h2 className="text-3xl font-bold text-blue-600 mt-1">{totalUsers}</h2>
         </div>
-        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg shadow-md border border-green-200">
+        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">
           <p className="text-gray-600 font-medium">Active Users</p>
           <h2 className="text-3xl font-bold text-green-600 mt-1">{activeUsers}</h2>
         </div>
-        <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg shadow-md border border-red-200">
+        <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg border border-red-200">
           <p className="text-gray-600 font-medium">Banned Users</p>
           <h2 className="text-3xl font-bold text-red-600 mt-1">{bannedUsers}</h2>
         </div>
@@ -181,7 +181,7 @@ const AdminUsers = () => {
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-[var(--primary-color)] text-white uppercase text-xs tracking-wide">
+          <thead className="bg-white text-gray-500 uppercase text-xs tracking-wide">
             <tr>
               <th className="px-6 py-6">Name</th>
               <th className="px-6 py-6">Email</th>

@@ -1,6 +1,5 @@
-import React, { Suspense, lazy, useContext, useEffect, useState } from "react";
+import { Suspense, lazy, useContext, useEffect, useState } from "react";
 import assets from "../assets/assets";
-import Marquee from 'react-fast-marquee'
 import Img from "../components/Image";
 const Search = lazy(() => import("../components/Search"));
 const Testimonials = lazy(() => import("../components/Testimonials"));
@@ -19,7 +18,8 @@ import { Bell, Code, FileText, Timer, X } from "lucide-react";
 import { Briefcase, Palette, PenTool, Headphones } from "lucide-react";
 import Announcementbar from "../components/Announcementbar";
 import CompanySection from "../components/CompanySection";
-import AnimatedText from "./AnimatedText";
+import AnimatedText from "../components/AnimatedText";
+import Loading from "../components/Loading";
 
 const Home = () => {
   // Auto Scroll to Top
@@ -48,9 +48,33 @@ const Home = () => {
       setCategoriesLoading(false)
     }
   }
+
+  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState([])
+  const getJobs = async () => {
+    setLoading(true)
+    try {
+      const { data } = await axios.get(backendUrl + '/api/jobs/getalljobs');
+      if (data.success) {
+        setJobs(data.jobs)
+        setLoading(false)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
     getCategories()
+    getJobs();
   }, [])
+
+  if (loading || categoriesLoading) {
+    return <Loading />
+  }
 
   return (
     <>
@@ -88,254 +112,20 @@ const Home = () => {
             <div className="relative h-[700px] overflow-hidden hidden md:block group">
               <div className="scroll-vertical group-hover:[animation-play-state:paused]">
                 <div className="flex flex-col gap-15">
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-4 flex flex-col cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#ffd865]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#ffd865]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-4 flex flex-col cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#ffd865]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#ffd865]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-4 flex flex-col cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#ffd865]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#ffd865]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-4 flex flex-col cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#ffd865]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#f9ab85]/90 rounded-2xl flex flex-col p-4 cursor-pointer gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
-                  <div
-                    className="ml-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#ffd865]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Customer%20Success%20Manager')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Customer Success Manager</h4>
-                  </div>
-
-                  <div
-                    className="ml-10 w-112 bg-[#f9ab85]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Data%20Engineer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Data Engineer</h4>
-                  </div>
-
-                  <div
-                    className="mr-10 w-112 bg-[#fff]/90 rounded-2xl p-5 cursor-pointer flex flex-col gap-2"
-                    onClick={() => navigate('/find-jobs?job=Designer')}
-                  >
-                    <span className="text-gray-600 text-sm">California</span>
-                    <h4 className="text-black font-semibold text-xl">Designer</h4>
-                  </div>
+                  {jobs.slice(0, 20).length > 0 && Array(5).fill(jobs.slice(0, 20)).flat().map((job, index) => {
+                    const bgColors = ['bg-[#f9ab85]/90', 'bg-[#fff]/90', 'bg-[#ffd865]/90'];
+                    const bgClass = bgColors[index % 3];
+                    return (
+                      <div
+                        key={index}
+                        className={`${index % 2 === 0 ? 'ml-10' : 'mr-10'} w-112 rounded-2xl flex flex-col p-4 cursor-pointer gap-2 ${bgClass}`}
+                        onClick={() => navigate(`/find-jobs?job=${encodeURIComponent(job.title)}`)}
+                      >
+                        <span className="text-gray-600 text-sm">{job.location}</span>
+                        <h4 className="text-black font-semibold text-xl">{job.title}</h4>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>

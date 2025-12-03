@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FaUsers, FaTrash } from "react-icons/fa";
-import { Ban, Unlock, Mail, Filter } from "lucide-react";
+import { Trash, Ban, Unlock, Mail, Filter, MapPin, Briefcase } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 
 const AdminRecruiters = () => {
@@ -36,6 +35,7 @@ const AdminRecruiters = () => {
 
   // Delete user
   const deleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this recruiter?")) return;
     try {
       const { data } = await axios.post(`${backendUrl}/api/auth/delete-user`, { id });
       if (data.success) {
@@ -111,42 +111,38 @@ const AdminRecruiters = () => {
   const underReviewCount = recruiters.filter((r) => r.reviewStatus === "udnerReview").length;
 
   return (
-    <div className="p-6 bg-white rounded-xl w-full min-h-screen shadow-sm">
+    <div className="bg-white w-full min-h-screen rounded-lg overflow-y-auto border border-gray-200 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-3 text-gray-800">
-          <FaUsers className="text-[var(--primary-color)]" /> Recruiters Management
+        <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-800 mb-3">
+          Recruiters Management
         </h1>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg shadow-md border border-green-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">
           <p className="text-gray-600 font-medium">Approved</p>
           <h2 className="text-3xl font-bold text-green-600 mt-1">{approvedCount}</h2>
         </div>
-        <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg shadow-md border border-yellow-200">
+        <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg border border-yellow-200">
           <p className="text-gray-600 font-medium">Pending</p>
           <h2 className="text-3xl font-bold text-yellow-600 mt-1">{pendingCount}</h2>
         </div>
-        <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg shadow-md border border-red-200">
+        <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg border border-red-200">
           <p className="text-gray-600 font-medium">Rejected</p>
           <h2 className="text-3xl font-bold text-red-600 mt-1">{rejectedCount}</h2>
         </div>
-        <div className="p-5 bg-gradient-to-br from-orange-100 to-orange-50 rounded-lg shadow-md border border-red-200">
+        <div className="p-5 bg-gradient-to-br from-orange-100 to-orange-50 rounded-lg border border-orange-200">
           <p className="text-gray-600 font-medium">Requests</p>
           <h2 className="text-3xl font-bold text-orange-600 mt-1">{underReviewCount}</h2>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm">
+      <div className="mb-6">
         <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex items-center gap-2 text-gray-700 font-semibold">
-            <Filter size={18} /> Filters:
-          </div>
-
-          <div className="w-full grid grid-cols-2 md:grid-cols- lg:grid-cols-4 gap-2">
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
             <CustomSelect
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
@@ -192,83 +188,103 @@ const AdminRecruiters = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-        <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-[var(--primary-color)] text-white uppercase text-xs tracking-wide">
-            <tr>
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">City</th>
-              <th className="px-6 py-3">Company</th>
-              <th className="px-6 py-3">Role</th>
-              <th className="px-6 py-3 text-center">Jobs</th>
-              <th className="px-6 py-3 text-center">Status</th>
-              <th className="px-6 py-3 text-center">Actions</th>
+      <div className="overflow-x-auto rounded-lg border border-gray-300">
+        <table className="min-w-full bg-white border-collapse">
+          <thead>
+            <tr className="text-left text-gray-500 bg-white border-b border-gray-200">
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">#</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Name</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">City</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Company</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Role</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Jobs</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Status</th>
+              <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredRecruiters.map((r, i) => (
-              <tr
-                key={r._id}
-                className={`transition duration-200 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-blue-50`}
-              >
-                <td className="px-6 py-4 font-medium">{i + 1}</td>
-                <td className="px-6 py-4 font-semibold text-gray-800">{r.name}</td>
-                <td className="px-6 py-4 flex items-center gap-2">
-                  <Mail size={15} className="text-gray-500" /> {r.email}
-                </td>
-                <td className="px-6 py-4">{r.city || <span className="text-gray-400">N/A</span>}</td>
-                <td className="px-6 py-4">{r.company || <span className="text-gray-400">N/A</span>}</td>
-                <td className="px-6 py-4">{r.role || <span className="text-gray-400">N/A</span>}</td>
-                <td className="px-6 py-4 text-center">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                    {r.sentJobs?.length || 0}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-semibold ${r.status === "approved"
-                      ? "bg-green-100 text-green-700"
-                      : r.status === "pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                      }`}
-                  >
-                    {r.status || "N/A"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <div className="flex justify-center items-center gap-4">
-                    <span
-                      onClick={() => deleteUser(r.authId)}
-                      className="cursor-pointer text-red-500 hover:text-red-700 transition"
-                      title="Delete"
-                    >
-                      <FaTrash size={18} />
+            {filteredRecruiters.length > 0 ? (
+              filteredRecruiters.map((r, i) => (
+                <tr
+                  key={r._id}
+                  className="hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out"
+                >
+                  <td className="px-6 py-3 font-medium text-gray-600">{i + 1}</td>
+                  <td className="px-6 py-3 font-semibold text-gray-800">{r.name}</td>
+                  <td className="px-6 py-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Mail size={14} className="text-gray-400" />
+                      {r.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={14} className="text-gray-400" />
+                      {r.city || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Briefcase size={14} className="text-gray-400" />
+                      {r.company || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 text-sm text-gray-600">{r.role || "N/A"}</td>
+                  <td className="px-6 py-3 text-center">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                      {r.sentJobs?.length || 0}
                     </span>
-                    {r.isBanned ? (
-                      <span
-                        onClick={() => toggleBan(r.email, true)}
-                        className="cursor-pointer text-green-500 hover:text-green-700 transition"
-                        title="Unban"
+                  </td>
+                  <td className="px-6 py-3 text-center">
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-semibold ${r.status === "approved"
+                        ? "bg-green-100 text-green-700"
+                        : r.status === "pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {r.status || "N/A"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3 text-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        onClick={() => deleteUser(r.authId)}
+                        className="p-2 rounded-full hover:bg-red-50 transition-colors text-red-500"
+                        title="Delete"
                       >
-                        <Unlock size={18} />
-                      </span>
-                    ) : (
-                      <span
-                        onClick={() => toggleBan(r.email, false)}
-                        className="cursor-pointer text-red-500 hover:text-red-700 transition"
-                        title="Ban"
-                      >
-                        <Ban size={18} />
-                      </span>
-                    )}
-                  </div>
+                        <Trash size={18} />
+                      </button>
+                      {r.isBanned ? (
+                        <button
+                          onClick={() => toggleBan(r.email, true)}
+                          className="p-2 rounded-full hover:bg-green-50 transition-colors text-green-500"
+                          title="Unban"
+                        >
+                          <Unlock size={18} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => toggleBan(r.email, false)}
+                          className="p-2 rounded-full hover:bg-red-50 transition-colors text-red-500"
+                          title="Ban"
+                        >
+                          <Ban size={18} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={9} className="text-center pt-6 pb-6">
+                  No recruiters found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

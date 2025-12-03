@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Footer from "../components/Footer";
 
 // React Icons
-import { MdComputer, MdCampaign, MdDesignServices, MdAccountBalance, MdPeople, MdBusinessCenter, MdEngineering } from "react-icons/md";
-import { FaSearch, FaArrowLeft } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import { getCategoryIcon } from "../utils/categoryIcons";
 import { Search } from "lucide-react";

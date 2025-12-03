@@ -49,62 +49,25 @@ const Candidates = () => {
         });
     };
 
-    const sampleCandidates = [
-        {
-            _id: "sample-1",
-            name: "Jordan Banks",
-            role: "Product Designer",
-            city: "Chicago",
-            country: "USA",
-            state: "Illinois",
-            about:
-                "Multidisciplinary designer with 10+ years building intuitive enterprise experiences.",
-            skills: ["UI/UX Design", "Figma", "Design Systems", "Prototyping"],
-            rate: "$65",
-            rateType: "hour",
-            createdAt: new Date().toISOString(),
-            experience: "Fresh",
-            gender: "other",
-            qualification: "Bachelors",
-        },
-        {
-            _id: "sample-2",
-            name: "Amelia Chen",
-            role: "Content Strategist",
-            city: "New York",
-            country: "USA",
-            state: "NY",
-            about:
-                "Strategist focused on crafting compelling narratives for SaaS brands.",
-            skills: ["Content Strategy", "Copywriting", "SEO", "Lifecycle Marketing"],
-            rate: "$550",
-            rateType: "day",
-            createdAt: new Date().toISOString(),
-            experience: "Fresh",
-            gender: "female",
-            qualification: "Bachelors",
-        },
-        {
-            _id: "sample-3",
-            name: "Mateo Alvarez",
-            role: "Full-Stack Developer",
-            city: "Austin",
-            state: "Texas",
-            country: "USA",
-            about:
-                "Full-stack engineer specializing in React, Node, and cloud architectures.",
-            skills: ["React", "Node.js", "TypeScript", "AWS"],
-            rate: "$90",
-            rateType: "hour",
-            createdAt: new Date().toISOString(),
-            experience: "Fresh",
-            gender: "male",
-            qualification: "Bachelors",
-        },
-    ];
+    const getCandidates = async () => {
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/user/allusers`);
+            if (data.success) {
+                setCandidates(data.users);
+            } else {
+                setCandidates([]);
+            }
+        } catch {
+            setCandidates([]);
+        }
+    }
+
+    useEffect(() => {
+        getCandidates();
+    }, []);
 
     const baseCandidates = useMemo(
-        () => (candidates.length ? candidates : sampleCandidates),
+        () => (candidates.length ? candidates : []),
         [candidates]
     );
 

@@ -65,57 +65,67 @@ const AdminListedBlogs = ({ setActiveTab }) => {
         </div>
     }
     return (
-        <div className='relative w-full p-6 overflow-y-auto min-h-screen'>
+        <div className='rounded-xl w-full flex flex-col min-h-screen border border-gray-200 p-6 bg-white'>
             <h1 className='font-bold flex items-center gap-4'>
-                <CiViewList className='text-[var(--primary-color)]' /> Listed Blogs
+                Listed Blogs
             </h1>
-            <button className='mt-10' onClick={() => (setActiveTab("add-blog"))}>
+            <button className='mt-10 primary-btn self-end flex items-center gap-2 '>
                 Add <FaPlus />
             </button>
-            <div className='overflow-x-auto mt-4 rounded-2xl border border-gray-200 shadow-md'>
-                <table className=" w-full text-sm text-left text-gray-700">
-                    <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white sticky top-0 whitespace-nowrap">
+            <div className='mt-10 overflow-x-auto rounded-lg border border-gray-200'>
+                <table className="w-full text-sm text-left text-gray-700">
+                    <thead className="bg-white text-gray-500 uppercase text-xs tracking-wide">
                         <tr>
-                            <th className="px-6 py-3">#</th>
-                            <th className="px-6 py-3">Featured Image</th>
-                            <th className="px-6 py-3">Title</th>
-                            <th className="px-6 py-3">Category</th>
-                            <th className="px-6 py-3">Created At</th>
-                            <th colSpan={2} className="px-6 py-3 text-center">Action</th>
+                            <th className="px-6 py-6">#</th>
+                            <th className="px-6 py-6">Featured Image</th>
+                            <th className="px-6 py-6">Title</th>
+                            <th className="px-6 py-6">Category</th>
+                            <th className="px-6 py-6">Created At</th>
+                            <th colSpan={2} className="px-6 py-6 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {allBlogs.map((blog, index) => (
-                            <tr
-                                key={index}
-                                className={`transition duration-200 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                                    } hover:bg-blue-50`}
-                            >
-                                <td className="px-6 py-4 font-medium">{index + 1}</td>
-                                <td className="px-6 py-4 "><Img
-                                    src={blog.coverImage}
-                                    onClick={() => {
-                                        setSelectedImg(blog.coverImage);
-                                        setImageModel(true);
-                                    }}
-                                    className="w-20 h-20 object-cover rounded-lg border border-gray-300 cursor-pointer hover:scale-105 hover:shadow-md transition-transform duration-200"
-                                />
-                                </td>
-                                <td className="px-6 py-4">{blog.title}</td>
-                                <td className="px-6 py-4 font-semibold">{blog.category}</td>
-                                <td className="px-6 py-4">
-                                    {blog.createdAt.split('T')[0]}
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <div className="flex justify-center items-center gap-4">
-                                        <HiOutlinePencilSquare
-                                            onClick={() => navigate('/editblog?id=' + encodeURIComponent(blog._id))}
-                                            className='cursor-pointer text-blue-300' />
-                                        <FaTrash onClick={() => removeBlog(blog._id)} className=' cursor-pointer text-red-300' />
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+
+                        {
+                            allBlogs?.length !== 0 ?
+                                allBlogs.map((blog, index) => (
+                                    <tr
+                                        key={index}
+                                        className={`transition duration-200 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                                            } hover:bg-blue-50`}
+                                    >
+                                        <td className="px-6 py-4 font-medium">{index + 1}</td>
+                                        <td className="px-6 py-4 "><Img
+                                            src={blog.coverImage}
+                                            onClick={() => {
+                                                setSelectedImg(blog.coverImage);
+                                                setImageModel(true);
+                                            }}
+                                            className="w-20 h-20 object-cover rounded-lg border border-gray-300 cursor-pointer hover:scale-105 hover:shadow-md transition-transform duration-200"
+                                        />
+                                        </td>
+                                        <td className="px-6 py-4">{blog.title}</td>
+                                        <td className="px-6 py-4 font-semibold">{blog.category}</td>
+                                        <td className="px-6 py-4">
+                                            {blog.createdAt.split('T')[0]}
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <div className="flex justify-center items-center gap-4">
+                                                <HiOutlinePencilSquare
+                                                    onClick={() => navigate('/editblog?id=' + encodeURIComponent(blog._id))}
+                                                    className='cursor-pointer text-blue-300' />
+                                                <FaTrash onClick={() => removeBlog(blog._id)} className=' cursor-pointer text-red-300' />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                                :
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-4 text-center">
+                                        No Blogs Found
+                                    </td>
+                                </tr>
+                        }
                     </tbody>
                 </table>
             </div>

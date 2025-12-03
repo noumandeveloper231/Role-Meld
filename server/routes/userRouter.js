@@ -93,8 +93,8 @@ userRouter.get("/allusers", getAllUsers);
 userRouter.get("/allrecruiters", getAllRecruiters);
  
 // Social & company
-userRouter.post("/follow-unfollow-acc", userAuth, followUnfollowAccount);
-userRouter.post("/getcompanydetails", userAuth, getCompanyDetails);
+userRouter.patch("/follow-unfollow-acc/:id", userAuth, followUnfollowAccount);
+userRouter.get("/getcompanydetails/:id", userAuth, getCompanyDetails);
 userRouter.get("/followedaccounts", userAuth, followedAccountsDetails);
 userRouter.get("/getFollowing", userAuth, getFollowing );
 userRouter.get("/getFollowers", userAuth, getFollowers);

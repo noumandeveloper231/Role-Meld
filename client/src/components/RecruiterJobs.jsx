@@ -1,13 +1,8 @@
 import axios from 'axios';
-import React, { use, useContext, useEffect, useState } from 'react'
-import { FaCircleCheck } from "react-icons/fa6";
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
-import { MdCancel } from "react-icons/md";
-import { FaClock } from "react-icons/fa";
-import { FaRegListAlt } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
-import { Trash, Filter, Search } from 'lucide-react';
+import { Trash, Search } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 import { NavLink } from 'react-router-dom';
 
@@ -26,7 +21,7 @@ const RecruiterJobs = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const getJobs = async () => {
         try {
-            const { data } = await axios.post(`${backendUrl}/api/jobs/getcompanyjobsbyid`, { id: userData.authId });
+            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobsbyid/${userData.authId}`);
             if (data.success) {
                 setJobs(data.companyJobs);
             }
@@ -38,20 +33,30 @@ const RecruiterJobs = () => {
         getJobs();
     }, [])
 
+    console.log('jobs', jobs)
+
     // Remove Job
-    const removeJob = async (jobId) => {
+    const removeJob = async (id) => {
         try {
-            const { data } = await axios.post(`${backendUrl}/api/jobs/removejob`, { jobId });
+            // instantly update UI before API completes
+            setJobs(prev => prev.filter(job => job._id !== id));
+
+            const { data } = await axios.delete(`${backendUrl}/api/jobs/removejob/${id}`);
+
             if (data.success) {
                 toast.success(data.message);
-                getJobs();
+                getJobs(); // refresh in background
             } else {
                 toast.error(data.message);
+                getJobs(); // restore if needed
             }
+
         } catch (error) {
             toast.error(error.message);
+            getJobs(); // restore
         }
-    }
+    };
+
 
     const approvedJobs = jobs.filter(job => job.approved === "approved");
     const rejectedJobs = jobs.filter(job => job.approved === "rejected");
@@ -111,15 +116,15 @@ const RecruiterJobs = () => {
                     </NavLink>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg shadow-md border border-green-200">
+                    <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">
                         <p className="text-gray-600 font-medium">Approved Jobs</p>
                         <h2 className="text-3xl font-bold text-green-600 mt-1">{approvedJobs.length}</h2>
                     </div>
-                    <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg shadow-md border border-red-200">
+                    <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg border border-red-200">
                         <p className="text-gray-600 font-medium">Rejected Jobs</p>
                         <h2 className="text-3xl font-bold text-red-600 mt-1">{rejectedJobs.length}</h2>
                     </div>
-                    <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg shadow-md border border-yellow-200">
+                    <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg border border-yellow-200">
                         <p className="text-gray-600 font-medium">Pending Jobs</p>
                         <h2 className="text-3xl font-bold text-yellow-600 mt-1">{pendingJobs.length}</h2>
                     </div>
@@ -134,6 +139,7 @@ const RecruiterJobs = () => {
                                 <CustomSelect
                                     value={selectedStatus}
                                     onChange={(e) => setSelectedStatus(e.target.value)}
+                                    className={"w-40"}
                                 >
                                     <option value="">All Status</option>
                                     <option value="approved">Approved</option>
@@ -149,7 +155,7 @@ const RecruiterJobs = () => {
                                         placeholder="Search jobs..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -158,9 +164,10 @@ const RecruiterJobs = () => {
                             <CustomSelect
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
+                                className={"w-40"}
                             >
-                                <option value="newest">Newest First</option>
-                                <option value="oldest">Oldest First</option>
+                                <option value="newest">Newest</option>
+                                <option value="oldest">Oldest</option>
                                 <option value="a-z">A–Z</option>
                                 <option value="z-a">Z–A</option>
                             </CustomSelect>
@@ -171,61 +178,70 @@ const RecruiterJobs = () => {
                 <div className="overflow-x-auto rounded-lg border border-gray-300">
                     <table className="min-w-full bg-white border-collapse">
                         <thead>
-                            <tr className="text-left text-white bg-[var(--primary-color)] border-b border-gray-200">
+                            <tr className="text-left text-gray-500 bg-white border-b border-gray-200">
                                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Job Title</th>
                                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Job Category</th>
                                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Active Till</th>
                                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Sponsored</th>
+                                <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Featured</th>
                                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentJobs.map((job, idx) => (
-                                <tr
-                                    key={job._id}
-                                    className={`hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out`}
-                                >
-                                    <td className="px-6 py-3 font-semibold text-gray-800">{job.title}</td>
-                                    <td className="px-6 py-3 text-sm text-gray-600">{job.category}</td>
-                                    <td className="px-6 py-3 text-sm text-gray-600">
-                                        {new Date(job.applicationDeadline).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-3">
-                                        {job.approved === "approved" && (
-                                            <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
-                                                Approved
-                                            </span>
-                                        )}
-                                        {job.approved === "rejected" && (
-                                            <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
-                                                Rejected
-                                            </span>
-                                        )}
-                                        {job.approved === "pending" && (
-                                            <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
-                                                Pending
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-3">
-                                        <span className={`px-3 py-1 text-xs rounded-full font-medium ${job.sponsored ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-200 text-gray-600'}`}>
-                                            {job.sponsored ? "Yes" : "No"}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-3 font-medium text-gray-700">
-                                        <div className='w-full flex justify-center items-center'>
-                                            <button
-                                                onClick={() => removeJob(job._id)}
-                                                className='p-2 rounded-full hover:bg-red-50 transition-colors'
-                                                aria-label={`Remove job: ${job.title}`}
-                                            >
-                                                <Trash className='text-red-500 cursor-pointer' size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                            {
+                                currentJobs?.length > 0 ?
+                                    currentJobs.map((job, idx) => (
+                                        <tr
+                                            key={job._id}
+                                            className={`hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out`}
+                                        >
+                                            <td className="px-6 py-3 font-semibold text-gray-800">{job.title}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-600">{job.category}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-600">
+                                                {new Date(job.applicationDeadline).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-3">
+                                                {job.approved === "approved" && (
+                                                    <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
+                                                        Approved
+                                                    </span>
+                                                )}
+                                                {job.approved === "rejected" && (
+                                                    <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
+                                                        Rejected
+                                                    </span>
+                                                )}
+                                                {job.approved === "pending" && (
+                                                    <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+                                                        Pending
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-3">
+                                                <span className={`px-3 py-1 text-xs rounded-full font-medium ${job.sponsored ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-200 text-gray-600'}`}>
+                                                    {job.sponsored ? "Yes" : "No"}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-3 font-medium text-gray-700">
+                                                <div className='w-full flex justify-center items-center'>
+                                                    <button
+                                                        onClick={() => removeJob(job._id)}
+                                                        className='p-2 rounded-full hover:bg-red-50 transition-colors'
+                                                        aria-label={`Remove job: ${job.title}`}
+                                                    >
+                                                        <Trash className='text-red-500 cursor-pointer' size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                    :
+                                    <tr>
+                                        <td colSpan={6} className="text-center  pt-6">
+                                            No jobs found.
+                                        </td>
+                                    </tr>
+                            }
                             <tr>
                                 <td className='px-6 py-3' colSpan={7}>
                                     {/* Pagination */}

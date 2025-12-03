@@ -9,13 +9,13 @@ jobsRouter.post("/getJob", getJob);
 jobsRouter.get('/getalljobs', getAllJobs);
 jobsRouter.post('/getcompanyjobs', getCompanyJobs);
 jobsRouter.get('/getsavedjobs', userAuth, getSavedJobs);
-jobsRouter.post('/updatejobstatus', updateJobStatus);
+jobsRouter.patch('/updatejobstatus', updateJobStatus);
 jobsRouter.get('/getapprovedjobs', getApprovedJobs);
 jobsRouter.get('/getpendingjobs', getPendingJobs);
 jobsRouter.post('/searchjobs', searchJob);
 jobsRouter.post('/getcategoryjobs', getCategoryJobs);
 jobsRouter.get('/getsponsoredjobs', getSponsoredJobs);
-jobsRouter.post('/removejob', removeJob);
-jobsRouter.post('/getcompanyjobsbyid', getCompanyJobsById);
+jobsRouter.delete('/removejob/:id', removeJob);
+jobsRouter.get('/getcompanyjobsbyid/:id', getCompanyJobsById);
 
 export default jobsRouter;

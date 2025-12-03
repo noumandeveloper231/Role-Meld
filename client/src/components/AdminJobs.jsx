@@ -121,16 +121,16 @@ const AdminJobs = () => {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="p-5 rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-white">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">
           <p className="text-sm text-gray-500">Approved Jobs</p>
           <p className="text-3xl font-bold text-green-600 mt-2">{approvedJobs.length}</p>
         </div>
-        <div className="p-5 rounded-2xl border border-yellow-200 bg-gradient-to-br from-yellow-50 to-white">
+        <div className="p-5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg border border-yellow-200">
           <p className="text-sm text-gray-500">Pending Jobs</p>
           <p className="text-3xl font-bold text-yellow-600 mt-2">{pendingJobs.length}</p>
         </div>
-        <div className="p-5 rounded-2xl border border-red-200 bg-gradient-to-br from-red-50 to-white">
+        <div className="p-5 bg-gradient-to-br from-red-100 to-red-50 rounded-lg border border-red-200">
           <p className="text-sm text-gray-500">Rejected Jobs</p>
           <p className="text-3xl font-bold text-red-600 mt-2">{rejectedJobs.length}</p>
         </div>
@@ -140,7 +140,7 @@ const AdminJobs = () => {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
             <div className="flex items-center gap-3">
-              <CustomSelect value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+              <CustomSelect className={"w-40"} value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
                 <option value="">All Status</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
@@ -154,14 +154,13 @@ const AdminJobs = () => {
                 placeholder="Search jobs, companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Filter size={18} className="text-gray-500" />
-            <CustomSelect value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <CustomSelect className={"w-40"} value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
               <option value="a-z">A – Z</option>
@@ -171,10 +170,10 @@ const AdminJobs = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full bg-white border-collapse">
           <thead>
-            <tr className="text-left bg-[var(--primary-color)]/95 text-white">
+            <tr className="text-left bg-white text-gray-500">
               <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Job</th>
               <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Category</th>
               <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Posted</th>

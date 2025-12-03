@@ -25,7 +25,7 @@ const recruiterProfileSchema = new mongoose.Schema({
   about: { type: String, default: "" },
   industry: { type: String, default: "" },
   companyImages: [{ type: String, default: [] }],
-  sentJobs: { type: Array, default: [] },
+  sentJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Jobs" }],
   savedApplicants: [{ type: mongoose.Schema.Types.ObjectId, ref: "UserProfile" }],
   followersAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   followedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

@@ -7,13 +7,18 @@ const CustomSelect = ({ name, value, onChange, children, className }) => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const options = React.Children.toArray(children).filter((child) => child.type === "option");
+  const options = React.Children.toArray(children).filter(
+    (child) => child.type === "option"
+  );
+
   const selectedOption = options.find((opt) => opt.props.value === value);
 
   const handleSelect = (optionValue) => {
@@ -28,31 +33,32 @@ const CustomSelect = ({ name, value, onChange, children, className }) => {
       {/* Display Button */}
       <div
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-6 py-3 border border-gray-300 rounded-md cursor-pointer hover:border-[var(--primary-color)] transition-colors duration-200 ${
-          open ? "ring-2 ring-[var(--primary-color)] border-[var(--primary-color)]" : ""
-        }`}
+        className="w-full flex items-center justify-between px-6 py-2.5 border border-gray-300 rounded-md cursor-pointer"
       >
-        <span className={`truncate ${value ? "text-gray-800" : "text-gray-400"}`}>
-          {selectedOption?.props.children || `--- Choose ${name[0].toUpperCase() + name.slice(1)} ---`}
+        <span
+          className={`truncate ${value ? "text-gray-800" : "text-gray-400"}`}
+        >
+          {selectedOption?.props.children ||
+            `--- Choose ${name[0].toUpperCase() + name.slice(1)} ---`}
         </span>
-        <ChevronDown
-          className={`text-gray-500 transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`}
-          size={18}
-        />
+
+        <ChevronDown className="text-gray-500" size={18} />
       </div>
 
       {/* Options Dropdown */}
       {open && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden animate-fadeIn max-h-60 overflow-y-auto">
+        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
           {options.map((opt) => (
             <div
               key={opt.props.value}
               onClick={() => handleSelect(opt.props.value)}
-              className={`px-4 py-2 cursor-pointer transition-all ${
-                opt.props.value === value 
-                  ? "bg-[var(--primary-color)] text-white" 
-                  : "text-gray-700 hover:bg-[var(--accent-color)]"
-              }`}
+              className={`px-4 py-2.5 cursor-pointer 
+                ${
+                  opt.props.value === value
+                    ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
+                    : "text-gray-700 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]"
+                }
+              `}
             >
               {opt.props.children}
             </div>

@@ -14,7 +14,9 @@ import {
   Menu,
   X,
   Blocks,
-  Package
+  Package,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { MdAssistant, MdRequestPage } from "react-icons/md";
 import Img from "./Image";
@@ -44,15 +46,22 @@ const AdminSidebar = ({ activeTab }) => {
     { name: "Analytics", key: "analytic-dashboard", icon: <LayoutDashboard size={20} />, path: "/admin" },
     { name: "Job Requests", key: "job-requests", icon: <Building size={20} />, path: "/admin/job-requests" },
     { name: "Users", key: "users", icon: <User size={20} />, path: "/admin/users" },
-    { name: "Recruiters", key: "recruiters", icon: <Users2 size={20} />, path: "/admin/recruiters" },
+    { name: "Employers", key: "employers", icon: <Users2 size={20} />, path: "/admin/employers" },
     { name: "Employee Requests", key: "employee-profile-requests", icon: <MdRequestPage size={20} />, path: "/admin/employee-profile-requests" },
     { name: "All Jobs", key: "jobs", icon: <Briefcase size={20} />, path: "/admin/jobs" },
     { name: "Category Manager", key: "category-manager", icon: <Briefcase size={20} />, path: "/admin/category-manager" },
     { name: "Packages", key: "packages", icon: <Package size={20} />, path: "/admin/packages" },
-    { name: "Add Assistant", key: "add-assistant", icon: <MdAssistant size={20} />, path: "/admin/add-assistant" },
-    { name: "All Assistants", key: "all-assistant", icon: <MdAssistant size={20} />, path: "/admin/all-assistant" },
-    { name: "Blog Management", key: "blog-management", icon: <Blocks size={20} />, path: "/admin/blog-management" },
-    { name: "Add Blog", key: "add-blog", icon: <Blocks size={20} />, path: "/admin/add-blog" },
+    {
+      name: "All Assistant", key: "all-assistant", icon: <MdAssistant size={20} />, path: "/admin/all-assistant",
+      subTabs: [
+        { name: "Add Assistant", key: "add-assistant", icon: <MdAssistant size={20} />, path: "/admin/add-assistant" },
+      ]
+    },
+    {
+      name: "Blog Management", key: "blog-management", icon: <Blocks size={20} />, path: "/admin/blog-management", subTabs: [
+        { name: "Add Blog", key: "add-blog", icon: <Blocks size={20} />, path: "/admin/add-blog" },
+      ]
+    },
     { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
   ];
 
@@ -143,9 +152,9 @@ const AdminSidebar = ({ activeTab }) => {
         <nav className={`${isSidebarOpen ? 'flex-1 px-2' : 'flex-1 px-7'} py-4`}>
           <ul className="space-y-1">
             {navLinks.map((item) => (
-              <li key={item.key}>
+              <li key={item.key} className="relative group">
                 <span
-                  onClick={() => handleNavClick(item)}
+                  onClick={() => !item.subTabs && handleNavClick(item)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-3xl text-left transition-colors cursor-pointer ${activeTab === item.key
                     ? 'bg-[var(--accent-color)] text-[var(--primary-color)]'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -155,9 +164,34 @@ const AdminSidebar = ({ activeTab }) => {
                     {item.icon}
                   </span>
                   {!isSidebarOpen && (
-                    <span className="font-medium">{item.name}</span>
+                    <div className="w-full font-medium flex items-center justify-between">{item.name} {item.subTabs && <ChevronRight />}</div>
                   )}
                 </span>
+
+                {/* Floating Sub-tabs */}
+                {item.subTabs && (
+                  <div className="absolute left-full top-0 pl-2 w-56 hidden group-hover:block z-50">
+                    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden p-2">
+                      {item.subTabs.map((subItem) => (
+                        <div
+                          key={subItem.key}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNavClick(subItem);
+                          }}
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-3xl cursor-pointer transition-colors mb-1 last:mb-0
+                            ${activeTab === subItem.key ? 'bg-[var(--accent-color)] text-[var(--primary-color)]' : 'text-gray-600 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]'}
+                          `}
+                        >
+                          <span className="flex-shrink-0 scale-90">
+                            {subItem.icon}
+                          </span>
+                          <span className="font-medium text-sm">{subItem.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

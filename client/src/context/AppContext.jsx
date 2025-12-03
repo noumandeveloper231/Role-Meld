@@ -19,17 +19,25 @@ export const AppContextProvider = (props) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // follow company 
-  async function followUnfollow({ followedAccountId }) {
+  async function followUnfollow(followedAccountId) {
+    if (!isLoggedIn) {
+      return toast.error("Please Login to Follow");
+    }
+
+    console.log('followedAccountId', followedAccountId)
     const toastId = toast.loading("Processing...")
-    try {
-      const { data } = await axios.post(`${backendUrl}/api/user/follow-unfollow-acc`, { followedAccountId })
+    try {x
+      const { data } = await axios.patch(`${backendUrl}/api/user/follow-unfollow-acc/${followedAccountId}`)
       if (data.success) {
         toast.update(toastId, { render: data.message, type: "success", isLoading: false })
+        getUserData();
       } else {
         toast.update(toastId, { render: data.message, type: "error", isLoading: false })
+        getUserData();
       }
     } catch (error) {
       toast.update(toastId, { render: error.response.data.message, type: "error", isLoading: false })
+      getUserData();
     }
   }
 
@@ -37,7 +45,7 @@ export const AppContextProvider = (props) => {
   axios.defaults.withCredentials = true;
 
   const sendNotification = async (user, subject, type) => {
-    try {
+    try { 
       const { data } = await axios.post(`${backendUrl}/api/notifications/send`, {
         subject,
         user,
@@ -59,6 +67,10 @@ export const AppContextProvider = (props) => {
   const toggleSaveJob = async (id) => {
     if (!isLoggedIn) {
       return toast.error("Please Login to Save Jobs");
+    }
+
+    if (userData.role === "recruiter") {
+      return toast.error("Employers cannot save jobs");
     }
 
     try {

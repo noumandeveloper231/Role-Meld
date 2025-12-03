@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { MapPin, Plus, Star } from 'lucide-react'
+import { AppContext } from '../context/AppContext'
+import { toast } from 'react-toastify'
 
-const CandidateCards = ({candidate}) => {
+const CandidateCards = ({ candidate }) => {
+    const { userData, followUnfollow } = useContext(AppContext)
     return (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer max-w-5xl w-full">
             <header className="flex items-start justify-between gap-4">
@@ -16,17 +19,21 @@ const CandidateCards = ({candidate}) => {
                             <h3 className="text-md font-semibold text-gray-900">{candidate.name}</h3>
                         </div>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                            <span className="text-[var(--primary-color,#1dbf73)] font-medium">{candidate.role}</span>
+                            <span className="text-[var(--primary-color,#1dbf73)] font-medium">{candidate.category || "Not Specified"}</span>
                             <span className="flex items-center gap-1">
                                 <MapPin size={16} className="text-gray-400" />
-                                {candidate.city}
+                                {candidate.city || "Not Specified"}
                             </span>
                         </div>
                     </div>
                 </div>
-                <button className="secondary-btn flex items-center gap-2">
-                    <Plus size={20} />Follow
-                </button>
+                {userData?.role === "user" &&
+                    <button
+                        onClick={() => followUnfollow({ followedAccountId: candidate._id })}
+                        className="secondary-btn flex items-center gap-2">
+                        <Plus size={20} />Follow
+                    </button>
+                }
             </header>
 
             <p className="mt-4 text-gray-600 text-lg leading-relaxed">{candidate.about}</p>
@@ -43,7 +50,7 @@ const CandidateCards = ({candidate}) => {
                     ))}
                 </div>
                 <div className="mt-5 flex items-center gap-2 justify-end">
-                    <span className="text-2xl text-[var(--primary-color)] font-semibold">{candidate.rate}/{candidate.rateType || 'Day'}</span> 
+                    <span className="text-2xl text-[var(--primary-color)] font-semibold">{candidate.offeredSalary}/{candidate.salaryType || 'Day'}</span>
                 </div>
             </div>
         </div>

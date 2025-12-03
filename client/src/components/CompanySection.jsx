@@ -7,10 +7,14 @@ import "swiper/css/autoplay";
 import "swiper/css/pagination";
 import { MdWork } from "react-icons/md";
 import CompanyCard from "./CompanyCard";
+import { toast } from "react-toastify";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
 
 const CompanySection = () => {
     const [latestJobs, setLatestJobs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const {backendUrl} = useContext(AppContext)
 
     // const getLatestJobs = async () => {
     //     setLoading(true);
@@ -41,6 +45,26 @@ const CompanySection = () => {
 
 
     // Static data for 5 job cards
+    
+    const [companies, setCompanies] = useState([])
+    const getCompanies = async () => {
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/user/allrecruiters`);
+            console.log('data', data)
+            if (data.success) {
+                setCompanies(data.recruiters);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+    useEffect(() => {
+        getCompanies();
+    }, []);
+    
     const sampleCompanies = [
         {
             _id: "sample-1",
@@ -175,7 +199,9 @@ const CompanySection = () => {
     //     );
     // }
 
-    if (sampleCompanies.length === 0) {
+    console.log('companies', companies)
+
+    if (companies.length < 0) {
         return (
             <>
                 <div className="flex flex-col justify-center w-full items-center mb-8">
@@ -222,7 +248,7 @@ const CompanySection = () => {
                     }}
                     className="pb-16"
                 >
-                    {sampleCompanies.map((company, index) => (
+                    {companies.map((company, index) => (
                         <SwiperSlide key={index}>
                             <CompanyCard company={company} />
                         </SwiperSlide>

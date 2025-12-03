@@ -15,7 +15,7 @@ export const addJob = async (req, res) => {
         const userProfile = await recruiterProfileModel.findOne({ authId: userId });
         const job = new jobsModel({
             ...jobData,
-            postedBy: userProfile._id,
+            postedBy: userProfile.authId,
             postedAt: new Date(),
             applicationDeadline: jobData.closingDays
                 ? new Date(Date.now() + jobData.closingDays * 24 * 60 * 60 * 1000)
@@ -278,18 +278,18 @@ export const getSponsoredJobs = async (req, res) => {
 
 // Remove Jobs
 export const removeJob = async (req, res) => {
-    const { jobId } = req.body;
+    const { id } = req.params;
 
-    if (!jobId) {
+    if (!id) {
         return res.status(400).json({ success: false, message: "Job ID is required" });
     }
     try {
-        const job = await jobsModel.findById(jobId);
+        const job = await jobsModel.findById(id);
         if (!job) {
             return res.status(404).json({ success: false, message: "Job not found" });
         }
 
-        await jobsModel.findByIdAndDelete(jobId);
+        await jobsModel.findByIdAndDelete(id);
 
         return res.status(200).json({ success: true, message: "Job removed successfully" });
     } catch (error) {
@@ -298,7 +298,7 @@ export const removeJob = async (req, res) => {
 }
 
 export const getCompanyJobsById = async (req, res) => {
-    const { id } = req.body;
+    const { id } = req.params;
 
     if (!id) {
         return res.json({ success: false, message: "No Company Found" });

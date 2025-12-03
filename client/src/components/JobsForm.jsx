@@ -6,6 +6,131 @@ import CustomSelect from "./CustomSelect";
 import SearchSelect from "./SelectSearch";
 import JobCard from "./JobCard";
 import JoditEditor from 'jodit-react';
+import SkillsInput from "./SkillsInput";
+
+const AVAILABLE_SKILLS = [
+  'JavaScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin',
+  'React', 'Angular', 'Vue.js', 'Node.js', 'Express.js', 'Django', 'Flask', 'Spring Boot',
+  'HTML', 'CSS', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material UI',
+  'MongoDB', 'MySQL', 'PostgreSQL', 'Redis', 'Firebase', 'SQL Server',
+  'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins',
+  'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Agile', 'Scrum',
+  'UI/UX Design', 'Figma Design', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
+  'Content Editor', 'Technical Writing', 'Product Manager', 'Communication Skills',
+  'BackEnd Developer', 'FrontEnd Developer', 'Full Stack Developer', 'DevOps',
+  'Machine Learning', 'Data Science', 'Artificial Intelligence', 'Deep Learning',
+  'Mobile Development', 'iOS Development', 'Android Development', 'React Native', 'Flutter',
+  'Testing', 'Unit Testing', 'Integration Testing', 'QA', 'Selenium', 'Jest',
+  'Documentation', 'API Development', 'REST API', 'GraphQL', 'Microservices',
+  'Problem Solving', 'Team Leadership', 'Project Management', 'Critical Thinking'
+];
+
+// Skills Selector Component
+const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const dropdownRef = React.useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const addSkill = (skill) => {
+    if (!selectedSkills.includes(skill)) {
+      onSkillsChange([...selectedSkills, skill]);
+    }
+    setSearchTerm('');
+  };
+
+  const removeSkill = (skillToRemove) => {
+    onSkillsChange(selectedSkills.filter(skill => skill !== skillToRemove));
+  };
+
+  const filteredSkills = AVAILABLE_SKILLS.filter(skill =>
+    !selectedSkills.includes(skill) &&
+    skill.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className='space-y-4' ref={dropdownRef}>
+      <div className='space-y-2'>
+        <label className='text-lg font-semibold text-gray-800'>Select Skills</label>
+
+        {/* Input Box with Selected Skills as Chips */}
+        <div
+          className='min-h-[60px] w-full p-3 border-2 border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all cursor-text bg-white'
+          onClick={() => setIsDropdownOpen(true)}
+        >
+          <div className='flex flex-wrap gap-2 items-center'>
+            {selectedSkills.map((skill, idx) => (
+              <span
+                key={idx}
+                className='bg-[var(--accent-color)] text-[var(--primary-color)] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 border border-[var(--primary-color)]/20'
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeSkill(skill);
+                  }}
+                  className='hover:text-red-600 transition-colors'
+                >
+                  ×
+                </button>
+                {skill}
+              </span>
+            ))}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              placeholder={selectedSkills.length === 0 ? "Click to select skills..." : ""}
+              className='flex-1 min-w-[200px] outline-none bg-transparent text-gray-700 placeholder-gray-400'
+            />
+          </div>
+        </div>
+
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
+          <div className='relative'>
+            <div className='absolute top-0 left-0 right-0 max-h-[300px] overflow-y-auto bg-white border-2 border-gray-200 rounded-lg shadow-md z-10'>
+              {filteredSkills.length > 0 ? (
+                filteredSkills.map((skill, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => addSkill(skill)}
+                    className='px-4 py-2 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)] cursor-pointer transition-colors text-gray-700 border-b border-gray-100 last:border-b-0'
+                  >
+                    {skill}
+                  </div>
+                ))
+              ) : (
+                <div className='px-4 py-3 text-gray-500 text-center'>
+                  {searchTerm ? 'No skills found' : 'All skills selected'}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Info Text */}
+      <p className='text-sm text-gray-500'>
+        Click on the input box to see available skills. Selected skills appear as chips inside the box.
+      </p>
+    </div>
+  );
+};
 
 const JobForm = ({ setActiveTab }) => {
   const { backendUrl, userData } = useContext(AppContext);
@@ -39,7 +164,6 @@ const JobForm = ({ setActiveTab }) => {
     externalUrl: "",
     userEmail: "",
     location: "",
-    coverImage: "",
     gallery: [],
     video: "",
     responsibilities: [],
@@ -88,24 +212,6 @@ const JobForm = ({ setActiveTab }) => {
     }
   };
 
-  const addSkill = (e) => {
-    if (e.key === "Enter" && currentSkill.trim() !== "") {
-      e.preventDefault();
-      setJobData((prev) => ({
-        ...prev,
-        skills: [...prev.skills, currentSkill.trim()],
-      }));
-      setCurrentSkill("");
-    }
-  };
-
-  const removeSkill = (index) => {
-    setJobData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((_, i) => i !== index),
-    }));
-  };
-
   const postJob = async (e) => {
     e.preventDefault();
 
@@ -124,7 +230,6 @@ const JobForm = ({ setActiveTab }) => {
 
       const { data } = await axios.post(`${backendUrl}/api/jobs/addjob`, {
         jobData: payload,
-        userId: userData._id,
       });
 
       if (data.success) {
@@ -152,13 +257,11 @@ const JobForm = ({ setActiveTab }) => {
           externalUrl: "",
           userEmail: "",
           location: "",
-          coverImage: "",
           gallery: [],
           video: "",
           responsibilities: [],
           benefits: []
         });
-        setActiveTab("listed-jobs");
       } else {
         toast.error(data.message);
       }
@@ -174,6 +277,13 @@ const JobForm = ({ setActiveTab }) => {
     { code: "EUR", name: "Euro" },
     { code: "GBP", name: "British Pound" },
     { code: "INR", name: "Indian Rupee" },
+    { code: "BDT", name: "Bangladesh Taka" },
+    { code: "AUD", name: "Australian Dollar" },
+    { code: "CAD", name: "Canadian Dollar" },
+    { code: "NZD", name: "New Zealand Dollar" },
+    { code: "CHF", name: "Swiss Franc" },
+    { code: "JPY", name: "Japanese Yen" },
+    { code: "CNY", name: "Chinese Yuan" },
   ];
 
   return (
@@ -239,22 +349,10 @@ const JobForm = ({ setActiveTab }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Skills *</label>
-                <div className="flex flex-wrap gap-2 mb-2 p-2 border border-gray-300 rounded-lg min-h-[42px]">
-                  {jobData.skills.map((skill, index) => (
-                    <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded-md text-sm flex items-center gap-1">
-                      {skill}
-                      <button type="button" onClick={() => removeSkill(index)} className="text-gray-500 hover:text-red-500">×</button>
-                    </span>
-                  ))}
-                  <input
-                    type="text"
-                    value={currentSkill}
-                    onChange={(e) => setCurrentSkill(e.target.value)}
-                    onKeyDown={addSkill}
-                    className="flex-1 outline-none bg-transparent min-w-[120px]"
-                    placeholder="Type skill and press Enter"
-                  />
-                </div>
+                <SkillsSelector
+                  selectedSkills={jobData.skills || []}
+                  onSkillsChange={(skills) => setJobData(prev => ({ ...prev, skills }))}
+                />
               </div>
 
               <div>
@@ -344,7 +442,15 @@ const JobForm = ({ setActiveTab }) => {
                 </CustomSelect>
               </div>
               <div>
-                <SearchSelect options={currencyOptions} value={jobData.currency} onChange={handleJobChange} label="Currency" placeholder="Select Currency" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                <CustomSelect name="currency" value={jobData.currency} onChange={handleJobChange}>
+                  <option value="">Select Currency</option>
+                  {
+                    currencyOptions.map(curr => (
+                      <option key={curr.code} value={curr.code}>{curr.code} - {curr.name}</option>
+                    ))
+                  }
+                </CustomSelect>
               </div>
 
               {jobData.salaryType === 'range' ? (
@@ -427,25 +533,6 @@ const JobForm = ({ setActiveTab }) => {
                 placeholder="e.g. New York, NY, USA"
                 required
               />
-            </div>
-          </section>
-
-          <hr className="border-gray-200" />
-
-          {/* Media */}
-          <section>
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">Media</h2>
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
-                <input
-                  type="file"
-                  name="coverImage"
-                  onChange={(e) => setJobData(prev => ({ ...prev, coverImage: e.target.files[0] }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none"
-                  accept="image/*"
-                />
-              </div>
             </div>
           </section>
 

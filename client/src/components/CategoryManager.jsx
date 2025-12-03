@@ -27,7 +27,7 @@ const IconSelect = ({ value, onChange, className }) => {
             <button
                 type="button"
                 onClick={() => setOpen((prev) => !prev)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 cursor-pointer border border-gray-300 rounded-3xl bg-white hover:border-[var(--primary-color)] focus:outline-none"
+                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer border border-gray-300 rounded-lg bg-white focus:outline-none"
             >
                 <span className="flex items-center gap-2">
                     {React.createElement(selectedOption.icon, { size: 18, className: "text-[var(--primary-color)]" })}
@@ -37,7 +37,7 @@ const IconSelect = ({ value, onChange, className }) => {
             </button>
 
             {open && (
-                <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-2xl shadow-lg max-h-64 overflow-y-auto">
+                <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-sm max-h-64 overflow-y-auto">
                     {categoryIconOptions.map((option) => (
                         <button
                             type="button"
@@ -353,7 +353,7 @@ const CategoryManager = () => {
                                 type="text"
                                 value={newCategory}
                                 placeholder="Enter category name..."
-                                className="flex-1 border border-gray-300 rounded-3xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
+                                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                 onChange={(e) => setNewCategory(e.target.value)}
                             />
                         </div>
@@ -444,15 +444,15 @@ const CategoryManager = () => {
                 <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Overview</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-5 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 shadow-sm">
+                        <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">
                             <p className="text-gray-500 text-sm font-medium">Total Categories</p>
-                            <p className="text-3xl font-bold text-blue-600 mt-2">{categories.length}</p>
+                            <p className="text-3xl font-bold text-green-600 mt-2">{categories.length}</p>
                         </div>
-                        <div className="p-5 bg-gradient-to-br from-green-50 to-white rounded-2xl border border-green-100 shadow-sm">
+                        <div className="p-5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg border border-blue-200">
                             <p className="text-gray-500 text-sm font-medium">Total Subcategories</p>
-                            <p className="text-3xl font-bold text-green-600 mt-2">{totalSubcategories}</p>
+                            <p className="text-3xl font-bold text-blue-600 mt-2">{totalSubcategories}</p>
                         </div>
-                        <div className="p-5 bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-purple-100 shadow-sm">
+                        <div className="p-5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg border border-purple-200">
                             <p className="text-gray-500 text-sm font-medium">Last Import</p>
                             <p className="text-base font-semibold text-purple-600 mt-2">
                                 {importResults
@@ -464,7 +464,7 @@ const CategoryManager = () => {
                 </div>
 
                 {/* Categories Table */}
-                <div className="rounded-2xl border border-gray-200 p-4 bg-white">
+                <div className="">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div className="relative w-full md:max-w-md">
                             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -473,7 +473,7 @@ const CategoryManager = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search categories or subcategories..."
-                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
                             />
                         </div>
                         <div className="text-sm text-gray-500">
@@ -483,10 +483,10 @@ const CategoryManager = () => {
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto mt-4 rounded-xl border border-gray-200">
+                    <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200">
                         <table className="min-w-full bg-white border-collapse">
                             <thead>
-                                <tr className="text-left bg-[var(--primary-color)]/95 text-white">
+                                <tr className="text-left bg-white text-gray-500">
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Category</th>
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Subcategories</th>
                                     <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Highlights</th>

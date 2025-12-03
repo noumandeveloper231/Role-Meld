@@ -8,12 +8,9 @@ import "aos/dist/aos.css";
 import { AppContext } from "./context/AppContext";
 import Loading from "./components/Loading";
 import CompanyProfile from "./pages/CompanyProfile";
-import FollowedAccounts from "./pages/FollowedAccounts";
-import Test from "./components/Test";
 import DashboardLayout from "./components/DashboardLayout";
 import AdminDashboardLayout from "./components/AdminDashboardLayout";
 import CandidateProfile from "./pages/CandidateProfile";
-import NotFound404 from "./components/NotFound404";
 import NotFoundPage from "./pages/NotFoundPage";
 import EmployerLanding from "./pages/EmployerLanding";
 import Blogs from "./pages/Blogs";
@@ -191,7 +188,7 @@ const App = () => {
             <Route index element={<AdminAnalytics />} />
             <Route path="job-requests" element={<AdminJobRequests />} />
             <Route path="users" element={<AdminUsers />} />
-            <Route path="recruiters" element={<AdminRecruiters />} />
+            <Route path="employers" element={<AdminRecruiters />} />
             <Route path="employee-profile-requests" element={<AdminEmployeeProfileRequests />} />
             <Route path="jobs" element={<AdminJobs />} />
             <Route path="category-manager" element={<AdminCategoryManager />} />
@@ -217,8 +214,6 @@ const App = () => {
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/find-jobs" element={<FindJobs />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/test" element={<Test />} />
-          <Route path="/followed-accounts" element={<FollowedAccounts />} />
           <Route path="/category-jobs" element={<CategoryJobs />} />
           <Route path="/blogdetails/:slug" element={<BlogsDetails />} />
           <Route path="/pricing" element={<Pricing />} />

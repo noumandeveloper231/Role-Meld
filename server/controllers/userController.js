@@ -520,7 +520,7 @@ export const fetchApplicants = async (req, res) => {
 
 
 export const followUnfollowAccount = async (req, res) => {
-    const { followedAccountId } = req.body;
+    const { id: followedAccountId } = req.params;
     const userId = req.user._id;
 
     if (!followedAccountId) {
@@ -602,15 +602,19 @@ export const followUnfollowAccount = async (req, res) => {
 };
 
 export const getCompanyDetails = async (req, res) => {
-    const { companyId } = req.body;
+    console.log("sending")
+    const { id } = req.params;
 
-    if (!companyId) {
+    console.log('req.params', req.params)
+
+    console.log('id', id)
+
+    if (!id) {
         return res.status(400).json({ success: false, message: 'Company ID is required' });
     }
 
     try {
-        let company = await recruiterProfileModel.findOne({ authId: companyId })
-            .populate('followersId', 'name email');
+        let company = await recruiterProfileModel.findById(id)
 
         if (!company) {
             return res.status(404).json({ success: false, message: 'Company not found' });
@@ -670,14 +674,12 @@ export const getFollowing = async (req, res) => {
 
                 // Try userProfile first
                 let prof = await userProfileModel.findById(pid)
-                    .select("name profilePicture headline city country authId");
 
                 let role = "user";
 
                 // If not found → try recruiterProfile
                 if (!prof) {
                     prof = await recruiterProfileModel.findById(pid)
-                        .select("name profilePicture tagline company city country authId");
                     role = "recruiter";
                 }
 
@@ -685,7 +687,6 @@ export const getFollowing = async (req, res) => {
 
                 // Fetch base user data
                 const authUser = await authModel.findById(prof.authId)
-                    .select("email role");
 
                 return {
                     ...prof.toObject(),
@@ -737,14 +738,12 @@ export const getFollowers = async (req, res) => {
             followerProfileIds.map(async (pid) => {
                 // First look in user profiles
                 let prof = await userProfileModel.findById(pid)
-                    .select("name profilePicture category city country authId");
 
                 let role = "user";
 
                 // If not found, try recruiter profile
                 if (!prof) {
                     prof = await recruiterProfileModel.findById(pid)
-                        .select("name profilePicture tagline company city country authId");
                     role = "recruiter";
                 }
 
@@ -752,7 +751,6 @@ export const getFollowers = async (req, res) => {
 
                 // Fetch base auth info
                 const authUser = await authModel.findById(prof.authId)
-                    .select("email role");
 
                 return {
                     ...prof.toObject(),

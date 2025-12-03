@@ -86,7 +86,7 @@ const AdminBlog = ({ setActiveTab }) => {
   };
 
   return (
-    <main className="w-full grid grid-cols-3 gap-4 p-6 overflow-x-hidden overflow-y-auto min-h-screen">
+    <main className="w-full rounded-xl flex-col border border-gray-200 bg-white grid grid-cols-3 gap-4 p-6 overflow-x-hidden overflow-y-auto min-h-screen">
       <div className='col-span-2 p-4'>
         <h1 className="font-bold flex items-center gap-4">
           <FaBloggerB className='text-[var(--primary-color)]' /> Add New Blog

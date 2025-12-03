@@ -2,8 +2,13 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { Eye, Mail, Search, Trash } from 'lucide-react'
 import CustomSelect from './CustomSelect';
 import Img from './Image';
+import axios from 'axios';
+import { AppContext } from '../context/AppContext';
+import Loading from './Loading';
+import { Link } from 'react-router-dom';
 
 const Candidates = () => {
+    const { backendUrl, followUnfollow } = useContext(AppContext)
     const [candidates, setCandidates] = useState([])
     const [tab, setTab] = useState("following")
     const [searchTerm, setSearchTerm] = useState("")
@@ -11,35 +16,44 @@ const Candidates = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10)
     const [currentPage, setCurrentPage] = useState(1)
 
-    const sampleFollowers = [
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 1 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 2 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 3 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 4 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 5 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 6 },
-        { name: "Candidate", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 7 },
-    ]
+    const [following, setFollowing] = useState([]);
+    const [followers, setFollowers] = useState([])
 
-    const sampleFollownig = [
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 1 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 2 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 3 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 4 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 5 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 6 },
-        { name: "Following", mainSkill: "UI/UX Designer", offeredSalary: "$30/day", city: "Chicago", email: "nt50616849@gmail.com", id: 7 },
-    ]
+    const [loading, setLoading] = useState(false)
+
+    const loadData = async () => {
+        setLoading(true);
+
+        try {
+            const [followersRes, followingRes] = await Promise.all([
+                axios.get(`${backendUrl}/api/user/getfollowers`),
+                axios.get(`${backendUrl}/api/user/getfollowing`)
+            ]);
+
+            setFollowers(followersRes.data.followers || []);
+            setFollowing(followingRes.data.following || []);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     useEffect(() => {
-        if (tab === 'followers') {
-            setCandidates(sampleFollowers)
+        loadData();
+    }, [])
+
+    useEffect(() => {
+        if (tab === 'following') {
+            setCandidates(following)
         } else {
-            setCandidates(sampleFollownig)
+            setCandidates(followers)
         }
         setSearchTerm("")
         setCityFilter("all")
         setCurrentPage(1)
-    }, [tab])
+    }, [tab, following, followers])
 
     useEffect(() => {
         setCurrentPage(1)
@@ -70,6 +84,10 @@ const Candidates = () => {
     const handleToggleFollow = (candidate) => {
         console.log(`${tab === 'following' ? 'Unfollow' : 'Follow'} candidate`, candidate)
     }
+
+    if (loading) return <Loading />
+
+    console.log('candidates', candidates)
 
     return (
         <div className="bg-white rounded-xl w-full min-h-screen border border-gray-200 p-6 rouned-lg">
@@ -126,40 +144,43 @@ const Candidates = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {paginatedCandidates.length === 0 && (
-                            <tr>
-                                <td colSpan={2} className='px-6 py-6 text-center text-gray-500'>
-                                    No candidates found.
-                                </td>
-                            </tr>
-                        )}
+                        {
+                            !loading && candidates.length === 0 && (
+                                <tr>
+                                    <td colSpan={2} className='px-6 py-6 text-center text-gray-500'>
+                                        No candidates found.
+                                    </td>
+                                </tr>
+                            )}
                         {paginatedCandidates.map(candidate => (
                             <tr key={candidate.id} className='border-t border-gray-100 hover:bg-gray-50'>
                                 <td className='px-6 py-4 flex items-center gap-4'>
-                                    <Img src={'/placeholder.png'} style='w-12 h-12 rounded-full' />
-                                    <div>
-                                        <div className='font-semibold text-gray-800'>{candidate.name}</div>
-                                        <div className='text-gray-400'>
-                                            {candidate?.mainSkill} / {candidate?.offeredSalary} / {candidate?.city}
-                                        </div>
-                                    </div>
+                                    <Img src={candidate.profilePicture || '/placeholder.png'} style='w-12 h-12 rounded-full object-cover' />
+                                    <span className='flex flex-col'>
+                                        <span className='font-semibold text-gray-800'>{candidate.name}</span>
+                                        <span className='text-gray-400'>
+                                            {candidate?.category || "Not Specified"} / {candidate?.offeredSalary}$ {candidate?.salaryType} / {candidate?.city || "Not Specified"}
+                                        </span>
+                                    </span>
                                 </td>
                                 <td className='px-6 py-4'>
-                                    <div className='flex justify-end gap-4 cursor-pointer'>
-                                        <button
-                                            onClick={() => handleViewProfile(candidate)}
+                                    <span className='flex items-center justify-end gap-4 cursor-pointer'>
+                                        <Link
+                                            title='View Profile'
+                                            to={`/candidate/${candidate._id}`}
                                         >
                                             <Eye size={20} />
-                                        </button>
-                                        <a href={`mailto:${candidate.email}`}>
+                                        </Link>
+                                        <a title='Mail' href={`mailto:${candidate.email}`}>
                                             <Mail size={20} />
                                         </a>
                                         <button
-                                            onClick={() => handleToggleFollow(candidate)}
+                                            className='secondary-btn'
+                                            onClick={() => followUnfollow(candidate.authId)}
                                         >
-                                            <Trash size={20} />
+                                            {tab === "following" ? "Unfollow" : "Follow"}
                                         </button>
-                                    </div>
+                                    </span>
                                 </td>
                             </tr>
                         ))}

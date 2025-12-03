@@ -1,14 +1,21 @@
 import { Group, MapPin, Plus } from 'lucide-react'
 import Img from './Image'
+import { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
+import { useNavigate } from 'react-router-dom'
 
 const CompanyCard = ({ company }) => {
+    const { userData, followUnfollow } = useContext(AppContext);
+    const navigate = useNavigate()
     return (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer w-full max-w-5xl mx-auto">
+        <div
+            onClick={() => navigate(`/company-profile/${company._id}`)}
+            className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer w-full max-w-5xl mx-auto">
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex flex-wrap items-start gap-4 sm:w-auto">
                     <Img
-                        src={company?.companyProfile || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&w=120&h=120&q=80"}
+                        src={company?.profilePicture || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&w=120&h=120&q=80"}
                         style="h-16 w-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="space-y-1 flex-1">
@@ -18,7 +25,7 @@ const CompanyCard = ({ company }) => {
                         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mt-1">
                             <span className="flex items-center gap-1 text-[var(--primary-color,#1dbf73)] font-medium">
                                 <MapPin size={18} className="text-gray-400" />
-                                {company?.country}
+                                {company?.country || "Not Specified"}
                             </span>
                             <span className="flex items-center gap-1">
                                 <Group size={18} className="text-gray-400" />
@@ -27,10 +34,14 @@ const CompanyCard = ({ company }) => {
                         </div>
                     </div>
                 </div>
+                {userData?.role !== "recruiter" &&
+                    <button
+                        onClick={() => followUnfollow({ followedAccountId: company._id })}
+                        className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
+                        <Plus size={20} />Follow
+                    </button>
+                }
 
-                <button className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
-                    <Plus size={20} />Follow
-                </button>
             </header>
 
             {/* About */}
@@ -42,7 +53,7 @@ const CompanyCard = ({ company }) => {
             <div className="mt-4 flex flex-wrap justify-between gap-4">
                 <div className="flex flex-wrap gap-3">
                     <span className="rounded-full bg-[var(--accent-color)] px-4 py-1.5 text-sm font-medium text-[var(--primary-color)]">
-                        {company?.industry}
+                        {company?.industry || "Not Specified"}
                     </span>
                 </div>
                 <div className="text-[var(--primary-color)] font-semibold whitespace-nowrap">

@@ -6,3 +6,4 @@
 *.csv
 *.json
 test
+/node_modules
