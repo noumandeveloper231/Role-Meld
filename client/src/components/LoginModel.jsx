@@ -53,9 +53,22 @@ const LoginModel = ({ setStep }) => {
   }
 
   return (
-    <div className="flex w-full justify-center items-center">
+    <div className="flex flex-col w-full justify-center items-center">
       <div className="w-full px-8 md:px-32 lg:px-24">
         <form onSubmit={login} className="bg-white rounded-2xl border border-gray-300 p-10 flex flex-col gap-3">
+          <div className="w-full max-w-md mx-auto mb-6">
+            <div className="bg-gray-100 rounded-xl p-4 text-gray-700 shadow-sm text-sm">
+              <dvi className="mb-1">
+                Email: <span className="font-semibold text-green-700">test@employer.com</span>
+                <span className="text-gray-500"> or </span>
+                <span className="font-semibold text-green-700">test@job-seeker.com</span>
+              </dvi>
+
+              <p>
+                Password: <span className="font-semibold text-green-700">test1234</span>
+              </p>
+            </div>
+          </div>
           <h1 className="text-gray-800 font-bold text-2xl mb-1">Login</h1>
           <p className="text-sm font-normal text-gray-600 mb-6">Welcome back 👋</p>
 

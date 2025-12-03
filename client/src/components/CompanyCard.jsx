@@ -82,7 +82,11 @@ const VerticalCompanyCard = ({ company }) => {
                         />
                         {userData?.role !== "recruiter" &&
                             <button
-                                onClick={() => followUnfollow({ followedAccountId: company._id })}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    followUnfollow({ followedAccountId: company._id })
+                                }
+                                }
                                 className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
                                 <Plus size={20} />Follow
                             </button>
