@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { useNavigate } from 'react-router-dom'
 
-const CompanyCard = ({ company }) => {
+const HorizontalCompanyCard = ({ company }) => {
     const { userData, followUnfollow } = useContext(AppContext);
     const navigate = useNavigate()
     return (
@@ -63,6 +63,77 @@ const CompanyCard = ({ company }) => {
         </div>
 
     )
+}
+
+const VerticalCompanyCard = ({ company }) => {
+    const { userData, followUnfollow } = useContext(AppContext);
+    const navigate = useNavigate()
+    return (
+        <div
+            onClick={() => navigate(`/company-profile/${company._id}`)}
+            className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer w-full max-w-5xl mx-auto">
+            {/* Header */}
+            <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start gap-4 sm:w-auto">
+                    <div className='flex w-full items-center justify-between'>
+                        <Img
+                            src={company?.profilePicture || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&w=120&h=120&q=80"}
+                            style="h-16 w-16 rounded-full object-cover flex-shrink-0"
+                        />
+                        {userData?.role !== "recruiter" &&
+                            <button
+                                onClick={() => followUnfollow({ followedAccountId: company._id })}
+                                className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
+                                <Plus size={20} />Follow
+                            </button>
+                        }
+                    </div>
+                    <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <h3 className="text-md font-semibold text-gray-900 whitespace-nowrap">{company?.company || "Not Specified"}</h3>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mt-1">
+                            <span className="flex items-center gap-1 text-[var(--primary-color,#1dbf73)] font-medium">
+                                <MapPin size={18} className="text-gray-400" />
+                                {company?.country || "Not Specified"}
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <Group size={18} className="text-gray-400" />
+                                {company?.members}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </header>
+
+            {/* About */}
+            <p className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed">
+                {company?.about || "Not Specified"}
+            </p>
+
+            {/* Footer: Tags + Jobs */}
+            <div className="mt-4 flex flex-col  gap-4">
+                <div className="flex flex-wrap gap-3">
+                    <span className="rounded-full bg-[var(--accent-color)] px-4 py-1.5 text-sm font-medium text-[var(--primary-color)]">
+                        {company?.industry || "Not Specified"}
+                    </span>
+                </div>
+                <div className="self-end text-[var(--primary-color)] font-semibold whitespace-nowrap">
+                    {company?.sentJobs?.length} jobs available
+                </div>
+            </div>
+        </div>
+
+    )
+}
+
+const CompanyCard = ({ company, type = "vertical" }) => {
+    if (type === "horizontal") {
+        return <HorizontalCompanyCard company={company} />
+    } else {
+        return <VerticalCompanyCard company={company} />
+    }
 }
 
 export default CompanyCard

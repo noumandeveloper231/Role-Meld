@@ -280,12 +280,13 @@ const Home = () => {
             </div>
             <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center">
               <h2 className="font-bold text-gray-900 mb-4 leading-tight">
-                Discover why more companies are using Civi to make hiring easy
+                Discover why more companies are using <span className="text-[var(--primary-color)]">Alfa Careers</span> to make hiring easy
               </h2>
 
               <p className="text-gray-600 text-lg mb-8 max-w-lg">
-                Faucibus sed diam lorem nibh nibh risus dui ultricies purus eget
-                convallis auctor massa.
+                Join the companies that have found their perfect candidates with
+                Alfa Careers. Our platform connects you with top talent
+                efficiently.
               </p>
 
               <div className="grid grid-cols-2 gap-8 mb-8">
