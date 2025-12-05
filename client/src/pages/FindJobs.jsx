@@ -33,9 +33,11 @@ const FindJobs = () => {
 
   // Using Parameters for getting the job 
   const search = new URLSearchParams(location.search);
-  const Param = search.get('job');
-  const categoryParam = search.get('category');
-  const locationParam = search.get('location');
+  const query = search.get('job');
+  const categoryParam = search.get('category') || '';
+  const locationParam = search.get('location') || '';
+
+  console.log('query', query)
 
   const [searchedCategories, setSearchedCategories] = useState([]);
   const [approvedCategoryJobs, setApprovedCategoryJobs] = useState([]);
@@ -43,11 +45,11 @@ const FindJobs = () => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        if (Param !== null) {
-          const { data } = await axios.post(`${backendUrl}/api/jobs/searchjobs`, { search: Param, location: locationParam || "" });
+        if (query !== null) {
+          const { data } = await axios.get(`${backendUrl}/api/jobs/searchjobs/${locationParam}?search=${query}`);
           if (data.success) {
             setSearchedCategories(data.categorySet);
-            setApprovedCategoryJobs(data.approvedCategoryJobs);
+            setApprovedCategoryJobs(data.approvedJobs);
           }
         } else {
           const { data } = await axios.get(`${backendUrl}/api/jobs/getapprovedjobs`);
@@ -64,11 +66,15 @@ const FindJobs = () => {
     };
 
     fetchJobs();
-  }, [Param, backendUrl]);
+  }, [query, backendUrl]);
 
   // Enhanced Filter States
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const jobTypeParam = search.get("jobtype");
+
+  const [selectedJobTypes, setSelectedJobTypes] = useState(
+    jobTypeParam ? [jobTypeParam] : []
+  );
   const [selectedLocationTypes, setSelectedLocationTypes] = useState([]);
   const [salaryRange, setSalaryRange] = useState([0, 200000]);
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
@@ -154,14 +160,6 @@ const FindJobs = () => {
     );
   };
 
-  const handleLocationTypeChange = (locationType) => {
-    setSelectedLocationTypes(prev =>
-      prev.includes(locationType)
-        ? prev.filter(l => l !== locationType)
-        : [...prev, locationType]
-    );
-  };
-
   const handleExperienceChange = (experience) => {
     setExperienceLevel(prev =>
       prev.includes(experience)
@@ -199,14 +197,10 @@ const FindJobs = () => {
     }
   }, [filteredJobs]);
 
-  console.log(selectedJob);
-
-
   // Loading
   if (loading) {
     return <Loading />
   }
-
 
   return (
     <div className={``}>
@@ -220,7 +214,7 @@ const FindJobs = () => {
           </h1>
           <Img src={assets.find_jobs_banner} style="absolute z-0 top-0 left-0 w-full h-full" />
           <div className='sticky top-0 z-10 px-6 py-4'>
-            <Search Param={Param} />
+            <Search Param={query} />
           </div>
         </div>
 
@@ -392,14 +386,11 @@ const FindJobs = () => {
               {/* Results Header */}
               <div className='flex items-center justify-between'>
                 <div>
-                  {Param || categoryParam ? (
+                  {query || categoryParam && 
                     <h1 className='text-2xl font-bold text-gray-900'>
-                      Search Results for "{Param || categoryParam}"
-                    </h1>
-                  ) : (
-                    <>
-                    </>
-                  )}
+                      Search Results for "{query || categoryParam}"
+                    </h1>}
+
                   <p className='text-gray-600 flex items-center gap-2 cursor-pointer' onClick={() => setIsFilterOpen(true)}>
                     <Filter size={17} />
                     <span className='hover:text-[var(--primary-color)] ' >
@@ -435,9 +426,9 @@ const FindJobs = () => {
                       margin={"mt-10"}
                       value={
                         <div className='text-center'>
-                          {Param || categoryParam ? (
+                          {query || categoryParam ? (
                             <>
-                              No matches found for <span className='font-bold'>"{Param || categoryParam}"</span>
+                              No matches found for <span className='font-bold'>"{query || categoryParam}"</span>
                             </>
                           ) : (
                             "No jobs posted yet"
@@ -506,7 +497,7 @@ const FindJobs = () => {
                         )}
                       </div>
                       <div className='flex items-center gap-4 hover:text-[var(--primary-color)] transition-all duration-200 underline underline-offset-4'>
-                        <Link className='flex items-center gap-2' to={'/jobDetails/' + selectedJob?._id}>View Details <ExternalLink size={16} /></Link>
+                        <Link className='flex items-center gap-2' to={`/jobs/${selectedJob.category}/${selectedJob.slug}`}>View Details <ExternalLink size={16} /></Link>
                         <button
                           onClick={() => {
                             if (!userData) {

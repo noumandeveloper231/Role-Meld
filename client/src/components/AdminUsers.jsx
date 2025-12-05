@@ -110,7 +110,7 @@ const AdminUsers = () => {
   const endItem = Math.min(endIndex, filteredUsers.length);
 
   return (
-    <div className="rounded-xl w-full min-h-screen border border-gray-200 p-6 rouned-lg">
+    <div className="bg-white rounded-xl w-full min-h-screen border border-gray-200 p-6 rouned-lg">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-800 mb-3">
@@ -179,9 +179,9 @@ const AdminUsers = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="bg-white rounded-lg border border-gray-200">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="bg-white text-gray-500 uppercase text-xs tracking-wide">
+          <thead className="border-b border-gray-300 bg-white text-gray-500 uppercase text-xs tracking-wide">
             <tr>
               <th className="px-6 py-6">Name</th>
               <th className="px-6 py-6">Email</th>
@@ -193,7 +193,7 @@ const AdminUsers = () => {
           </thead>
           <tbody>
             {currentUsers.map((u, i) => (
-              <tr key={u.authId || i} className={`transition duration-200 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50`}>
+              <tr key={u.authId || i} className={`border-b border-gray-300 transition duration-200 `}>
                 <td className="px-6 py-6 font-semibold text-gray-800">{u.name}</td>
                 <td className="px-6 py-6 flex items-center gap-2">
                   <Mail size={15} className="text-gray-500" /> {u.email}
@@ -230,22 +230,21 @@ const AdminUsers = () => {
             <tr>
               <td className="py-6 px-6" colSpan={7}>
                 {filteredUsers.length > 0 && (
-                  <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                     {/* Items per page selector */}
                     <div className="flex items-center gap-2">
-                      <select
+                      <CustomSelect
                         value={itemsPerPage}
                         onChange={(e) => {
                           setItemsPerPage(Number(e.target.value));
                           setCurrentPage(1);
                         }}
-                        className="border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value={10}>10</option>
                         <option value={25}>25</option>
                         <option value={50}>50</option>
                         <option value={100}>100</option>
-                      </select>
+                      </CustomSelect>
                       <span className="text-sm text-gray-600">
                         {startItem} - {endItem} of {filteredUsers.length} items
                       </span>

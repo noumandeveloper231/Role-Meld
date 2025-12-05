@@ -37,8 +37,8 @@ const HorizontalCompanyCard = ({ company }) => {
                 {userData?.role !== "recruiter" &&
                     <button
                         onClick={(e) => {
-                            e.preventDefault();
-                            followUnfollow({ followedAccountId: company._id })
+                            e.stopPropagation();
+                            followUnfollow(company._id)
                         }
                         }
                         className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
@@ -87,8 +87,8 @@ const VerticalCompanyCard = ({ company }) => {
                         {userData?.role !== "recruiter" &&
                             <button
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    followUnfollow({ followedAccountId: company._id })
+                                    e.stopPropagation();
+                                    followUnfollow(company._id)
                                 }
                                 }
                                 className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
@@ -128,7 +128,7 @@ const VerticalCompanyCard = ({ company }) => {
                     </span>
                 </div>
                 <div className="self-end text-[var(--primary-color)] font-semibold whitespace-nowrap">
-                    {company?.sentJobs?.length} jobs available
+                    {company?.sentJobs?.length} job{company?.sentJobs?.length > 1 && "s"} available
                 </div>
             </div>
         </div>

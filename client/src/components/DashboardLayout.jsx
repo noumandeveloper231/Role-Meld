@@ -40,9 +40,9 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#fafafa]">
       <Sidebar activeTab={activeTab} />
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isMobile ? "ml-0" : isSidebarOpen ? "ml-8" : "ml-72"}`}>
+      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isMobile ? "ml-0" : isSidebarOpen ? "ml-8" : "ml-64"}`}>
         <Navbar className={isSidebarOpen && "ml-8"} />
         <main className="p-2 md:p-4 lg:p-6 flex-1">
           <Outlet />  

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 // React Icons
 import { IoHome, IoWarning } from "react-icons/io5";
 import { toast } from 'react-toastify';
@@ -38,12 +38,14 @@ const JobDetails = () => {
     const [tab, setTab] = useState('Overview');
 
     const navigate = useNavigate();
-    const { id } = useParams();
+    const { slug } = useParams();
+
+    console.log('slug', slug);
 
     const getJob = async () => {
         setLoading(true)
         try {
-            const { data } = await axios.post(`${backendUrl}/api/jobs/getJob`, { id });
+            const { data } = await axios.get(`${backendUrl}/api/jobs/getjobbyslug/${slug}`);
             if (data.success) {
                 setJobData(data.job);
             }
@@ -76,7 +78,7 @@ const JobDetails = () => {
     useEffect(() => {
         getJob();
         getCompanyJobs();
-    }, [id])
+    }, [slug])
 
     if (loading) {
         return <Loading />
@@ -94,14 +96,21 @@ const JobDetails = () => {
                 {/* Breadcrumb */}
                 <nav className='mb-6'>
                     <div className='flex items-center text-sm text-gray-600'>
-                        <span onClick={() => navigate('/')} className='cursor-pointer hover:text-blue-600 flex items-center gap-1'>
-                            <IoHome size={16} />
+                        <NavLink to={'/'} className='cursor-pointer flex items-center gap-1'>
                             Home
-                        </span>
+                        </NavLink>
                         <span className='mx-2'>/</span>
-                        <span>Jobs</span>
+                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
+                            Jobs
+                        </NavLink>
                         <span className='mx-2'>/</span>
-                        <span className='text-gray-900 font-medium'>{jobData?.category}</span>
+                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
+                            {jobData?.category}
+                        </NavLink>
+                        <span className='mx-2'>/</span>
+                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
+                            {jobData?.title}
+                        </NavLink>
                     </div>
                 </nav>
 
@@ -437,7 +446,7 @@ const JobDetails = () => {
 
                                             <div>
                                                 <div className='text-black'>Email</div>
-                                                <div className='font-medium text-sm mt-1'>contact@{jobData?.company?.toLowerCase().replace(/\s+/g, '')}.com</div>
+                                                <div className='font-medium text-sm mt-1'>{jobData?.postedBy?.email}</div>
                                             </div>
 
                                             <div>
@@ -492,7 +501,7 @@ const JobDetails = () => {
 
                 <LoginPortal loginReminder={loginReminder} setLoginReminder={setLoginReminder} />
 
-                <ApplyJobPortal jobData={jobData} applyJobModel={applyJobModel} setApplyJobModel={setApplyJobModel} id={id} />
+                <ApplyJobPortal jobData={jobData} applyJobModel={applyJobModel} setApplyJobModel={setApplyJobModel} id={jobData?._id} />
             </main>
         </div>
 

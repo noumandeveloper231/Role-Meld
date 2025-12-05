@@ -88,6 +88,11 @@ const userProfileSchema = new mongoose.Schema({
     date: { type: Date },
     description: { type: String }
   }],
+  // 📈 Profile Analytics
+  profileViews: [{
+    date: { type: Date, default: Date.now },
+    count: { type: Number, default: 1 }
+  }],
 }, { timestamps: true });
 
 

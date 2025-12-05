@@ -50,6 +50,10 @@ body {
   background-color: white;
 }
 
+button{
+  @apply: cursor-pointer;
+}
+
 
 button.primary-btn {
   padding: 0.7rem 1.7rem;
@@ -208,17 +212,14 @@ input{
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-50%); /* Animate to half the content's height for seamless looping with duplicated content */
+    transform: translateY(-50%);
   }
 }
 
 .scroll-vertical {
-  animation: vertical-scroll 10s linear infinite;
+  animation: vertical-scroll 65s linear infinite;
   will-change: transform;
   margin-left: 3rem;
-  /* Ensure the container has a fixed height and overflow: hidden */
-  /* For seamless looping, the content inside this element should be duplicated */
-  /* e.g., if you have items A, B, C, the content should be A, B, C, A, B, C */
 }
 
 .scroll-vertical:hover {

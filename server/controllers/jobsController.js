@@ -15,7 +15,7 @@ export const addJob = async (req, res) => {
         const userProfile = await recruiterProfileModel.findOne({ authId: userId });
         const job = new jobsModel({
             ...jobData,
-            postedBy: userProfile.authId,
+            postedBy: userId,
             postedAt: new Date(),
             applicationDeadline: jobData.closingDays
                 ? new Date(Date.now() + jobData.closingDays * 24 * 60 * 60 * 1000)
@@ -66,6 +66,29 @@ export const saveJob = async (req, res) => {
     }
 }
 
+export const getJobBySlug = async (req, res) => {
+
+    const { slug } = req.params;
+    console.log(slug);
+
+    if (!slug) {
+        return res.json({ success: false, message: "Job Id Required" });
+    }
+
+    try {
+        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedDate city country industry authId about');
+
+
+
+        if (!job) {
+            return res.json({ success: false, message: "Job Not Found, Expired" })
+        }
+
+        return res.json({ success: true, job });
+    } catch (error) {
+        return res.json({ success: false, message: error.message })
+    }
+}
 export const getJob = async (req, res) => {
     const { id } = req.body;
 
@@ -85,6 +108,7 @@ export const getJob = async (req, res) => {
         return res.json({ success: false, message: error.message })
     }
 }
+
 
 export const getAllJobs = async (req, res) => {
     try {
@@ -190,7 +214,8 @@ export const getActiveJobs = async (req, res) => {
 
 export const searchJob = async (req, res) => {
     try {
-        const { search, location } = req.body;
+        const { search } = req.query;
+        const { location } = req.params
 
         console.log(search, location);
 
@@ -202,7 +227,7 @@ export const searchJob = async (req, res) => {
                 title: { $regex: search, $options: "i" },
                 approved: "approved",
                 isActive: true,
-                sponsored: false
+                // sponsored: false
             });
         } else {
             approvedJobs = await jobsModel.find({
@@ -218,21 +243,9 @@ export const searchJob = async (req, res) => {
                 ]
             });
         }
-
-        // Get unique categories of matched jobs
-        const categorySet = new Set(approvedJobs.map(job => job.category));
-
-        const approvedCategoryJobs = await jobsModel.find({
-            category: { $in: [...categorySet] },
-            approved: "approved",
-            isActive: true,
-            sponsored: false
-        })
-
         return res.json({
             success: true,
-            categorySet: [...categorySet],
-            approvedCategoryJobs
+            approvedJobs
         });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });

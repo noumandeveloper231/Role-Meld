@@ -90,7 +90,7 @@ const CompanyProfile = () => {
                         </h1>
                         <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
                           <span className="flex items-center gap-1">
-                            <MapPin size={14} /> {companyData.location || "Location"}
+                            <MapPin size={14} /> {companyData.country || "Not Specified"}
                           </span>
                           <span className="flex items-center gap-1">
                             <span className="text-yellow-500 font-bold">★ {companyData.rating || "0.0"}</span>
@@ -116,7 +116,7 @@ const CompanyProfile = () => {
                       <button
                         title='Send Message'
                         onClick={() => toast.info("This Feature is not avaible yet")}
-                        className="flex-1 md:flex-none bg-[var(--primary-color)] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[var(--primary-color)]/90 transition-colors flex items-center justify-center gap-2">
+                        className="cursor-pointer flex-1 md:flex-none bg-[var(--primary-color)] text-white px-6 py-2.5 rounded-full font-medium hover:bg-[var(--primary-color)]/90 transition-colors flex items-center justify-center gap-2">
                         Send message
                       </button>
                     </div>

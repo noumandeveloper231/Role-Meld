@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MdComputer, MdLoop } from "react-icons/md";
 import { IoHomeOutline } from "react-icons/io5";
@@ -19,9 +19,10 @@ const CategoryJobs = () => {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [])
-  const location = useLocation();
-  const search = new URLSearchParams(location.search);
-  const category = search.get('category');
+  let { cat } = useParams();
+  cat = cat()
+
+  console.log('cat', cat)
   const { backendUrl } = useContext(AppContext);
 
   const [categoryJobs, setCategoryJobs] = useState([]);
@@ -47,7 +48,7 @@ const CategoryJobs = () => {
   const getCategoryJobs = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.post(`${backendUrl}/api/jobs/getcategoryjobs`, { category });
+      const { data } = await axios.post(`${backendUrl}/api/jobs/getcategoryjobs`, { cat });
       if (data.success) setCategoryJobs(data.approvedCategoryJobs);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
@@ -74,7 +75,7 @@ const CategoryJobs = () => {
     getCategories();
     const newGradient = gradients[Math.floor(Math.random() * gradients.length)];
     setRandomGradient(newGradient);
-  }, [category]);
+  }, [cat]);
 
   const filteredJobs = categoryJobs.filter((job) =>
     (filteredLocationType === "locationType" || job.locationType === filteredLocationType) &&
@@ -84,7 +85,7 @@ const CategoryJobs = () => {
 
   if (loading || categoriesLoading) return <Loading />;
 
-  const currentCategory = categories.find(cat => cat.name === category);
+  const currentCategory = categories.find(cat => cat.name === cat);
 
   console.log('', currentCategory);
 
@@ -95,7 +96,7 @@ const CategoryJobs = () => {
       <main className='p-6 max-w-6xl mx-auto'>
         <section className={`py-12 rounded-2xl shadow-2xl bg-gradient-to-br ${randomGradient}`}>
           <h1 className="text-3xl font-bold text-center text-white flex flex-col items-center justify-center gap-2">
-            <MdComputer size={60} /> {category}
+            <MdComputer size={60} /> {cat}
           </h1>
         </section>
 
@@ -134,7 +135,7 @@ const CategoryJobs = () => {
         {/* Breadcrumb */}
         <section className='p-2'>
           <h3 className='flex items-center gap-4 font-semibold'>
-            <IoHomeOutline size={30} className='text-[var(--primary-color)]' /> / {category} {subCategory && `/ ${subCategory}`}
+            <IoHomeOutline size={30} className='text-[var(--primary-color)]' /> / {cat} {subCategory && `/ ${subCategory}`}
           </h3>
         </section>
 

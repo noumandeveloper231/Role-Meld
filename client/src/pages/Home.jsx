@@ -113,7 +113,7 @@ const Home = () => {
             <div className="relative h-[700px] overflow-hidden hidden md:block group">
               <div className="scroll-vertical group-hover:[animation-play-state:paused]">
                 <div className="flex flex-col gap-15">
-                  {jobs.slice(0, 20).length > 0 && Array(5).fill(jobs.slice(0, 20)).flat().map((job, index) => {
+                  {jobs.slice(0, 20).length > 0 && Array(100).fill(jobs.slice(0, 20)).flat().map((job, index) => {
                     const bgColors = ['bg-[#f9ab85]/90', 'bg-[#fff]/90', 'bg-[#ffd865]/90'];
                     const bgClass = bgColors[index % 3];
                     return (
@@ -190,9 +190,9 @@ const Home = () => {
                 categories.slice(0, 6).map((category, index) => {
                   const Icon = getCategoryIcon(category?.icon);
                   return (
-                    <div
+                    <Link
                       key={category._id}
-                      onClick={() => navigate('/category-jobs?category=' + encodeURIComponent(category?.slug || category?.name))}
+                      to={'/category-jobs/' + category?.slug}
                       className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
                     >
                       <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
@@ -202,7 +202,7 @@ const Home = () => {
                         <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
                         <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.name).length} jobs</p>
                       </div>
-                    </div>
+                    </Link>
                   )
                 })
               }
@@ -310,7 +310,7 @@ const Home = () => {
 
               <button
                 className="primary-btn"
-                onClick={() => navigate('/post-job')}
+                onClick={() => navigate('/employer-landing')}
               >
                 Post your job for FREE
               </button>
@@ -354,7 +354,7 @@ const Home = () => {
             </p>
 
             <button
-              onClick={() => navigate('/post-job')}
+              onClick={() => navigate('/employer-landing')}
               className="primary-btn"
             >
               Post your job for FREE

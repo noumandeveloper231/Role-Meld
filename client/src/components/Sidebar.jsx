@@ -66,8 +66,8 @@ const Sidebar = ({ activeTab }) => {
       { name: "Dashboard", key: "dashboard", icon: <LayoutDashboard size={20} />, path: "/dashboard" },
       { name: "Profile", key: "profile", icon: <User size={20} />, path: "/dashboard/profile" },
       { name: "My Resume", key: "resume", icon: <FileText size={20} />, path: "/dashboard/resume" },
-      { name: "Applied Jobs", key: "applied-jobs", icon: <Briefcase size={20} />, path: "/dashboard/applied-jobs" },
-      { name: "Saved Jobs", key: "saved-jobs", icon: <Heart size={20} />, path: "/dashboard/saved-jobs" },
+      { name: "My Jobs", key: "my-jobs", icon: <Briefcase size={20} />, path: "/dashboard/my-jobs" },
+      { name: "My Following", key: "my-following", icon: <Briefcase size={20} />, path: "/dashboard/my-following" },
       { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
     ]
   }
@@ -118,7 +118,7 @@ const Sidebar = ({ activeTab }) => {
       {/* Sidebar */}
       <div className={`
         sidebar
-        ${isSidebarOpen ? 'w-16' : 'w-72'} 
+        ${isSidebarOpen ? 'w-16' : 'w-64'} 
         bg-white border-r border-gray-200 h-screen flex flex-col transition-all duration-300 
         fixed left-0 top-0 z-9999
         ${isMobileOpen ? 'translate-x-0 absolute' : '-translate-x-full lg:translate-x-0'}
@@ -126,7 +126,7 @@ const Sidebar = ({ activeTab }) => {
         {/* Logo Section */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <Img src={'/logo.webp'} />
+            <Img src={'/logo.webp'}/>
           </div>
 
           {/* Desktop collapse button */}
@@ -153,7 +153,7 @@ const Sidebar = ({ activeTab }) => {
             {navLinks.map((item) => (
               <li key={item.key} className="relative group">
                 <span
-                  onClick={() => !item.subTabs && handleNavClick(item)}
+                  onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-3xl text-left transition-colors cursor-pointer 
             ${activeTab === item.key
                       ? 'bg-[var(--accent-color)] text-[var(--primary-color)]'

@@ -1,16 +1,15 @@
 import express from 'express'
 import Category from '../models/categoryModel.js';
 import Package from '../models/packageModel.js';
+import Skill from '../models/skillModel.js';
 
 const adminRouter = express.Router()
 
 adminRouter.post("/categories", async (req, res) => {
-  console.log("POST");
-  const { name, icon = "Tag" } = req.body;
+  const { name, icon = "Tag", slug } = req.body;
 
-  console.log(req.body);
   try {
-    const category = new Category({ name, icon, subcategories: [] });
+    const category = new Category({ name, icon, subcategories: [], slug });
     await category.save();
     res.status(201).json(category);
   } catch (err) {
@@ -166,6 +165,56 @@ adminRouter.post("/categories/bulk-import", async (req, res) => {
       error: "Bulk import failed",
       details: err.message
     });
+  }
+});
+
+// ============================
+// Skills Management Routes
+// ============================
+
+// Create new skill
+adminRouter.post("/skills", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success:false, message: "Skill name is required" });
+    }
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const skill = new Skill({ name: name.trim(), slug });
+    await skill.save();
+    res.status(201).json({ success:true, skill });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ success:false, message: "Skill already exists" });
+    }
+    res.status(400).json({ success:false, message: err.message });
+  }
+});
+
+// Get all skills
+adminRouter.get("/skills", async (req, res) => {
+  try {
+    const skills = await Skill.find().sort({ name: 1 });
+    res.json({ success:true, skills });
+  } catch (err) {
+    res.status(500).json({ success:false, message: err.message });
+  }
+});
+
+// Delete a skill
+adminRouter.delete("/skills/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const skill = await Skill.findById(id);
+    if (!skill) {
+      return res.status(404).json({ success:false, message: "Skill not found" });
+    }
+    await Skill.findByIdAndDelete(id);
+    res.json({ success:true, message: `Skill "${skill.name}" deleted successfully` });
+  } catch (err) {
+    res.status(400).json({ success:false, message: err.message });
   }
 });
 

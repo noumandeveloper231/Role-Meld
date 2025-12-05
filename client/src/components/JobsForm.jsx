@@ -1,136 +1,12 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
 import CustomSelect from "./CustomSelect";
-import SearchSelect from "./SelectSearch";
 import JobCard from "./JobCard";
 import JoditEditor from 'jodit-react';
-import SkillsInput from "./SkillsInput";
-
-const AVAILABLE_SKILLS = [
-  'JavaScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin',
-  'React', 'Angular', 'Vue.js', 'Node.js', 'Express.js', 'Django', 'Flask', 'Spring Boot',
-  'HTML', 'CSS', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material UI',
-  'MongoDB', 'MySQL', 'PostgreSQL', 'Redis', 'Firebase', 'SQL Server',
-  'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Jenkins',
-  'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Agile', 'Scrum',
-  'UI/UX Design', 'Figma Design', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
-  'Content Editor', 'Technical Writing', 'Product Manager', 'Communication Skills',
-  'BackEnd Developer', 'FrontEnd Developer', 'Full Stack Developer', 'DevOps',
-  'Machine Learning', 'Data Science', 'Artificial Intelligence', 'Deep Learning',
-  'Mobile Development', 'iOS Development', 'Android Development', 'React Native', 'Flutter',
-  'Testing', 'Unit Testing', 'Integration Testing', 'QA', 'Selenium', 'Jest',
-  'Documentation', 'API Development', 'REST API', 'GraphQL', 'Microservices',
-  'Problem Solving', 'Team Leadership', 'Project Management', 'Critical Thinking'
-];
-
-// Skills Selector Component
-const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const dropdownRef = React.useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const addSkill = (skill) => {
-    if (!selectedSkills.includes(skill)) {
-      onSkillsChange([...selectedSkills, skill]);
-    }
-    setSearchTerm('');
-  };
-
-  const removeSkill = (skillToRemove) => {
-    onSkillsChange(selectedSkills.filter(skill => skill !== skillToRemove));
-  };
-
-  const filteredSkills = AVAILABLE_SKILLS.filter(skill =>
-    !selectedSkills.includes(skill) &&
-    skill.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className='space-y-4' ref={dropdownRef}>
-      <div className='space-y-2'>
-        <label className='text-lg font-semibold text-gray-800'>Select Skills</label>
-
-        {/* Input Box with Selected Skills as Chips */}
-        <div
-          className='min-h-[60px] w-full p-3 border-2 border-gray-300 rounded-lg focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all cursor-text bg-white'
-          onClick={() => setIsDropdownOpen(true)}
-        >
-          <div className='flex flex-wrap gap-2 items-center'>
-            {selectedSkills.map((skill, idx) => (
-              <span
-                key={idx}
-                className='bg-[var(--accent-color)] text-[var(--primary-color)] px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 border border-[var(--primary-color)]/20'
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeSkill(skill);
-                  }}
-                  className='hover:text-red-600 transition-colors'
-                >
-                  ×
-                </button>
-                {skill}
-              </span>
-            ))}
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setIsDropdownOpen(true);
-              }}
-              onFocus={() => setIsDropdownOpen(true)}
-              placeholder={selectedSkills.length === 0 ? "Click to select skills..." : ""}
-              className='flex-1 min-w-[200px] outline-none bg-transparent text-gray-700 placeholder-gray-400'
-            />
-          </div>
-        </div>
-
-        {/* Dropdown Menu */}
-        {isDropdownOpen && (
-          <div className='relative'>
-            <div className='absolute top-0 left-0 right-0 max-h-[300px] overflow-y-auto bg-white border-2 border-gray-200 rounded-lg shadow-md z-10'>
-              {filteredSkills.length > 0 ? (
-                filteredSkills.map((skill, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => addSkill(skill)}
-                    className='px-4 py-2 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)] cursor-pointer transition-colors text-gray-700 border-b border-gray-100 last:border-b-0'
-                  >
-                    {skill}
-                  </div>
-                ))
-              ) : (
-                <div className='px-4 py-3 text-gray-500 text-center'>
-                  {searchTerm ? 'No skills found' : 'All skills selected'}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Info Text */}
-      <p className='text-sm text-gray-500'>
-        Click on the input box to see available skills. Selected skills appear as chips inside the box.
-      </p>
-    </div>
-  );
-};
+import SkillsSelector from './SkillsSelector'
+import slugify from 'slugify'
 
 const JobForm = ({ setActiveTab }) => {
   const { backendUrl, userData } = useContext(AppContext);
@@ -143,6 +19,7 @@ const JobForm = ({ setActiveTab }) => {
   // Form State
   const [jobData, setJobData] = useState({
     title: "",
+    slug: "",
     category: "",
     subCategory: "",
     jobType: "",
@@ -171,7 +48,43 @@ const JobForm = ({ setActiveTab }) => {
     companyProfile: userData?.profilePicture,
   });
 
-  const [currentSkill, setCurrentSkill] = useState("");
+  const [jobs, setJobs] = useState([])
+  const [isSlugAvailable, setIsSlugAvailable] = useState(true);
+
+  const getJobs = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/jobs/getalljobs`);
+      if (data.success) {
+        setJobs(data.jobs)
+      } else {
+        console.error(data.message)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getJobs()
+  }, [])
+
+
+  const [slugSuggestions, setSlugSuggestions] = useState([]);
+
+  useEffect(() => {
+    if (!jobData?.title || !jobData?.slug || jobs.length === 0) return;
+
+    const exists = jobs.some((job) => job.slug === jobData.slug);
+
+    setIsSlugAvailable(!exists);
+
+    if (exists) {
+      const base = jobData.slug;
+      setSlugSuggestions(generateSlugSuggestions(base));
+    } else {
+      setSlugSuggestions([]);
+    }
+  }, [jobData.slug, jobData.title]);
 
   const getCategories = async () => {
     setCategoriesLoading(true);
@@ -195,6 +108,17 @@ const JobForm = ({ setActiveTab }) => {
 
   const handleJobChange = (e) => {
     const { name, value } = e.target;
+
+    // Auto-generate slug whenever the title changes so availability checks run
+    if (name === "title") {
+      const generatedSlug = slugify(value || "", { lower: true });
+      setJobData((prev) => ({
+        ...prev,
+        title: value,
+        slug: generatedSlug,
+      }));
+      return;
+    }
 
     if (name === "category") {
       const selectedCategory = categories.find((cat) => cat.name === value);
@@ -236,6 +160,7 @@ const JobForm = ({ setActiveTab }) => {
         toast.success(data.message);
         setJobData({
           title: "",
+          slug: "",
           category: "",
           subCategory: "",
           jobType: "",
@@ -286,6 +211,20 @@ const JobForm = ({ setActiveTab }) => {
     { code: "CNY", name: "Chinese Yuan" },
   ];
 
+  const generateSlugSuggestions = (base) => {
+    const timestamp = Date.now().toString().slice(-4); // last 4 digits
+    return [
+      `${base}-job`,
+      `${base}-vacancy`,
+      `${base}-position`,
+      `${base}-${timestamp}`,   // impossible-to-collide
+      `${base}-${timestamp + 8}`,   // impossible-to-collide
+      `${base}-${timestamp + 1}`,   // impossible-to-collide
+      `${base}-${timestamp + 9}`,   // impossible-to-collide
+    ];
+  };
+
+
   return (
     <main className="w-full p-6 bg-white rounded-lg shadow-sm overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
@@ -316,9 +255,66 @@ const JobForm = ({ setActiveTab }) => {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Slug
+                </label>
+
+                <div className="flex items-center w-full bg-[#f9f9f9] border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[var(--primary-color)]">
+
+                  <span className="text-gray-600 bg-[#f9f9f9] px-4 py-2 whitespace-nowrap text-sm border-r border-gray-300 tracking-wider">
+                    https://alfacareers.com/jobs/<b>{jobData?.category || "category"}</b>/
+                  </span>
+
+                  <input
+                    type="text"
+                    name="slug"
+                    value={
+                      jobData.slug?.toLowerCase() ||
+                      slugify(jobData.title || "").toLowerCase()
+                    }
+                    onChange={handleJobChange}
+                    className="w-full bg-white px-4 py-2 text-gray-800 outline-none"
+                    placeholder="enter-slug-here"
+                    required
+                  />
+                </div>
+              </div>
+
+              {!isSlugAvailable && slugSuggestions.length > 0 ? (
+                <div className="mt-2">
+                  <p className="text-red-600 text-sm mb-1">Slug not available. Try one:</p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {slugSuggestions.map((s, i) => (
+                      <button
+                        onClick={() => handleJobChange({ target: { name: "slug", value: s } })}
+                        key={i}
+                        className="
+            bg-[var(--accent-color)] 
+            text-[var(--primary-color)] 
+            px-3 
+            py-1
+            rounded-full 
+            text-xs 
+            font-medium 
+            flex items-center gap-2 
+            border border-[var(--primary-color)]/20
+          "
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : isSlugAvailable && jobData.slug ? (
+                <p className="text-green-600 text-sm mt-1">Slug is available</p>
+              ) : null}
+
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Job Category *</label>
+                  <label className=" block text-sm font-medium text-gray-700 mb-1">Job Category *</label>
                   <CustomSelect
                     name="category"
                     value={jobData.category}

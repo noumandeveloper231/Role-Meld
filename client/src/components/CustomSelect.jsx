@@ -33,7 +33,7 @@ const CustomSelect = ({ name, value, onChange, children, className }) => {
       {/* Display Button */}
       <div
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-2.5 border border-gray-300 rounded-md cursor-pointer"
+        className="capitalize w-full flex items-center justify-between px-6 py-2.5 border border-gray-300 rounded-md cursor-pointer"
       >
         <span
           className={`truncate ${value ? "text-gray-800" : "text-gray-400"}`}
@@ -47,7 +47,7 @@ const CustomSelect = ({ name, value, onChange, children, className }) => {
 
       {/* Options Dropdown */}
       {open && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-999 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
           {options.map((opt) => (
             <div
               key={opt.props.value}

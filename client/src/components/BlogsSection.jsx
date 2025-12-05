@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import BlogCard from './BlogCard'
+import { Link } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -75,9 +76,11 @@ const BlogsSection = ({ className, limit = 4, layout = "vertical" }) => {
           <NotFound404 margin={"mt-10"} value={"No Recent Blogs"} />
         }
       </section>
-      <button className='mt-10 secondary-btn'>
-        View more articles
-      </button>
+      <Link to={'/blogs'}>
+        <button className='mt-10 secondary-btn'>
+          View more articles
+        </button>
+      </Link>
     </div>
   )
 }

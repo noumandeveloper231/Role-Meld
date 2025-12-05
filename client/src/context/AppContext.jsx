@@ -24,7 +24,6 @@ export const AppContextProvider = (props) => {
       return toast.error("Please Login to Follow");
     }
 
-    console.log('followedAccountId', followedAccountId)
     const toastId = toast.loading("Processing...")
     try {
       const { data } = await axios.patch(`${backendUrl}/api/user/follow-unfollow-acc/${followedAccountId}`)
@@ -189,7 +188,8 @@ export const AppContextProvider = (props) => {
     isSidebarOpen,
     setIsSidebarOpen,
     isSearchOpen,
-    setIsSearchOpen
+    setIsSearchOpen,
+    toggleSaveJob
   ]);
 
   return (

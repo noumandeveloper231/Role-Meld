@@ -9,27 +9,12 @@ import Img from './Image';
 import Currency from './CurrencyCovertor';
 
 const JobCard = ({ e, className }) => {
-    const { isLoggedIn, toggleSaveJob, savedJobs } = useContext(AppContext);
+    const { toggleSaveJob, savedJobs } = useContext(AppContext);
     const navigate = useNavigate();
     const location = useLocation()
 
     // Check if job is saved or applied
     const isSaved = [...savedJobs].includes(e?._id);
-
-    // Function to calculate relative time (kept from original)
-    const timeSince = (createdAt) => {
-        if (!createdAt) return "Unknown";
-        const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-        const diff = (new Date() - new Date(createdAt)) / 1000; // in seconds
-
-        if (diff < 60) return rtf.format(-Math.floor(diff), "second");
-        if (diff < 3600) return rtf.format(-Math.floor(diff / 60), "minute");
-        if (diff < 86400) return rtf.format(-Math.floor(diff / 3600), "hour");
-        if (diff < 2592000) return rtf.format(-Math.floor(diff / 86400), "day");
-        if (diff < 31536000) return rtf.format(-Math.floor(diff / 2592000), "month");
-        return rtf.format(-Math.floor(diff / 31536000), "year");
-    };
-
     // --- Main Render ---
 
     return (
@@ -40,7 +25,7 @@ const JobCard = ({ e, className }) => {
     min-w-full sm:min-w-[250px] md:min-w-[300px] 
   `}
             onClick={() => {
-                if (location.pathname !== '/find-jobs') navigate('/jobDetails/' + e._id)
+                if (location.pathname !== '/find-jobs') navigate(`/jobs/${e.category}/${e.slug}`)
             }}
         >
             <div className='flex flex-col gap-4'>
@@ -82,8 +67,8 @@ const JobCard = ({ e, className }) => {
                             <Crown className='text-yellow-500' />
                         )}
                         <button
-                            onClick={(event) => {
-                                event.stopPropagation()
+                            onClick={(e) => {
+                                e.stopPropagation()
                                 toggleSaveJob(e?._id)
                             }}
                             className={`p-2 rounded-full transition-all duration-200 flex-shrink-0
@@ -92,7 +77,7 @@ const JobCard = ({ e, className }) => {
                                     : 'text-gray-600 hover:text-[var(--primary-color)] hover:bg-gray-200'
                                 }`}
                             aria-label={isSaved ? 'Unsave job' : 'Save job'}
-                            disabled={!isLoggedIn}
+                        // disabled={!isLoggedIn}
                         >
                             {isSaved ? <Heart size={24} fill='white' /> : <Heart size={24} />}
                         </button>
@@ -102,13 +87,19 @@ const JobCard = ({ e, className }) => {
                 {/* 2. Job Info */}
                 <div className='flex flex-col gap-2 mt-2'>
                     <div className='flex flex-wrap items-center gap-2 font-semibold text-xs'>
-                        <span className='flex px-3 py-1 rounded-full bg-[#e9e0f2] text-[#6c4cbe]'>
+                        <button onClick={(event) => {
+                            event.stopPropagation()
+                            navigate(`${'/find-jobs?jobtype=' + e?.jobType}`)
+                        }} className='capitalize cursor-pointer flex px-3 py-1 rounded-full bg-[#e9e0f2] text-[#6c4cbe]'>
                             {e?.jobType?.replace('-', ' ') || 'N/A'}
-                        </span>
-                        <span className='flex gap-1 items-center px-3 py-1 rounded-full bg-[var(--accent-color)] text-[var(--primary-color)]'>
+                        </button>
+                        <button onClick={(event) => {
+                            event.stopPropagation()
+                            navigate(`${'/find-jobs?location=' + e?.location}`)
+                        }} className='capitalize cursor-pointer flex gap-1 items-center px-3 py-1 rounded-full bg-[var(--accent-color)] text-[var(--primary-color)]'>
                             <MapPin size={14} /> {e?.location || 'Remote'}
-                        </span>
-                        <span className='w-max px-3 py-1 rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)]'>
+                        </button>
+                        <button className='capitalize cursor-pointer w-max px-3 py-1 rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)]'>
                             {e?.salaryType === 'fixed' ? (
                                 <Currency amount={e?.fixedSalary} from={e?.currency} />
                             ) : (
@@ -117,7 +108,7 @@ const JobCard = ({ e, className }) => {
                                     <Currency amount={e?.maxSalary} from={e?.currency} />
                                 </>
                             )}
-                        </span>
+                        </button>
                     </div>
                 </div>
 

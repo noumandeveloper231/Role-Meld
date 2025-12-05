@@ -16,7 +16,9 @@ import {
   Blocks,
   Package,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Hammer,
+  Settings
 } from "lucide-react";
 import { MdAssistant, MdRequestPage } from "react-icons/md";
 import Img from "./Image";
@@ -49,8 +51,8 @@ const AdminSidebar = ({ activeTab }) => {
     { name: "Employers", key: "employers", icon: <Users2 size={20} />, path: "/admin/employers" },
     { name: "Employee Requests", key: "employee-profile-requests", icon: <MdRequestPage size={20} />, path: "/admin/employee-profile-requests" },
     { name: "All Jobs", key: "jobs", icon: <Briefcase size={20} />, path: "/admin/jobs" },
-    { name: "Category Manager", key: "category-manager", icon: <Briefcase size={20} />, path: "/admin/category-manager" },
     { name: "Packages", key: "packages", icon: <Package size={20} />, path: "/admin/packages" },
+    { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/admin/settings" },
     {
       name: "All Assistant", key: "all-assistant", icon: <MdAssistant size={20} />, path: "/admin/all-assistant",
       subTabs: [
@@ -154,7 +156,7 @@ const AdminSidebar = ({ activeTab }) => {
             {navLinks.map((item) => (
               <li key={item.key} className="relative group">
                 <span
-                  onClick={() => !item.subTabs && handleNavClick(item)}
+                  onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-3xl text-left transition-colors cursor-pointer ${activeTab === item.key
                     ? 'bg-[var(--accent-color)] text-[var(--primary-color)]'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

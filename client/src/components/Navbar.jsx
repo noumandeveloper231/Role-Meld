@@ -176,12 +176,12 @@ const Navbar = ({ className }) => {
   }
 
   const DesktopNavLinks = () => (
-    <div className="hidden md:flex items-baseline gap-6">
+    <div className="hidden md:flex items-center gap-6">
       {USER_NAV_LINKS.map(({ to, label }) => (
         <NavLink
           key={to}
           to={to}
-          className={`relative text-sm pb-2 transition-colors duration-200 ${location.pathname === to
+          className={`font-medium relative text-sm pb-2 transition-colors duration-200 ${location.pathname === to
             ? "font-bold text-[var(--primary-color)] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[var(--primary-color)]"
             : "text-gray-600 hover:text-[var(--primary-color)]"
             }`}
@@ -404,11 +404,8 @@ const Navbar = ({ className }) => {
 
       {/* Profile/Followed Accounts Button */}
       <div className="flex relative group items-center gap-3 cursor-pointer">
-        <h4 className="hidden lg:block text-sm text-[var(--primary-color)]">
-          Hi, {userData?.name || "Buddy"}
-        </h4>
         <button
-          className="h-10 w-10 text-white rounded-full bg-black overflow-hidden ring-2 ring-transparent hover:ring-[var(--primary-color)] transition-all duration-200 focus:outline-none"
+          className="h-9 w-9 text-white rounded-full bg-black overflow-hidden ring-2 ring-transparent hover:ring-[var(--primary-color)] transition-all duration-200 focus:outline-none"
           aria-label="User menu"
         >
           {userData?.profilePicture ? (
@@ -423,6 +420,9 @@ const Navbar = ({ className }) => {
             </span>
           )}
         </button>
+        <h4 className="hidden lg:block text-sm font-medium">
+          {userData?.name ? userData?.name : userData?.role === "user" ? "Candidate" : "Employer"}
+        </h4>
 
 
         {/* DROPDOWN */}
@@ -504,8 +504,8 @@ const Navbar = ({ className }) => {
   return (
     <div className={location.pathname !== "/" ? "border-b border-gray-200" : undefined}>
 
-      <nav className={`px-4 max-w-7xl mx-auto w-full ${location.pathname.includes("dashboard") ? "bg-white border-b border-gray-300" : ""} py-5 relative z-999 ${className}`}>
-        <div className="flex items-center md:px-2 lg:px-4 justify-between">
+      <nav className={`px-4 max-w-7xl mx-auto w-full ${location.pathname.includes("dashboard") ? "bg-white" : ""} py-3 relative z-999 ${className}`}>
+        <div className="flex items-center justify-between">
           {/* Left Section - Logo and Desktop Links */}
           <div className="flex items-center gap-3">
             <div className="md:hidden">

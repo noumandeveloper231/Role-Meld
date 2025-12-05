@@ -18,6 +18,9 @@ import ContactUs from "./pages/ContactUs";
 import FAQs from "./pages/FAQs";
 import ManageJobs from "./pages/dashboard/Jobs/Jobs";
 import PostJobPage from "./pages/dashboard/Jobs/PostJob";
+import JobSeekerFollowing from "./components/JobSeekerFollowing";
+import SkillsManager from "./components/SkillsManager";
+import AdminSettings from "./components/AdminSettings";
 
 
 // Lazy-loaded components
@@ -52,8 +55,7 @@ const Company = lazy(() => import("./pages/dashboard/Company"));
 const DashboardSettings = lazy(() => import("./pages/dashboard/DashboardSettings"));
 const MyProfile = lazy(() => import("./components/MyProfile"));
 const MyResume = lazy(() => import("./components/MyResume"));
-const AppliedJobs = lazy(() => import("./components/AppliedJobs"));
-const SavedJobs = lazy(() => import("./components/SavedJobs"));
+const MyJobs = lazy(() => import("./components/MyJobs"));
 
 // Admin dashboard pages
 const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
@@ -142,6 +144,11 @@ const App = () => {
     }
   }, [loading, isLoggedIn, userData, location, navigate]);
 
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
+
   return (
 
     <div className="flex flex-col min-h-screen">
@@ -187,10 +194,10 @@ const App = () => {
             {/* User Dashboard Routes */}
             <Route path="profile" element={<MyProfile />} />
             <Route path="resume" element={<MyResume />} />
-            <Route path="applied-jobs" element={<AppliedJobs />} />
-            <Route path="saved-jobs" element={<SavedJobs />} />
+            <Route path="my-jobs" element={<MyJobs />} />
+            <Route path="my-following" element={<JobSeekerFollowing />} />
           </Route>
-          <Route path="/jobdetails/:id" element={<JobDetails />} />
+          <Route path="/jobs/:cat/:slug" element={<JobDetails />} />
           <Route
             path="/admin"
             element={
@@ -205,8 +212,8 @@ const App = () => {
             <Route path="employers" element={<AdminRecruiters />} />
             <Route path="employee-profile-requests" element={<AdminEmployeeProfileRequests />} />
             <Route path="jobs" element={<AdminJobs />} />
-            <Route path="category-manager" element={<AdminCategoryManager />} />
             <Route path="packages" element={<AdminPackages />} />
+            <Route path="settings" element={<AdminSettings />} />
             <Route path="add-assistant" element={<AdminAddAssistant />} />
             <Route path="all-assistant" element={<AdminAllAssistants />} />
             <Route path="blog-management" element={<AdminBlogManagement />} />
@@ -228,7 +235,7 @@ const App = () => {
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/find-jobs" element={<FindJobs />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/category-jobs" element={<CategoryJobs />} />
+          <Route path="/category-jobs/:cat" element={<CategoryJobs />} />
           <Route path="/blogdetails/:slug" element={<BlogsDetails />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/employer-landing" element={<EmployerLanding />} />

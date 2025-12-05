@@ -44,7 +44,7 @@ const Search = ({ Param }) => {
     e.preventDefault();
     let url = `/find-jobs?job=${encodeURIComponent(searchJob)}`;
     if (searchLocation && searchLocation !== 'All Cities') {
-      url += `&location=${encodeURIComponent(searchLocation)}`;
+      url += `/${encodeURIComponent(searchLocation)}`;
     }
     navigate(url);
   };

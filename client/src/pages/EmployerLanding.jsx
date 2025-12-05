@@ -5,6 +5,7 @@ import Img from '../components/Image'
 import assets from '../assets/assets'
 import LoginModel from '../components/LoginModel'
 import Testimonials from '../components/Testimonials'
+import PricingComponent from '../components/PricingComponent'
 
 const EmployerLanding = () => {
     return (
@@ -60,61 +61,9 @@ const EmployerLanding = () => {
                         <p className='mt-2 text-gray-500'>
                             Our simple, per-job pricing scales with you.
                         </p>
-                        <div className='mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl px-4'>
-                            <div className='hover:shadow-xl shadow-gray-200 transition-all  relative rounded-lg cursor-pointer border border-gray-200 bg-white p-8'>
-                                <p className='text-[var(--primary-color)] font-semibold uppercase text-sm'>Trial</p>
-                                <div className='mt-3 flex items-end gap-2'>
-                                    <h4 className='text-5xl font-semibold text-black'>Free</h4>
-                                    <span className='text-gray-500 text-lg'>/month</span>
-                                </div>
-                                <div className='my-6 h-px bg-gray-200' />
-                                <div className='space-y-5 overflow-auto max-h-48 text-gray-700'>
-                                    <div className='flex items-center gap-3'><Check className='text-green-900' size={20} /> <span>5 job postings</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-green-900' size={20} /> <span>1 featured job</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-green-900' size={20} /> <span>2 candidates follow</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-green-900' size={20} /> <span>Limited support</span></div>
-                                </div>
-                                <button className='mt-10 w-full secondary-btn'>Get Started</button>
-                            </div>
 
-                            <div className='hover:shadow-xl shadow-gray-200 transition-all  relative rounded-lg cursor-pointer border border-yellow-400 bg-white p-8'>
-                                <p className='text-[var(--primary-color)] font-semibold uppercase text-sm'>Extended</p>
-                                <div className='mt-3 flex items-end gap-1'>
-                                    <span className='text-xl self-start text-black'>$</span>
-                                    <h4 className='text-5xl font-semibold text-black'>180</h4>
-                                    <span className='text-gray-500 text-lg'>/year</span>
-                                </div>
-                                <span className='absolute right-6 top-6 rounded-full bg-yellow-400/30 text-yellow-800 text-sm font-semibold px-3 py-1'>Recommended</span>
-                                <div className='my-6 h-px bg-gray-200' />
-                                <div className='space-y-5 text-gray-700 max-h-48 overflow-y-auto pr-1'>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>999 job postings</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>30 featured jobs</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>2 candidates follow</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>Invite Candidates</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>Send Messages</span></div>
-                                </div>
-                                <button className='primary-btn w-full mt-10'>Get Started</button>
-                            </div>
-
-                            <div className='hover:shadow-xl shadow-gray-200 transition-all  relative rounded-lg border border-gray-200 bg-white p-8 cursor-pointer'>
-                                <p className='text-[var(--primary-color)] font-semibold uppercase text-sm'>Basic</p>
-                                <div className='mt-3 flex items-end gap-1'>
-                                    <span className='text-xl self-start text-black'>$</span>
-                                    <h4 className='text-5xl font-semibold text-black'>90</h4>
-                                    <span className='text-gray-500 text-lg'>/year</span>
-                                </div>
-                                <div className='my-6 h-px bg-gray-200' />
-                                <div className='space-y-5 text-gray-700 max-h-48 overflow-y-auto pr-1'>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>99 job postings</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>7 featured jobs</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>Print candidate profiles</span></div>
-                                    <div className='flex items-center gap-3'><Check className='text-[var(--primary-color)]' size={20} /> <span>Limited support</span></div>
-                                </div>
-                                <button className='secondary-btn w-full mt-10'>Get Started</button>
-                            </div>
-                        </div>
+                        <PricingComponent />
                     </div>
-
                 </section>
 
                 <section className='max-w-6xl flex flex-col items-center text-center mx-auto px-4 py-14'>
@@ -156,11 +105,11 @@ const EmployerLanding = () => {
                         <div className='absolute w-full bottom-0 left-0'>
                             <Img src={assets.landing_bg} alt='landing-bg' style='w-full h-full object-cover rounded-2xl' />
                         </div>
-                        <div className='space-y-4'>
+                        <div className='relative z-999 space-y-4 w-full'>
                             <h4 className='text-2xl md:text-4xl text-center font-semibold text-white'>Are you a recruiter? Become a member now</h4>
                             <LoginModel />
                         </div>
-                        
+
                         <Img src={assets.girl} alt='girl' className='w-full h-full object-cover rounded-2xl' />
                     </div>
                 </section>

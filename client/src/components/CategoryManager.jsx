@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
-import { Plus, Trash2, Tag, FolderPlus, Upload, FileSpreadsheet, Download, Search } from 'lucide-react';
+import { Plus, Trash2, Tag, FolderPlus, Upload, FileSpreadsheet, Download, Search, Check, Edit } from 'lucide-react';
 import { toast } from "react-toastify";
 import * as XLSX from 'xlsx';
 import { categoryIconOptions, getCategoryIcon } from "../utils/categoryIcons";
+import slugify from "slugify";
 
 const IconSelect = ({ value, onChange, className }) => {
     const [open, setOpen] = useState(false);
@@ -153,7 +154,7 @@ const CategoryManager = () => {
     const handleAddCategory = async () => {
         if (!newCategory.trim()) return;
         try {
-            await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon });
+            await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon, slug: slugify(newCategory, {lower: true})  });
             setNewCategory("");
             setNewCategoryIcon("Tag");
             fetchCategories();
@@ -274,66 +275,77 @@ const CategoryManager = () => {
 
     // Parse Excel data into categories format
     const parseExcelData = (jsonData) => {
-        const categories = [];
-        const categoryMap = new Map();
+    const categories = [];
 
-        // Skip header row if it exists
-        const startRow = jsonData.length > 0 && 
-            (typeof jsonData[0][0] === 'string' && jsonData[0][0].toLowerCase().includes('category')) ? 1 : 0;
+    // Skip header row if it exists
+    const startRow = jsonData.length > 0 &&
+        (typeof jsonData[0][0] === 'string' && jsonData[0][0].toLowerCase().includes('name')) ? 1 : 0;
 
-        for (let i = startRow; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (!row || row.length === 0) continue;
+    for (let i = startRow; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || row.length === 0) continue;
 
-            const categoryName = row[0]?.toString().trim();
-            const subcategoryName = row[1]?.toString().trim();
+        const name = row[0]?.toString().trim();
+        const icon = row[1]?.toString().trim() || "Tag";
+        const subcategoriesStr = row[2]?.toString().trim() || "";
 
-            if (!categoryName) continue;
+        if (!name) continue;
 
-            if (!categoryMap.has(categoryName)) {
-                categoryMap.set(categoryName, {
-                    name: categoryName,
-                    subcategories: []
-                });
-            }
+        // Split subcategories by comma
+        const subcategories = subcategoriesStr
+            ? subcategoriesStr.split(',').map(s => s.trim()).filter(Boolean)
+            : [];
 
-            if (subcategoryName) {
-                const category = categoryMap.get(categoryName);
-                if (!category.subcategories.includes(subcategoryName)) {
-                    category.subcategories.push(subcategoryName);
-                }
-            }
-        }
+        // Optional: generate slug
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
 
-        return Array.from(categoryMap.values());
-    };
+        categories.push({
+            name,
+            icon,
+            subcategories,
+            slug
+        });
+    }
+
+    return categories;
+};
+
 
     // Download Excel template
     const downloadTemplate = () => {
-        const templateData = [
-            ['Category Name', 'Subcategory Name'],
-            ['Technology', 'Web Development'],
-            ['Technology', 'Mobile Development'],
-            ['Technology', 'Data Science'],
-            ['Marketing', 'Digital Marketing'],
-            ['Marketing', 'Content Marketing'],
-            ['Design', 'UI/UX Design'],
-            ['Design', 'Graphic Design']
-        ];
+    if (!categories || categories.length === 0) {
+        toast.error('No categories available to download');
+        return;
+    }
 
-        const worksheet = XLSX.utils.aoa_to_sheet(templateData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
-        
-        // Set column widths
-        worksheet['!cols'] = [
-            { width: 20 },
-            { width: 25 }
-        ];
+    // Build template data
+    const templateData = [
+        ['Name', 'Icon', 'Subcategories'] // Header
+    ];
 
-        XLSX.writeFile(workbook, 'categories_template.xlsx');
-        toast.success('Template downloaded successfully!');
-    };
+    categories.forEach(cat => {
+        templateData.push([
+            cat.name,
+            cat.icon || 'Tag',
+            cat.subcategories ? cat.subcategories.join(', ') : ''
+        ]);
+    });
+
+    const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+
+    // Set column widths for readability
+    worksheet['!cols'] = [
+        { width: 25 }, // Name
+        { width: 20 }, // Icon
+        { width: 60 }  // Subcategories
+    ];
+
+    XLSX.writeFile(workbook, 'categories_template.xlsx');
+    toast.success('Template downloaded successfully!');
+};
+
 
     return (
         <div className="border border-gray-300 rounded-3xl bg-white w-full overflow-y-auto min-h-screen p-6">
@@ -341,7 +353,6 @@ const CategoryManager = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Category Manager</h1>
-                    <p className="text-gray-600">Manage and organize job categories and subcategories</p>
                 </div>
 
                 {/* Add New Category */}
@@ -406,21 +417,21 @@ const CategoryManager = () => {
                     </div>
 
                     {importing && (
-                        <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <div className="w-5 h-5 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                            <span className="text-blue-700">Processing Excel file...</span>
+                        <div className="flex items-center gap-3 p-3 bg-[var(--accent-color)] rounded-lg border border-[var(--accent-color)]">
+                            <div className="w-5 h-5 border-2 border-[var(--primary-color)]/20 border-t-[var(--primary-color)] rounded-full animate-spin"></div>
+                            <span className="text-[var(--primary-color)]">Processing Excel file...</span>
                         </div>
                     )}
 
                     {importResults && (
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                            <h4 className="font-semibold text-green-800 mb-2">Import Results:</h4>
+                        <div className="p-4 bg-[var(--accent-color)] rounded-lg border border-[var(--primary-color)]">
+                            <h4 className="font-semibold text-[var(--primary-color)] mb-2">Import Results:</h4>
                             <div className="space-y-1 text-sm">
-                                <div className="text-green-700">
-                                    ✅ Created: {importResults.created} categories
+                                <div className="text-green-700 flex items-center gap-2">
+                                    <Check /> Created: {importResults.created} categories
                                 </div>
-                                <div className="text-blue-700">
-                                    🔄 Updated: {importResults.updated} categories
+                                <div className="text-blue-700 flex items-center gap-2">
+                                    <Edit /> Updated: {importResults.updated} categories
                                 </div>
                                 {importResults.errors.length > 0 && (
                                     <div className="text-red-700">
@@ -520,7 +531,7 @@ const CategoryManager = () => {
                                                             {React.createElement(getCategoryIcon(cat.icon), { size: 22 })}
                                                         </span>
                                                         <div>
-                                                            <p className="font-semibold text-gray-900">{cat.name}</p>
+                                                            <p className="capitalize font-semibold text-gray-900">{cat.name}</p>
                                                             <p className="text-sm text-gray-500">{cat._id}</p>
                                                         </div>
                                                     </div>

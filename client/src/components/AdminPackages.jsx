@@ -273,7 +273,7 @@ const AdminPackages = () => {
             {/* Table */}
             <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="w-full text-sm text-left text-gray-700">
-                    <thead className="bg-white text-gray-500 uppercase text-xs tracking-wide">
+                    <thead className="border-b border-gray-300 bg-white text-gray-500 uppercase text-xs tracking-wide">
                         <tr>
                             <th className="px-6 py-6">Package Name</th>
                             <th className="px-6 py-6">Price</th>
@@ -286,7 +286,7 @@ const AdminPackages = () => {
                     </thead>
                     <tbody>
                         {currentPackages.map((pkg, i) => (
-                            <tr key={pkg._id} className={`transition duration-200 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50`}>
+                            <tr key={pkg._id} className={`border-b border-gray-300 transition duration-200`}>
                                 <td className="px-6 py-6 font-semibold text-gray-800">{pkg.name}</td>
                                 <td className="px-6 py-6">
                                     {pkg.currency} {pkg.price.toLocaleString()}

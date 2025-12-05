@@ -5,7 +5,8 @@ import jobsModel from "../models/jobsModel.js";
 import applicationModel from "../models/applicationModel.js";
 import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
-
+import companyReviewModel from "../models/companyReviewModel.js";
+    
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -636,12 +637,7 @@ export const followUnfollowAccount = async (req, res) => {
 };
 
 export const getCompanyDetails = async (req, res) => {
-    console.log("sending")
     const { id } = req.params;
-
-    console.log('req.params', req.params)
-
-    console.log('id', id)
 
     if (!id) {
         return res.status(400).json({ success: false, message: 'Company ID is required' });
@@ -649,6 +645,7 @@ export const getCompanyDetails = async (req, res) => {
 
     try {
         let company = await recruiterProfileModel.findById(id)
+            .populate("sentJobs");
 
         if (!company) {
             return res.status(404).json({ success: false, message: 'Company not found' });
@@ -744,6 +741,73 @@ export const getFollowing = async (req, res) => {
     }
 };
 
+export const getApplicantDashboardStats = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const user = await userProfileModel.findOne({ authId: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // 1. Applied Jobs Count
+        const appliedJobsCount = user.appliedJobs.length;
+
+        // 2. Following Count
+        const followingCount = user.followedAccounts.length;
+
+        // 3. Reviews Count (Reviews written by user)
+        const reviewsCount = await companyReviewModel.countDocuments({ reviewerId: user._id });
+
+        // 4. Meetings Count (Shortlisted applications as proxy)
+        const meetingsCount = await applicationModel.countDocuments({
+            applicant: user._id,
+            status: "shortlisted"
+        });
+
+        // 5. Profile Views (Last 7 days)
+        const profileViews = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            profileViews.push({
+                day: d.toLocaleDateString('en-US', { weekday: 'short' }),
+                fullDate: d.toISOString().split('T')[0],
+                views: 0 // Placeholder
+            });
+        }
+
+        // 6. Recently Applied Jobs
+        const recentApplications = await applicationModel.find({ applicant: user._id })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate({
+                path: 'job',
+                select: 'title locationType jobType location company postedBy',
+                populate: {
+                    path: 'postedBy',
+                    select: 'company profilePicture'
+                }
+            });
+
+        return res.json({
+            success: true,
+            stats: {
+                appliedJobs: appliedJobsCount,
+                following: followingCount,
+                reviews: reviewsCount,
+                meetings: meetingsCount,
+                profileViews,
+                recentApplications
+            }
+        });
+
+    } catch (error) {
+        console.error("Dashboard Stats Error:", error);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const getFollowers = async (req, res) => {
     const userId = req.user._id;
 
@@ -807,7 +871,6 @@ export const getFollowers = async (req, res) => {
         return res.status(500).json({ success: false, message: error.message });
     }
 };
-
 
 export const uploadCompanyImages = async (req, res) => {
     const userId = req.user._id;

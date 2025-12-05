@@ -20,8 +20,7 @@ import {
   getFollowing,
   getFollowers,
   getCandidate,
-  updateCoverImage,
-} from "../controllers/userController.js";
+  updateCoverImage,  getApplicantDashboardStats,} from "../controllers/userController.js";
 import express from "express";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -70,6 +69,7 @@ const upload = multer({
 userRouter.get("/data", userAuth, getUserData);
 userRouter.post("/updateprofile", userAuth, updateProfile);
 userRouter.get("/checkprofilescore", userAuth, checkProfileScore);
+userRouter.get("/dashboard-stats", userAuth, getApplicantDashboardStats);
 
 // Separate upload for resume (using disk storage for manual upload)
 const storageResume = multer.diskStorage({});
@@ -96,7 +96,7 @@ userRouter.get("/allrecruiters", getAllRecruiters);
 
 // Social & company
 userRouter.patch("/follow-unfollow-acc/:id", userAuth, followUnfollowAccount);
-userRouter.get("/getcompanydetails/:id", userAuth, getCompanyDetails);
+userRouter.get("/getcompanydetails/:id", getCompanyDetails);
 userRouter.get("/followedaccounts", userAuth, followedAccountsDetails);
 userRouter.get("/getFollowing", userAuth, getFollowing);
 userRouter.get("/getFollowers", userAuth, getFollowers);
