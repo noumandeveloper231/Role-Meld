@@ -15,6 +15,7 @@ const CandidateProfile = () => {
 
     const [candidate, setCandidate] = useState({});
 
+    // Fetch candidate profile data
     useEffect(() => {
         const fetchCandidate = async () => {
             try {
@@ -30,6 +31,20 @@ const CandidateProfile = () => {
         };
         fetchCandidate();
     }, []);
+
+    // 🔔 Trigger profile view count after candidate data loads
+    useEffect(() => {
+        if (!candidate?.authId) return;
+        const recordView = async () => {
+            try {
+                await axios.post(`${backendUrl}/api/profile/${candidate.authId}/view`);
+            } catch (err) {
+                // silent fail – no toast, just log
+                console.error("Profile view track error", err?.response?.data || err.message);
+            }
+        };
+        recordView();
+    }, [candidate?.authId, backendUrl]);
 
     return (
         <div className='flex flex-col min-h-screen'>

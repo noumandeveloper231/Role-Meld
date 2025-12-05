@@ -6,6 +6,7 @@ import applicationModel from "../models/applicationModel.js";
 import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 import companyReviewModel from "../models/companyReviewModel.js";
+import ProfileView from "../models/profileViewModel.js";
     
 
 export const getAllUsers = async (req, res) => {
@@ -766,14 +767,37 @@ export const getApplicantDashboardStats = async (req, res) => {
         });
 
         // 5. Profile Views (Last 7 days)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+        // Aggregate view counts per day for last 7 days
+        const viewsAggregation = await ProfileView.aggregate([
+            {
+                $match: {
+                    viewedUserId: user.authId,
+                    viewedAt: { $gte: sevenDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$viewedAt" }
+                    },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
         const profileViews = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const matched = viewsAggregation.find(v => v._id === dateStr);
             profileViews.push({
                 day: d.toLocaleDateString('en-US', { weekday: 'short' }),
-                fullDate: d.toISOString().split('T')[0],
-                views: 0 // Placeholder
+                fullDate: dateStr,
+                views: matched ? matched.count : 0
             });
         }
 

@@ -50,80 +50,43 @@ body {
   background-color: white;
 }
 
-button{
+button {
   @apply: cursor-pointer;
 }
 
 
+/* Primary Button */
 button.primary-btn {
-  padding: 0.7rem 1.7rem;
-  justify-content: center;
-
-  border-radius: 2rem;
-
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  outline: none;
-  cursor: pointer;
+  @apply px-7 py-3 flex justify-center items-center gap-2 font-semibold tracking-wide rounded-full text-white bg-[var(--primary-color)] border-none outline-none cursor-pointer;
 }
 
 button.primary-btn:hover {
-  background-color: #005d45;
+  @apply bg-[#005d45];
 }
 
 button.primary-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 6px rgba(114, 14, 158, 0.25);
+  @apply translate-y-[1px] scale-95 shadow-md;
 }
 
 button.primary-btn:disabled {
-  background: #ccc;
-  color: #666;
-  cursor: not-allowed;
-  box-shadow: none;
+  @apply bg-gray-300 text-gray-600 cursor-not-allowed shadow-none;
 }
 
+/* Secondary Button */
 button.secondary-btn {
-  padding: 0.6rem 1.5rem;
-  justify-content: center;
-  text-align: center;
-
-  border-radius: 2rem;
-  cursor: pointer;
-
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  outline: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  @apply px-6 py-2 flex justify-center items-center gap-2 font-semibold tracking-wide rounded-full border border-[var(--primary-color)] text-[var(--primary-color)] outline-none cursor-pointer transition-all duration-200 ease-in-out;
 }
 
 button.secondary-btn:hover {
-  background-color: var(--primary-color);
-  color: white;
+  @apply bg-[var(--primary-color)] text-white;
 }
 
 button.secondary-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 6px rgba(114, 14, 158, 0.25);
+  @apply translate-y-[1px] scale-95 shadow-md;
 }
 
 button.secondary-btn:disabled {
-  background: #ccc;
-  color: #666;
-  cursor: not-allowed;
-  box-shadow: none;
+  @apply bg-gray-300 text-gray-600 cursor-not-allowed shadow-none;
 }
 
 
@@ -164,7 +127,7 @@ select {
   color: white;
 }
 
-input{
+input {
   color: var(--primary-color);
 }
 
@@ -211,6 +174,7 @@ input{
   0% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(-50%);
   }

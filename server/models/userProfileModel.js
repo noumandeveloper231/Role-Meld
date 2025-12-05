@@ -88,6 +88,7 @@ const userProfileSchema = new mongoose.Schema({
     date: { type: Date },
     description: { type: String }
   }],
+  profileViewsCount: { type: Number, default: 0 },
   // 📈 Profile Analytics
   profileViews: [{
     date: { type: Date, default: Date.now },

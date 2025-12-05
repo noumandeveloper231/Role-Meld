@@ -38,6 +38,19 @@ const CompanyProfile = () => {
     getCompanyDetails();
   }, []);
 
+  // 🔔 Trigger profile view count when company data loads
+  useEffect(() => {
+    if (!companyData?.authId) return;
+    const recordView = async () => {
+      try {
+        await axios.post(`${backendUrl}/api/profile/${companyData.authId}/view`);
+      } catch (err) {
+        console.error("Company profile view track error", err?.response?.data || err.message);
+      }
+    };
+    recordView();
+  }, [companyData?.authId, backendUrl]);
+
   // Reset to first page whenever company data changes
   useEffect(() => {
     setCurrentPage(1);

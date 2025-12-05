@@ -53,6 +53,8 @@ const recruiterProfileSchema = new mongoose.Schema({
 
   assistants: [{ type: mongoose.Schema.Types.ObjectId, ref: "RecruiterProfile" }],
 
+  profileViewsCount: { type: Number, default: 0 },
+
   reviewStatus: { type: String, default: "pending", enum: ["pending", "underReview", "approved", "rejected"] },
 }, { timestamps: true });
 
