@@ -198,7 +198,7 @@ const Companies = () => {
                         src={assets.find_jobs_banner}
                         style="absolute z-0 top-0 left-0 w-full h-full"
                     />
-                    <section className="relative z-999 w-full max-w-4xl mt-8">
+                    <section className="relative z-99 w-full max-w-4xl mt-8">
                         <form
                             onSubmit={handleSearch}
                             className="flex flex-wrap items-center gap-3 rounded-full bg-white shadow-xl px-4 py-3 divide-x divide-gray-200"
@@ -210,7 +210,7 @@ const Companies = () => {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Company name or keywords"
-                                    className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
+                                    className="!p-0 !border-none"
                                 />
                             </div>
 

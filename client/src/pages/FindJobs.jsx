@@ -272,14 +272,12 @@ const FindJobs = () => {
                       placeholder="Min"
                       value={salaryRange[0]}
                       onChange={(e) => setSalaryRange([parseInt(e.target.value) || 0, salaryRange[1]])}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={salaryRange[1]}
                       onChange={(e) => setSalaryRange([salaryRange[0], parseInt(e.target.value) || 200000])}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -386,11 +384,6 @@ const FindJobs = () => {
               {/* Results Header */}
               <div className='flex items-center justify-between'>
                 <div>
-                  {query || categoryParam && 
-                    <h1 className='text-2xl font-bold text-gray-900'>
-                      Search Results for "{query || categoryParam}"
-                    </h1>}
-
                   <p className='text-gray-600 flex items-center gap-2 cursor-pointer' onClick={() => setIsFilterOpen(true)}>
                     <Filter size={17} />
                     <span className='hover:text-[var(--primary-color)] ' >
@@ -422,20 +415,7 @@ const FindJobs = () => {
                     </div>
                   )) : (
                   <div className='col-span-full'>
-                    <NotFound404
-                      margin={"mt-10"}
-                      value={
-                        <div className='text-center'>
-                          {query || categoryParam ? (
-                            <>
-                              No matches found for <span className='font-bold'>"{query || categoryParam}"</span>
-                            </>
-                          ) : (
-                            "No jobs posted yet"
-                          )}
-                        </div>
-                      }
-                    />
+                    No Jobs Found
                   </div>
                 )
                 }
@@ -614,37 +594,8 @@ const FindJobs = () => {
                 <div className='p-4 space-y-6'>
                   <div>
                     <h4 className='text-2xl font-medium text-gray-900 mb-4'>Description</h4>
-                    <h4 className='text-lg font-medium text-gray-900 mb-2'>Overview</h4>
-                    <p className='text-sm text-gray-700 leading-relaxed whitespace-pre-line'>{selectedJob.description}</p>
+                    <div className='job-description' dangerouslySetInnerHTML={{ __html: selectedJob?.description }} />
                   </div>
-
-                  {Array.isArray(selectedJob.responsibilities) && selectedJob.responsibilities.length > 0 && (
-                    <div>
-                      <h3 className='text-lg font-medium text-gray-900 mb-2'>Requirements</h3>
-                      <ul className='space-y-2 text-sm text-gray-700'>
-                        {selectedJob.responsibilities.map((item, idx) => (
-                          <li key={idx} className='flex items-start gap-2'>
-                            <span className='mt-1 w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0' />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {Array.isArray(selectedJob.benefits) && selectedJob.benefits.length > 0 && (
-                    <div>
-                      <h3 className='text-lg font-medium text-gray-900 mb-2'>Benefits</h3>
-                      <ul className='space-y-2 text-sm text-gray-700'>
-                        {selectedJob.benefits.map((item, idx) => (
-                          <li key={idx} className='flex items-start gap-2'>
-                            <span className='mt-1 w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0' />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
 
                 {/* Skills */}

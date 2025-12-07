@@ -15,6 +15,8 @@ const CompanyProfile = () => {
 
   const { backendUrl, userData, followUnfollow } = useContext(AppContext);
 
+  const [show, setShow] = useState(false)
+
   const [companyData, setCompanyData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 5;
@@ -61,7 +63,7 @@ const CompanyProfile = () => {
   // Pagination calculations
   const totalJobs = companyData?.sentJobs?.length || 0;
   const totalPages = Math.ceil(totalJobs / jobsPerPage);
-  const displayedJobs = companyData?.sentJobs?.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+  const displayedJobs = companyData?.sentJobs?.filter(job => job.approved === "approved")?.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
 
   if (!companyData) {
     return <Loading />
@@ -135,10 +137,16 @@ const CompanyProfile = () => {
                     </div>
                   </div>
                 </div>
-                <section className='bg-white p-6 border-t border-gray-100'>
+                <section className='bg-white p-6 border-t border-gray-100 h-60 overflow-clip'>
                   <h4 className="text-xl font-semibold text-gray-900 mb-4">Overview</h4>
-                  <div className="text-gray-600 leading-relaxed whitespace-pre-line">
-                    {companyData.about}
+                  <div className='job-description' dangerouslySetInnerHTML={{ __html: companyData?.about }} />
+                </section>
+                <section className='bg-white p-6 border-t border-gray-100'>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Gallery</h4>
+                  <div className="grid grid-cols-4 gap-4">
+                    {companyData?.companyImages?.map(img => (
+                      <Img style={"border border-gray-300 w-38 h-38 object-cover rounded-md"} src={img} />
+                    ))}
                   </div>
                 </section>
               </div>

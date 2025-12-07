@@ -5,6 +5,7 @@ const userProfileSchema = new mongoose.Schema({
   isOnboardingCompleted: { type: Boolean, default: false },
   isActive: { type: Boolean, default: false },
   name: { type: String, default: '' },
+  lastName: { type: String, default: '' },
   email: { type: String, default: '' },
   profilePicture: { type: String, default: "" },
   savedJobs: { type: Array, default: [] },
@@ -22,6 +23,7 @@ const userProfileSchema = new mongoose.Schema({
   currency: { type: String, default: "USD" },
   followersAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   followedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  age: { type: String, enum: ["18-25", "25-30", "30-35", "35-40"], default: "18-25" },
 
   // 🆕 Resume & extra fields
   resume: { type: String, default: "" },   // file URL (PDF/Doc)
@@ -39,7 +41,7 @@ const userProfileSchema = new mongoose.Schema({
   qualification: { type: String, default: "" },
   experienceYears: { type: String, default: "" },
   offeredSalary: { type: Number, default: 30 },
-  salaryType: { type: String, default: "Monthly" },
+  salaryType: { type: String, enum: ["month", "year", "day"], default: "month" },
 
   // 🌐 Predefined Social Networks
   linkedin: { type: String, default: "" },

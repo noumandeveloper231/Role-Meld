@@ -154,7 +154,7 @@ const AdminJobs = () => {
                 placeholder="Search jobs, companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                className="!pl-10"
               />
             </div>
           </div>
@@ -238,7 +238,7 @@ const AdminJobs = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-3">
                         <button
-                          onClick={() => navigate(`/jobdetails/${job._id}`)}
+                          onClick={() => navigate(`/jobs/${job?.category}/${job?.slug}`)}
                           className="p-2 rounded-full hover:bg-blue-50"
                           title="View job"
                         >

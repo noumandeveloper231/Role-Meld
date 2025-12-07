@@ -85,11 +85,11 @@ const Footer = () => {
               </span>
               <h4 className="hidden md:block text-lg font-semibold mb-4">Company</h4>
               <ul className={`space-y-4 text-sm text-gray-500 transition-all duration-300 ease-in-out overflow-hidden ${openSections.company ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} md:max-h-none md:opacity-100 md:block`}>
-                <li><Link to={'/about-us'} className="hover:text-gray-800">About us</Link></li>
-                <li><Link to={'/career'} className="hover:text-gray-800">Career</Link></li>
-                <li><Link to={'/blogs'} className="hover:text-gray-800">Blogs</Link></li>
-                <li><Link to={'/faqs'} className="hover:text-gray-800">FAQ's</Link></li>
-                <li><Link to={'/contact'} className="hover:text-gray-800">Contact</Link></li>
+                <li><Link to={'/about-us'} className="hover:text-[var(--primary-color)]">About us</Link></li>
+                <li><Link to={'/career'} className="hover:text-[var(--primary-color)]">Career</Link></li>
+                <li><Link to={'/blogs'} className="hover:text-[var(--primary-color)]">Blogs</Link></li>
+                <li><Link to={'/faqs'} className="hover:text-[var(--primary-color)]">FAQ's</Link></li>
+                <li><Link to={'/contact'} className="hover:text-[var(--primary-color)]">Contact</Link></li>
               </ul>
             </div>
 
@@ -104,11 +104,11 @@ const Footer = () => {
               </span>
               <h4 className="hidden md:block text-lg font-semibold mb-4">Services</h4>
               <ul className={`space-y-4 text-sm text-gray-500 transition-all duration-300 ease-in-out overflow-hidden ${openSections.services ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} md:max-h-none md:opacity-100 md:block`}>
-                <li><Link to={'/find-jobs'} className="hover:text-gray-800">Jobs</Link></li>
-                <li><Link to={'/companies'} className="hover:text-gray-800">Companies</Link></li>
-                <li><Link to={'/candidates'} className="hover:text-gray-800">Candidates</Link></li>
-                <li><Link to={'/pricing'} className="hover:text-gray-800">Pricing</Link></li>
-                <li><Link to={'/partner'} className="hover:text-gray-800">Partner</Link></li>
+                <li><Link to={'/find-jobs'} className="hover:text-[var(--primary-color)]">Jobs</Link></li>
+                <li><Link to={'/companies'} className="hover:text-[var(--primary-color)]">Companies</Link></li>
+                <li><Link to={'/candidates'} className="hover:text-[var(--primary-color)]">Candidates</Link></li>
+                <li><Link to={'/pricing'} className="hover:text-[var(--primary-color)]">Pricing</Link></li>
+                <li><Link to={'/partner'} className="hover:text-[var(--primary-color)]">Partner</Link></li>
               </ul>
             </div>
 
@@ -123,11 +123,11 @@ const Footer = () => {
               </span>
               <h4 className="hidden md:block text-lg font-semibold mb-4">Support</h4>
               <ul className={`space-y-4 text-sm text-gray-500 transition-all duration-300 ease-in-out overflow-hidden ${openSections.support ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} md:max-h-none md:opacity-100 md:block`}>
-                <li><a href="#" className="hover:text-gray-800">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-gray-800">Terms of Use</a></li>
-                <li><a href="#" className="hover:text-gray-800">Help Center</a></li>
-                <li><a href="#" className="hover:text-gray-800">Updates</a></li>
-                <li><a href="#" className="hover:text-gray-800">Documentation</a></li>
+                <li><Link to="/privacy-policy" className="hover:text-[var(--primary-color)]">Privacy Policy</Link></li>
+                <li><a href="#" className="hover:text-[var(--primary-color)]">Terms of Use</a></li>
+                <li><a href="#" className="hover:text-[var(--primary-color)]">Help Center</a></li>
+                <li><a href="#" className="hover:text-[var(--primary-color)]">Updates</a></li>
+                <li><a href="#" className="hover:text-[var(--primary-color)]">Documentation</a></li>
               </ul>
             </div>
 

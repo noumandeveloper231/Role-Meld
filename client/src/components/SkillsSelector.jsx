@@ -87,6 +87,7 @@ const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
         flex items-center flex-wrap 
         gap-2
         text-sm
+        focus-within:border-[var(--primary-color)]
       "
                     onClick={() => setIsDropdownOpen(true)}
                 >
@@ -132,13 +133,15 @@ const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
                             selectedSkills.length === 0 ? `Select Skills` : ""
                         }
                         className="
-          flex-1 
-          min-w-[120px] 
-          outline-none 
-          bg-transparent 
-          text-gray-700 
-          placeholder-gray-400 
-          text-sm
+          !flex-1 
+          !min-w-[120px] 
+          !outline-none 
+          !bg-transparent 
+          !text-gray-700 
+          !placeholder-gray-400 
+          !text-sm
+          !border-none
+          !p-0
         "
                     />
                 </div>

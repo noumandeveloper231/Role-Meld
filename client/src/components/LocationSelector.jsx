@@ -40,11 +40,11 @@ const SearchableSelect = ({
   };
 
   return (
-    <div className="space-y-2" ref={containerRef}>
+    <div className="" ref={containerRef}>
       <label className="flex text-sm items-center gap-2 font-medium text-gray-700">
         {label}
       </label>
-      <div className="relative">
+    <div className="relative mt-1">
         <div className="relative">
           <input
             type="text"
@@ -59,7 +59,6 @@ const SearchableSelect = ({
             onFocus={() => setShowDropdown(true)}
             placeholder={placeholder}
             disabled={disabled}
-            className="w-full px-3 py-2.5 pr-20 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-lg transition-colors disabled:bg-gray-100"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {inputValue && (
@@ -76,7 +75,7 @@ const SearchableSelect = ({
         </div>
 
         {showDropdown && !disabled && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-999 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
             {loading ? (
               <div className="p-4 text-center text-gray-500">Loading...</div>
             ) : options.length > 0 ? (
@@ -84,7 +83,7 @@ const SearchableSelect = ({
                 <div
                   key={keyExtractor(item, index)}
                   onClick={() => handleSelect(item)}
-                  className="w-full text-left p-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 cursor-pointer"
+                  className="text-gray-700 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)] px-4 py-2.5 cursor-pointer"
                 >
                   {renderOption(item)}
                 </div>

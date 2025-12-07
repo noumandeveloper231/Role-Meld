@@ -16,7 +16,7 @@ const Search = ({ Param }) => {
     'All Cities',
     'California',
     'San Francisco',
-    'Los Angeles', 
+    'Los Angeles',
     'San Diego',
     'Sacramento',
     'New York',
@@ -84,8 +84,8 @@ const Search = ({ Param }) => {
           <input
             value={searchJob}
             onChange={(e) => setSearchJob(e.target.value)}
-            className="w-full py-3 pl-12 pr-4 text-gray-700 placeholder-gray-400 bg-transparent border-none outline-none text-sm"
             type="text"
+            className="border-none !p-0 !pl-12"
             placeholder="Jobs title or keyword"
           />
         </div>
@@ -101,15 +101,15 @@ const Search = ({ Param }) => {
               onChange={handleLocationSearchChange}
               onFocus={() => setIsLocationDropdownOpen(true)}
               onBlur={handleLocationBlur}
-              className="w-full text-gray-700 placeholder-gray-400 bg-transparent border-none outline-none text-sm flex-1"
+              className="border-none !p-0 !pl-10"
             />
             <ChevronDown
-              size={16} 
+              size={16}
               className={`text-gray-400 transition-transform cursor-pointer ${isLocationDropdownOpen ? 'rotate-180' : ''}`}
               onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
             />
           </div>
-          
+
           {/* Dropdown Menu */}
           {isLocationDropdownOpen && (
             <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-full">
@@ -135,8 +135,8 @@ const Search = ({ Param }) => {
         </div>
 
         {/* Search Button */}
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="primary-btn"
         >
           Search

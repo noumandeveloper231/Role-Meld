@@ -10,6 +10,7 @@ import { FaUsers, FaBriefcase, FaUser, FaFileAlt, FaChartLine, FaEye, FaCog, FaC
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { MdDashboard, MdWork, MdPeople, MdAssignment } from "react-icons/md";
 import Loading from './Loading';
+import { RefreshCwIcon } from 'lucide-react';
 const AnalyticDashboard = () => {
 
   const { backendUrl } = useContext(AppContext);
@@ -443,21 +444,18 @@ const AnalyticDashboard = () => {
   );
 
   return (
-    <div className='p-4 md:p-8 w-full min-h-screen bg-gray-50'>
+    <div className='border border-gray-300 rounded-3xl bg-white w-full overflow-y-auto min-h-screen p-6'>
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <h1 className='text-3xl font-bold text-gray-800 flex items-center gap-3'>
-            <TbBrandGoogleAnalytics className='text-blue-500' />
             Analytics Dashboard
           </h1>
-          <span 
+          <button 
             onClick={fetchAllAnalytics}
-            className="bg-blue-500 cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
           >
-            <FaEye className="w-4 h-4" />
-            Refresh Data
-          </span>
+            <RefreshCwIcon className='hover:text-[var(--primary-color)]' />
+          </button>
         </div>
       </div>
 
@@ -475,8 +473,8 @@ const AnalyticDashboard = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center cursor-pointer gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-[var(--primary-color)] text-white'
+                  : 'text-gray-600 hover:text-white hover:bg-[var(--primary-color)]/90'
               }`}
             >
               <tab.icon className="w-4 h-4" />

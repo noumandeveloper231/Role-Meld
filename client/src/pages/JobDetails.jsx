@@ -34,7 +34,8 @@ const JobDetails = () => {
     const { backendUrl, userData, isLoggedIn } = useContext(AppContext);
     const [loginReminder, setLoginReminder] = useState(false)
     const [jobData, setJobData] = useState(null);
-    const [loading, setLoading] = useState(false)
+    const [jobLoading, setJobLoading] = useState(false)
+    const [companyJobsLoading, setCompanyJobsLoading] = useState(false)
     const [tab, setTab] = useState('Overview');
 
     const navigate = useNavigate();
@@ -43,7 +44,7 @@ const JobDetails = () => {
     console.log('slug', slug);
 
     const getJob = async () => {
-        setLoading(true)
+        setJobLoading(true)
         try {
             const { data } = await axios.get(`${backendUrl}/api/jobs/getjobbyslug/${slug}`);
             if (data.success) {
@@ -52,7 +53,7 @@ const JobDetails = () => {
         } catch (error) {
             toast.error(error.response.data.message);
         } finally {
-            setLoading(false)
+            setJobLoading(false)
         }
     }
     console.log(jobData)
@@ -62,16 +63,16 @@ const JobDetails = () => {
     const [companyJobs, setCompanyJobs] = useState([])
     // Get More Related Jobs;
     const getCompanyJobs = async () => {
-        setLoading(true)
+        setCompanyJobsLoading(true)
         try {
-            const { data } = await axios.post(`${backendUrl}/api/jobs/getcompanyjobs`, { company: jobData?.company });
+            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobs/${jobData?.postedBy}`);
             if (data.success) {
                 setCompanyJobs(data.companyJobs);
             }
         } catch (error) {
             toast.error(error.response.data.message);
         } finally {
-            setLoading(false)
+            setCompanyJobsLoading(false)
         }
     }
 
@@ -80,12 +81,9 @@ const JobDetails = () => {
         getCompanyJobs();
     }, [slug])
 
-    if (loading) {
+    if (companyJobsLoading || jobLoading) {
         return <Loading />
     }
-
-    console.log(companyJobs)
-    console.log(isLoggedIn)
 
     return (
         <div className='bg-[#f9f9f9]'>
@@ -100,11 +98,11 @@ const JobDetails = () => {
                             Home
                         </NavLink>
                         <span className='mx-2'>/</span>
-                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
+                        <NavLink to={'/find-jobs'} className='cursor-pointer flex items-center gap-1'>
                             Jobs
                         </NavLink>
                         <span className='mx-2'>/</span>
-                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
+                        <NavLink to={'/find-jobs?category=' + jobData?.category  } className='cursor-pointer flex items-center gap-1'>
                             {jobData?.category}
                         </NavLink>
                         <span className='mx-2'>/</span>
@@ -285,7 +283,7 @@ const JobDetails = () => {
                             <div className='p-4 space-y-6'>
                                 <div>
                                     <h4 className='text-2xl font-medium text-gray-900 mb-4'>Description</h4>
-                                    <div dangerouslySetInnerHTML={{ __html: jobData?.description }} />
+                                    <div className='job-description' dangerouslySetInnerHTML={{ __html: jobData?.description }} />
                                 </div>
                             </div>
 
@@ -416,8 +414,8 @@ const JobDetails = () => {
                                             </div>
 
                                             <div>
-                                                <div className='text-black'>Industry</div>
-                                                <div className='font-medium text-sm mt-1 text-[var(--primary-color)]'>{jobData?.postedBy?.industry || "Tech Startup"}</div>
+                                                <div className='text-black'>Category</div>
+                                                <div className='font-medium text-sm mt-1 text-[var(--primary-color)]'>{jobData?.postedBy?.category || "Tech Startup"}</div>
                                             </div>
 
                                             <div>
@@ -428,9 +426,7 @@ const JobDetails = () => {
                                             <div>
                                                 <div className='text-black'>Founded in</div>
                                                 <div className='font-medium text-sm mt-1 '>
-                                                    {jobData?.postedBy?.foundedDate
-                                                        ? (new Date(jobData.postedBy.foundedDate).getFullYear() || '2010')
-                                                        : '2010'}
+                                                    {jobData?.postedBy?.foundedIn}
                                                 </div>
                                             </div>
 
@@ -446,7 +442,7 @@ const JobDetails = () => {
 
                                             <div>
                                                 <div className='text-black'>Email</div>
-                                                <div className='font-medium text-sm mt-1'>{jobData?.postedBy?.email}</div>
+                                                <div className='font-medium text-sm mt-1'>{jobData?.postedBy?.email || "Not Specified"}</div>
                                             </div>
 
                                             <div>
@@ -454,7 +450,7 @@ const JobDetails = () => {
                                                 <a href={jobData?.postedBy?.website}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className='font-medium text-blue-600 hover:underline flex items-center gap-1'>
+                                                    className='font-medium text-[var(--primary-color)] hover:underline flex items-center gap-1'>
                                                     Visit {jobData?.postedBy?.website}
                                                     <ExternalLink size={12} />
                                                 </a>

@@ -26,7 +26,7 @@ const Categories = () => {
 
   const getAllJobs = async () => {
     try {
-      const {data} = await axios.get(backendUrl + "/api/jobs/getalljobs")
+      const { data } = await axios.get(backendUrl + "/api/jobs/getalljobs")
       if (data.success) {
         setJobs(data.jobs)
       }
@@ -95,13 +95,13 @@ const Categories = () => {
 
             {/* Search Bar */}
             <div className="relative max-w-md">
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <input
                 type="text"
                 placeholder="Search categories..."
                 value={searchTerm}
+                className="!pl-10"
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
           </div>

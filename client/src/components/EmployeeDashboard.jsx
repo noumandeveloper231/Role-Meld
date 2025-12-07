@@ -9,6 +9,7 @@ import Img from './Image';
 import { ClipboardList, ClipboardPenLine, Loader, User } from 'lucide-react';
 import ImageCropPortal from '../portals/ImageCropPortal';
 import CustomSelect from './CustomSelect'
+import { Editor } from '@tinymce/tinymce-react';
 
 const EmployeeDashboard = () => {
   const { userData, backendUrl, setUserData } = useContext(AppContext);

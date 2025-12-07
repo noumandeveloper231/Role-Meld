@@ -117,7 +117,7 @@ const Candidates = () => {
                         placeholder="Search candidates..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
+                        className="!pl-10"
                     />
                 </div>
                 <div className='flex gap-3 w-full lg:w-auto'>

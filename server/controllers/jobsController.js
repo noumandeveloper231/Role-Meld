@@ -12,10 +12,10 @@ export const addJob = async (req, res) => {
     }
 
     try {
-        const userProfile = await recruiterProfileModel.findOne({ authId: userId });
+        const recruiterProfile = await recruiterProfileModel.findOne({ authId: userId });
         const job = new jobsModel({
             ...jobData,
-            postedBy: userId,
+            postedBy: recruiterProfile._id,
             postedAt: new Date(),
             applicationDeadline: jobData.closingDays
                 ? new Date(Date.now() + jobData.closingDays * 24 * 60 * 60 * 1000)
@@ -76,9 +76,7 @@ export const getJobBySlug = async (req, res) => {
     }
 
     try {
-        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedDate city country industry authId about');
-
-
+        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedIn city country category authId about');
 
         if (!job) {
             return res.json({ success: false, message: "Job Not Found, Expired" })
@@ -125,14 +123,16 @@ export const getAllJobs = async (req, res) => {
 }
 
 export const getCompanyJobs = async (req, res) => {
-    const { company } = req.body;
+    const { companyId } = req.params;
 
-    if (!company) {
+    if (!companyId) {
         return res.json({ success: false, message: "No Company Found" });
     }
 
     try {
-        const companyJobs = await jobsModel.find({ company: company, isActive: true });
+        const companyJobs = await jobsModel.find({ postedBy: companyId, isActive: true, approved: "approved" });
+
+        console.log(companyJobs);
 
         if (!companyJobs || companyJobs.length <= 0) {
             return res.json({ success: false, message: "No Jobs Found" });

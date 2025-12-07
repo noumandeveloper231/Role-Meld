@@ -7,6 +7,7 @@ import JobCard from "./JobCard";
 import JoditEditor from 'jodit-react';
 import SkillsSelector from './SkillsSelector'
 import slugify from 'slugify'
+import { Editor } from "@tinymce/tinymce-react";
 
 const JobForm = ({ setActiveTab }) => {
   const { backendUrl, userData } = useContext(AppContext);
@@ -243,24 +244,23 @@ const JobForm = ({ setActiveTab }) => {
             <h2 className="text-lg font-semibold mb-4 text-gray-800">Basic Info</h2>
             <div className="grid grid-cols-1 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Job Title *</label>
                 <input
                   type="text"
                   name="title"
                   value={jobData.title}
                   onChange={handleJobChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
                   placeholder="e.g. Senior Software Engineer"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Slug
                 </label>
 
-                <div className="flex items-center w-full bg-[#f9f9f9] border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-[var(--primary-color)]">
+                <div className="flex items-center w-full bg-[#f9f9f9] border border-gray-300 rounded-md overflow-hidden">
 
                   <span className="text-gray-600 bg-[#f9f9f9] px-4 py-2 whitespace-nowrap text-sm border-r border-gray-300 tracking-wider">
                     https://alfacareers.com/jobs/<b>{jobData?.category || "category"}</b>/
@@ -353,16 +353,31 @@ const JobForm = ({ setActiveTab }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-                <JoditEditor
-                  ref={editor}
+                <Editor
+                  apiKey="dznz0nlhha6epdf1cqah52owptipjne3a23b9e67vgtdgv22"  // or your TinyMCE key
                   value={jobData.description}
-                  config={{
-                    readonly: false,
-                    height: 300,
-                    uploader: { insertImageAsBase64URI: true },
-                    toolbarSticky: false,
+                  onEditorChange={(content) =>
+                    handleJobChange({
+                      target: { name: "description", value: content }
+                    })
+                  }
+                  init={{
+                    height: 250,
+                    menubar: false,
+
+                    plugins: "lists link fullscreen",
+
+                    toolbar: `
+                        styles | bold italic |
+                        bullist numlist |
+                        blockquote |
+                        alignleft aligncenter alignright |
+                        link |
+                        fullscreen
+                        `,
+
+                    content_style: "body { font-family: Inter, sans-serif; font-size: 14px; }",
                   }}
-                  onBlur={(newContent) => setJobData(prev => ({ ...prev, description: newContent }))}
                 />
               </div>
             </div>

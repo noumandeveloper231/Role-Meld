@@ -21,6 +21,7 @@ import PostJobPage from "./pages/dashboard/Jobs/PostJob";
 import JobSeekerFollowing from "./components/JobSeekerFollowing";
 import SkillsManager from "./components/SkillsManager";
 import AdminSettings from "./components/AdminSettings";
+import PrivacyPolicy from "./pages/Privacy-Policy";
 
 
 // Lazy-loaded components
@@ -243,7 +244,9 @@ const App = () => {
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFoundPage />} />
+
         </Routes>
       </div>
       <ChatBotBubble />

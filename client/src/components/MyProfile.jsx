@@ -4,15 +4,14 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { FaCamera, FaPlus, FaTrash, FaVideo, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaGithub, FaTiktok } from 'react-icons/fa';
-import { User, Phone, Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader } from 'lucide-react'
+import { Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader } from 'lucide-react'
 import LocationSelector from './LocationSelector';
 import Img from './Image';
 import CustomSelect from './CustomSelect';
 import ImageCropPortal from '../portals/ImageCropPortal';
 import { useLocation } from 'react-router-dom';
 import 'react-circular-progressbar/dist/styles.css';
-
-
+import { Editor } from '@tinymce/tinymce-react';
 
 // Predefined Skills List
 import SkillsSelector from './SkillsSelector';
@@ -20,11 +19,27 @@ import SkillsSelector from './SkillsSelector';
 const MyProfile = () => {
     const { userData, backendUrl, setUserData } = useContext(AppContext);
     const location = useLocation();
+
+    // Get tab query from the url
+    const queryParams = new URLSearchParams(location.search);
+    const tab = queryParams.get('tab');
+    useEffect(() => {
+        if (tab) {
+            setActiveTab(tab);
+        }
+    }, [tab]);
+
     const [activeTab, setActiveTab] = useState("basic");
     const [loading, setLoading] = useState(false);
 
     // Field refs for focusing
     const fieldRefs = useRef({});
+
+    const focusField = queryParams.get("focusField");
+    if (focusField && fieldRefs.current[focusField]) {
+        fieldRefs.current[focusField].focus();
+    }
+
 
     // Image Crop Portal State
     const [cropPortalOpen, setCropPortalOpen] = useState(false);
@@ -39,6 +54,8 @@ const MyProfile = () => {
     const [formData, setFormData] = useState({
         // Basic Info
         name: "",
+        lastName: "",
+        age: "",
         email: "",
         phone: "",
         headline: "",
@@ -120,7 +137,6 @@ const MyProfile = () => {
                     const fieldElement = fieldRefs.current[focusField];
                     if (fieldElement) {
                         fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        fieldElement.focus();
 
                         // Add highlight animation
                         fieldElement.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
@@ -306,7 +322,6 @@ const MyProfile = () => {
     return (
         <div className='w-full min-h-[calc(100vh-4.6rem)] bg-gray-50 p-6'>
             <div className='max-w-6xl mx-auto bg-white rounded-xl border border-gray-200 p-6 md:p-8'>
-                {/* Header */}
                 <div className='flex justify-between items-center mb-6'>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
@@ -321,7 +336,6 @@ const MyProfile = () => {
                     </button>
                 </div>
 
-                {/* Tabs */}
                 <div className='mb-6'>
                     <div className='flex min-w-max'>
                         {tabs.map(tab => (
@@ -345,21 +359,18 @@ const MyProfile = () => {
                     {activeTab === 'basic' && (
                         <div className='space-y-8'>
                             {/* Cover Image */}
-
-
-                            {/* Profile Picture & Basic Details */}
                             <div className='flex flex-col relative'>
                                 <div className='flex mb-4 items-center gap-4'>
                                     <div>
-                                        <label htmlFor="profilePicture" className='text-sm font-medium text-gray-700'>Profile Picture</label>
-                                        <div className='mt-1 relative w-32 h-32 flex items-center justify-center'>
-                                            <div className='flex items-center justify-center border border-gray-300 w-32 h-32 object-cover'>
+                                        <label htmlFor="profilePicture" className=''>Profile Picture</label>
+                                        <div className='mt-1 relative w-36 h-36 rounded-md overflow-hidden flex items-center justify-center'>
+                                            <div className='flex items-center justify-center border border-gray-300 w-36 h-36 rounded-md object-cover'>
                                                 {profilePictureLoading ? <div className='flex items-center justify-center'>
                                                     <Loader2 className='w-12 h-12 animate-spin' />
                                                 </div> :
                                                     <Img
                                                         src={userData?.profilePicture || '/placeholder.png'}
-                                                        style="w-32 h-32 rounded-full object-cover "
+                                                        style="w-36 h-36 rounded-md object-cover "
                                                     />
                                                 }
                                             </div>
@@ -369,9 +380,9 @@ const MyProfile = () => {
                                             </label>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className='text-sm font-medium text-gray-700 '>Cover Image</label>
-                                        <div className='mt-1 relative w-100 h-32 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
+                                    <div className='w-full'>
+                                        <label className=' '>Cover Image</label>
+                                        <div className='mt-1 relative w-full h-36 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
                                             {userData?.coverImage ? (
                                                 <>
                                                     {coverImageloading ? <div className='flex w-full h-full items-center justify-center'>
@@ -399,30 +410,27 @@ const MyProfile = () => {
                                 <div className='md:col-span-2 space-y-4 mt-16 md:mt-0'>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Full Name</label>
+                                            <label className=''>First Name</label>
                                             <input
                                                 ref={el => fieldRefs.current['name'] = el}
                                                 type="text"
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Current Position</label>
+                                            <label className=''>Last Name</label>
                                             <input
-                                                ref={el => fieldRefs.current['currentPosition'] = el}
+                                                ref={el => fieldRefs.current['lastName'] = el}
                                                 type="text"
-                                                name="currentPosition"
-                                                value={formData.currentPosition}
+                                                name="lastName"
+                                                value={formData.lastName}
                                                 onChange={handleChange}
-                                                placeholder="e.g. Senior Developer"
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Email</label>
+                                            <label className=''>Email</label>
                                             <input
                                                 type="email"
                                                 name="email"
@@ -432,15 +440,40 @@ const MyProfile = () => {
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Phone</label>
+                                            <label className=''>Phone</label>
                                             <input
                                                 ref={el => fieldRefs.current['phone'] = el}
                                                 type="tel"
                                                 name="phone"
                                                 value={formData.phone}
                                                 onChange={handleChange}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all'
                                             />
+                                        </div>
+                                        <div className='space-y-1'>
+                                            <label className=''>Current Position</label>
+                                            <input
+                                                ref={el => fieldRefs.current['currentPosition'] = el}
+                                                type="text"
+                                                name="currentPosition"
+                                                value={formData.currentPosition}
+                                                onChange={handleChange}
+                                                placeholder="e.g. Senior Developer"
+                                            />
+                                        </div>
+                                        <div className='space-y-1'>
+                                            <label className=''>Category</label>
+                                            <CustomSelect
+                                                ref={el => fieldRefs.current['category'] = el}
+                                                name="category"
+                                                value={formData.category}
+                                                className={"mt-1.5"}
+                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            >
+                                                <option value="18-25">18-25</option>
+                                                <option value="25-30">25-30</option>
+                                                <option value="30-35">30-35</option>
+                                                <option value="35-40">35-40</option>
+                                            </CustomSelect>
                                         </div>
                                     </div>
                                 </div>
@@ -451,21 +484,37 @@ const MyProfile = () => {
                             {/* Details */}
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                                 <div className='space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Date of Birth</label>
+                                    <label className=''>Date of Birth</label>
                                     <input
+                                        ref={el => fieldRefs.current['dob'] = el}
                                         type="date"
                                         name="dob"
                                         value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ''}
                                         onChange={handleChange}
-                                        className='mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                     />
                                 </div>
                                 <div className='space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Gender</label>
+                                    <label className=''>Age</label>
                                     <CustomSelect
+                                        ref={el => fieldRefs.current['age'] = el}
+                                        name="age"
+                                        value={formData.age}
+                                        className={"mt-1.5"}
+                                        onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                                    >
+                                        <option value="18-25">18-25</option>
+                                        <option value="25-30">25-30</option>
+                                        <option value="30-35">30-35</option>
+                                        <option value="35-40">35-40</option>
+                                    </CustomSelect>
+                                </div>
+                                <div className='space-y-1'>
+                                    <label className=''>Gender</label>
+                                    <CustomSelect
+                                        ref={el => fieldRefs.current['gender'] = el}
                                         name="gender"
                                         value={formData.gender}
-                                        className={"mt-1"}
+                                        className={"mt-1.5"}
                                         onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                     >
                                         <option value="male">Male</option>
@@ -474,9 +523,10 @@ const MyProfile = () => {
                                     </CustomSelect>
                                 </div>
                                 <div className='space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Qualification</label>
+                                    <label className=''>Qualification</label>
                                     <CustomSelect
-                                        className={"mt-1 "}
+                                        ref={el => fieldRefs.current['qualification'] = el}
+                                        className={"mt-1.5"}
                                         name="qualification"
                                         value={formData.qualification}
                                         onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
@@ -489,9 +539,9 @@ const MyProfile = () => {
                                     </CustomSelect>
                                 </div>
                                 <div className='space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Experience</label>
+                                    <label className=''>Experience</label>
                                     <CustomSelect
-                                        className={"mt-1 "}
+                                        className={"mt-1.5"}
                                         name="experienceYears"
                                         value={formData.experienceYears}
                                         onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
@@ -503,16 +553,65 @@ const MyProfile = () => {
                                         <option value="9+ years">9+ Years</option>
                                     </CustomSelect>
                                 </div>
-                                <div className='col-span-full space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Description</label>
-                                    <textarea
 
-                                        name="description"
-                                        value={formData.description}
+                                <div className='space-y-2'>
+                                    <label className="">
+                                        Offered Salary
+                                    </label>
+                                    <input
+                                        // type="te"
+                                        type='number'
+                                        name="offeredSalary"
+                                        value={formData.offeredSalary}
+                                        onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
+                                        placeholder={userData?.offeredSalary || "30"}
+                                    />
+                                </div>
+                                <div className='space-y-2'>
+                                    <label className="">
+                                        Salary Type
+                                    </label>
+                                    <CustomSelect
+                                        label="Sala"
+                                        name="members"
+                                        value={formData.members || ""}
                                         onChange={handleChange}
-                                        rows={4}
-                                        className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none'
-                                        placeholder="Tell us about yourself..."
+                                    >
+                                        <option value="day">Per Day</option>
+                                        <option value="month">Per Month</option>
+                                        <option value="year">Per Year</option>
+                                    </CustomSelect>
+                                </div>
+                                <div className='col-span-full space-y-1'>
+                                    <label className=''>Description</label>
+                                    <Editor
+                                        apiKey="dznz0nlhha6epdf1cqah52owptipjne3a23b9e67vgtdgv22"  // or your TinyMCE key
+                                        value={formData.description}
+                                        onEditorChange={(content) =>
+                                            handleChange({
+                                                target: { name: "description", value: content }
+                                            })
+                                        }
+                                        onInit={(evt, editor) => {
+                                            fieldRefs.current["description"] = editor;
+                                        }}
+                                        init={{
+                                            height: 250,
+                                            menubar: false,
+
+                                            plugins: "lists link fullscreen",
+
+                                            toolbar: `
+                                                        styles | bold italic |
+                                                        bullist numlist |
+                                                        blockquote |
+                                                        alignleft aligncenter alignright |
+                                                        link |
+                                                        fullscreen
+                                                        `,
+
+                                            content_style: "body { font-family: Inter, sans-serif; font-size: 14px; }",
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -524,14 +623,14 @@ const MyProfile = () => {
                                 <h3 className='text-lg font-semibold text-gray-800 mb-4'>Location</h3>
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                                     <div className='col-span-full space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700'>Address</label>
+                                        <label className=''>Address</label>
                                         <input
+                                            ref={el => fieldRefs.current['address'] = el}
                                             type="text"
                                             name="address"
                                             value={formData.address}
                                             onChange={handleChange}
                                             placeholder='Enter Your Address here...'
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
                                     <div className='space-y-1'>
@@ -543,14 +642,13 @@ const MyProfile = () => {
                                         />
                                     </div>
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700'>Postal Code</label>
+                                        <label className=''>Postal Code</label>
                                         <input
                                             type="text"
                                             name="postal"
                                             value={formData.postal}
                                             onChange={handleChange}
                                             placeholder='Enter Your Postal Code here...'
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
                                 </div>
@@ -564,21 +662,21 @@ const MyProfile = () => {
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                     {/* Predefined Social Links */}
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             LinkedIn
                                         </label>
                                         <input
+                                            ref={el => fieldRefs.current['linkedin'] = el}
                                             type="text"
                                             name="linkedin"
                                             value={formData.linkedin}
                                             onChange={handleChange}
                                             placeholder="https://linkedin.com/in/yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             Twitter
                                         </label>
                                         <input
@@ -587,12 +685,11 @@ const MyProfile = () => {
                                             value={formData.twitter}
                                             onChange={handleChange}
                                             placeholder="https://twitter.com/yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             Facebook
                                         </label>
                                         <input
@@ -601,12 +698,11 @@ const MyProfile = () => {
                                             value={formData.facebook}
                                             onChange={handleChange}
                                             placeholder="https://facebook.com/yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             Instagram
                                         </label>
                                         <input
@@ -615,12 +711,11 @@ const MyProfile = () => {
                                             value={formData.instagram}
                                             onChange={handleChange}
                                             placeholder="https://instagram.com/yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             YouTube
                                         </label>
                                         <input
@@ -629,12 +724,11 @@ const MyProfile = () => {
                                             value={formData.youtube}
                                             onChange={handleChange}
                                             placeholder="https://youtube.com/@yourchannel"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             TikTok
                                         </label>
                                         <input
@@ -643,12 +737,11 @@ const MyProfile = () => {
                                             value={formData.tiktok}
                                             onChange={handleChange}
                                             placeholder="https://tiktok.com/@yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
 
                                     <div className='space-y-1'>
-                                        <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+                                        <label className=' flex items-center gap-2'>
                                             GitHub
                                         </label>
                                         <input
@@ -657,7 +750,6 @@ const MyProfile = () => {
                                             value={formData.github}
                                             onChange={handleChange}
                                             placeholder="https://github.com/yourprofile"
-                                            className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
                                 </div>
@@ -672,14 +764,12 @@ const MyProfile = () => {
                                                 value={net.network}
                                                 onChange={(e) => handleArrayChange(idx, 'customSocialNetworks', 'network', e.target.value)}
                                                 placeholder="Network name"
-                                                className='mt-1 w-40 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                             />
                                             <input
                                                 type="text"
                                                 value={net.url}
                                                 onChange={(e) => handleArrayChange(idx, 'customSocialNetworks', 'url', e.target.value)}
                                                 placeholder="Profile URL"
-                                                className='mt-1 flex-1 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                             />
                                             <button
                                                 onClick={() => removeArrayItem('customSocialNetworks', idx)}
@@ -699,7 +789,7 @@ const MyProfile = () => {
 
                                 {/* Video URL */}
                                 <div className='mt-6 space-y-1'>
-                                    <label className='text-sm font-medium text-gray-700'>Video Introduction</label>
+                                    <label className=''>Video Introduction</label>
                                     <div className='relative mt-1'>
                                         <FaVideo className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' />
                                         <input
@@ -708,7 +798,6 @@ const MyProfile = () => {
                                             value={formData.videoUrl}
                                             onChange={handleChange}
                                             placeholder="e.g. YouTube link"
-                                            className='w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none'
                                         />
                                     </div>
                                 </div>
@@ -729,48 +818,43 @@ const MyProfile = () => {
                                     </button>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Degree Title</label>
+                                            <label className=''>Degree Title</label>
                                             <input
                                                 type="text"
                                                 value={edu.title || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'education', 'title', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Level</label>
+                                            <label className=''>Level</label>
                                             <input
                                                 type="text"
                                                 value={edu.level || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'education', 'level', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>From</label>
+                                            <label className=''>From</label>
                                             <input
                                                 type="date"
                                                 value={edu.from ? new Date(edu.from).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleArrayChange(idx, 'education', 'from', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>To</label>
+                                            <label className=''>To</label>
                                             <input
                                                 type="date"
                                                 value={edu.to ? new Date(edu.to).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleArrayChange(idx, 'education', 'to', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='col-span-full space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Description</label>
+                                            <label className=''>Description</label>
                                             <textarea
                                                 value={edu.description || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'education', 'description', e.target.value)}
                                                 rows={3}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg resize-none'
                                             />
                                         </div>
                                     </div>
@@ -798,48 +882,43 @@ const MyProfile = () => {
                                     </button>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Job Title</label>
+                                            <label className=''>Job Title</label>
                                             <input
                                                 type="text"
                                                 value={exp.jobTitle || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'experience', 'jobTitle', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Company</label>
+                                            <label className=''>Company</label>
                                             <input
                                                 type="text"
                                                 value={exp.company || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'experience', 'company', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>From</label>
+                                            <label className=''>From</label>
                                             <input
                                                 type="date"
                                                 value={exp.from ? new Date(exp.from).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleArrayChange(idx, 'experience', 'from', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>To</label>
+                                            <label className=''>To</label>
                                             <input
                                                 type="date"
                                                 value={exp.to ? new Date(exp.to).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleArrayChange(idx, 'experience', 'to', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='col-span-full space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Description</label>
+                                            <label className=''>Description</label>
                                             <textarea
                                                 value={exp.description || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'experience', 'description', e.target.value)}
                                                 rows={3}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg resize-none'
                                             />
                                         </div>
                                     </div>
@@ -876,31 +955,28 @@ const MyProfile = () => {
                                     <div className='space-y-4'>
                                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                             <div className='space-y-1'>
-                                                <label className='text-sm font-medium text-gray-700'>Project Title</label>
+                                                <label className=''>Project Title</label>
                                                 <input
                                                     type="text"
                                                     value={proj.title || ''}
                                                     onChange={(e) => handleArrayChange(idx, 'projects', 'title', e.target.value)}
-                                                    className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
-                                                <label className='text-sm font-medium text-gray-700'>Link</label>
+                                                <label className=''>Link</label>
                                                 <input
                                                     type="text"
                                                     value={proj.link || ''}
                                                     onChange={(e) => handleArrayChange(idx, 'projects', 'link', e.target.value)}
-                                                    className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                                 />
                                             </div>
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Description</label>
+                                            <label className=''>Description</label>
                                             <textarea
                                                 value={proj.description || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'projects', 'description', e.target.value)}
                                                 rows={3}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg resize-none'
                                             />
                                         </div>
                                     </div>
@@ -928,30 +1004,27 @@ const MyProfile = () => {
                                     </button>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Award Title</label>
+                                            <label className=''>Award Title</label>
                                             <input
                                                 type="text"
                                                 value={award.title || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'awards', 'title', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Date Awarded</label>
+                                            <label className=''>Date Awarded</label>
                                             <input
                                                 type="date"
                                                 value={award.date ? new Date(award.date).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleArrayChange(idx, 'awards', 'date', e.target.value)}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg'
                                             />
                                         </div>
                                         <div className='col-span-full space-y-1'>
-                                            <label className='text-sm font-medium text-gray-700'>Description</label>
+                                            <label className=''>Description</label>
                                             <textarea
                                                 value={award.description || ''}
                                                 onChange={(e) => handleArrayChange(idx, 'awards', 'description', e.target.value)}
                                                 rows={3}
-                                                className='mt-1 w-full p-2.5 border border-gray-300 rounded-lg resize-none'
                                             />
                                         </div>
                                     </div>

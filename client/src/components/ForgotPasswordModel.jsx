@@ -98,7 +98,7 @@ const ForgotPasswordModel = ({ onBackToLogin }) => {
     return (
         <div className="flex w-full justify-center items-center">
             <div className="w-full px-8 md:px-32 lg:px-24">
-                <div className="bg-white rounded-2xl border border-gray-300 p-10 flex flex-col gap-3">
+                <div className="bg-white rounded-lg border border-gray-300 p-10 flex flex-col gap-3">
                     {/* Header */}
                     <div className="flex items-center gap-3 mb-1">
                         <button
@@ -107,7 +107,7 @@ const ForgotPasswordModel = ({ onBackToLogin }) => {
                         >
                             <ArrowLeft size={20} />
                         </button>
-                        <h1 className="text-gray-800 font-bold text-2xl">Forgot Password</h1>
+                        <h4 className="text-gray-800 font-bold text-2xl">Forgot Password</h4>
                     </div>
                     <p className="text-sm font-normal text-gray-600 mb-6">
                         {step === 1 && 'Enter your email to receive an OTP'}
@@ -118,12 +118,11 @@ const ForgotPasswordModel = ({ onBackToLogin }) => {
                     {/* Step 1: Email Input */}
                     {step === 1 && (
                         <form onSubmit={handleSendOTP} className="flex flex-col gap-3">
-                            <div className="flex items-center border-2 py-2 px-3 rounded-2xl">
-                                <Mail size={18} className="text-gray-400" />
+                            <div className="">
+                                <label htmlFor="email" className='text-sm font-medium'>Email address</label>
                                 <input
                                     type="email"
                                     placeholder="Email Address"
-                                    className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -143,12 +142,12 @@ const ForgotPasswordModel = ({ onBackToLogin }) => {
                     {/* Step 2: OTP Verification */}
                     {step === 2 && (
                         <form onSubmit={handleVerifyOTP} className="flex flex-col gap-3">
-                            <div className="flex items-center border-2 py-2 px-3 rounded-2xl">
-                                <Lock size={18} className="text-gray-400" />
+                            <div className="">
+                                <label htmlFor="otp" className='text-sm font-medium'>OTP</label>
                                 <input
                                     type="text"
                                     placeholder="Enter 6-digit OTP"
-                                    className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
+                                    name='otp'
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                                     required
@@ -177,45 +176,50 @@ const ForgotPasswordModel = ({ onBackToLogin }) => {
                     {/* Step 3: New Password */}
                     {step === 3 && (
                         <form onSubmit={handleResetPassword} className="flex flex-col gap-3">
-                            <div className="flex items-center border-2 py-2 px-3 rounded-2xl relative">
-                                <Lock size={18} className="text-gray-400" />
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="New Password"
-                                    className="text-[var(--primary-color)] pl-2 py-1 text-sm pr-8 w-full outline-none border-none"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword((prev) => !prev)}
-                                >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
+                            <div className="">
+                                <label htmlFor="email" className='font-medium text-sm'>New Password</label>
+                                <div className='flex items-center'>
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="New Password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        className='-ml-8 mt-1'
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="flex items-center border-2 py-2 px-3 rounded-2xl relative">
-                                <Lock size={18} className="text-gray-400" />
-                                <input
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    placeholder="Confirm New Password"
-                                    className="text-[var(--primary-color)] pl-2 py-1 text-sm pr-8 w-full outline-none border-none"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                                >
-                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
+                            <div className="">
+                                <label htmlFor="email" className='font-medium text-sm'>New Password</label>
+                                <div className='flex items-center'>
+
+                                    <input
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        placeholder="Confirm New Password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        className='-ml-8 mt-1'
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || confirmPassword.length === 0 || newPassword.len === 0}
                                 className="primary-btn"
                             >
                                 {loading ? 'Resetting...' : 'Reset Password'}

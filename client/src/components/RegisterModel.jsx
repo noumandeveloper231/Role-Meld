@@ -6,12 +6,13 @@ import { toast } from "react-toastify";
 
 // Lucide React Icons
 import { User, Mail, Lock, Briefcase, Eye, EyeOff, XCircle, CheckCircle, Search, Building } from "lucide-react";
+import ForgotPasswordModel from "./ForgotPasswordModel";
 
 const RegisterModel = ({ setRegStep }) => {
     const { backendUrl } = useContext(AppContext);
-    const navigate = useNavigate()
 
     // Form Data States
+    const [showForgotPassword, setShowForgotPassword] = useState(false)
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -71,9 +72,9 @@ const RegisterModel = ({ setRegStep }) => {
     // Component for a single role selection card/toggle
     const RoleToggle = ({ value, label, icon: Icon, isSelected, onClick }) => (
         <div
-            className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 w-full md:w-1/2 ${isSelected
-                    ? 'border-[var(--primary-color)] bg-[var(--primary-color)]/10 shadow-md shadow-[var(--primary-color)]/20'
-                    : 'border-gray-300 hover:border-gray-400 bg-white'
+            className={`flex flex-col items-center justify-center p-4 rounded-xl border-1 cursor-pointer transition-all duration-300 w-full md:w-1/2 ${isSelected
+                ? 'border-[var(--primary-color)] bg-[var(--primary-color)]/10 shadow-md shadow-[var(--primary-color)]/20'
+                : 'border-gray-300 hover:border-gray-400 bg-white'
                 }`}
             onClick={onClick}
         >
@@ -83,79 +84,86 @@ const RegisterModel = ({ setRegStep }) => {
             </span>
         </div>
     );
+    if (showForgotPassword) {
+        return <ForgotPasswordModel onBackToLogin={() => setShowForgotPassword(false)} />
+    }
 
     return (
         <div className="flex w-full justify-center items-center bg-white">
             <div className="w-full px-8 md:px-32 lg:px-24">
-                <form className="bg-white rounded-xl flex flex-col gap-2 border border-gray-200 p-8 shadow-lg" onSubmit={register}>
-                    <h1 className="text-gray-800 font-extrabold text-3xl mb-1">Join Us</h1>
+                <form className="bg-white rounded-lg flex flex-col gap-2 border border-gray-200 p-8" onSubmit={register}>
+                    <h1 className="text-gray-800 font-extrabold text-3xl mb-1">Join <span className="text-[var(--primary-color)]/90">Us</span></h1>
                     <p className="text-sm font-normal text-gray-500 mb-4">Select your account type to proceed.</p>
 
                     {/* Name Field */}
-                    <div className="flex items-center border-2 py-3 px-4 rounded-full focus-within:border-[var(--primary-color)] transition-colors">
-                        <User size={20} className="text-gray-400" />
-                        <input
-                            className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
-                            type="text"
-                            placeholder="Full Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
+                    <div className="flex items-center gap-4">
+                        <div className="">
+                            <label htmlFor="email" className='font-medium text-sm'>Name</label>
+                            <input
+                                type="text"
+                                placeholder="Full Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
+
+                        {/* Email Field */}
+                        <div className="">
+                            <label htmlFor="email" className='font-medium text-sm'>Email address</label>
+
+                            <input
+                                type="email"
+                                placeholder="Email Address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
 
-                    {/* Email Field */}
-                    <div className="flex items-center border-2 py-3 px-4 rounded-full focus-within:border-[var(--primary-color)] transition-colors">
-                        <Mail size={20} className="text-gray-400" />
-                        <input
-                            className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
-                            type="email"
-                            placeholder="Email Address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
 
                     {/* Password Field with Toggle */}
-                    <div className="flex items-center border-2 py-3 px-4 rounded-full focus-within:border-[var(--primary-color)] transition-colors">
-                        <Lock size={20} className="text-gray-400" />
-                        <input
-                            className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        <span
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="text-gray-500 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
-                            aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </span>
+                    <div className="">
+                        <label htmlFor="email" className='font-medium text-sm'>Password</label>
+                        <div className="flex items-center">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <button
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="-ml-8 mt-1 text-gray-500 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
 
                     {/* CONFIRM Password Field with Toggle & Feedback */}
                     <div className="flex flex-col gap-1">
-                        <div className="flex items-center border-2 py-3 px-4 rounded-full focus-within:border-[var(--primary-color)] transition-colors">
-                            <Lock size={20} className="text-gray-400" />
-                            <input
-                                className="pl-2 py-1 text-sm w-full outline-none border-none text-[var(--primary-color)]"
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm Password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
-                            <span
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="text-gray-500 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
-                                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                            >
-                                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </span>
+                        <div className="">
+                            <label htmlFor="email" className='font-medium text-sm'>Confirm Password</label>
+                            <div className="flex items-center">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Confirm Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="-ml-8 mt-1 text-gray-500 hover:text-[var(--primary-color)] transition-colors cursor-pointer"
+                                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                                >
+                                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Real-Time Match Feedback */}
@@ -180,14 +188,14 @@ const RegisterModel = ({ setRegStep }) => {
                     <div className="flex flex-col md:flex-row gap-4 mt-2">
                         <RoleToggle
                             value="user"
-                            label="Job Seeker"
+                            label="Candidate"
                             icon={Search}
                             isSelected={role === 'user'}
                             onClick={() => setRole('user')}
                         />
                         <RoleToggle
                             value="recruiter"
-                            label="Recruiter"
+                            label="Employer"
                             icon={Building}
                             isSelected={role === 'recruiter'}
                             onClick={() => setRole('recruiter')}
@@ -206,7 +214,10 @@ const RegisterModel = ({ setRegStep }) => {
 
                     {/* Footer Links */}
                     <div className="flex justify-between mt-4 text-sm">
-                        <span className="text-gray-500 hover:text-[var(--primary-color)] cursor-pointer transition-colors">
+                        <span
+                            onClick={() => setShowForgotPassword(true)}
+                            className="text-gray-500 hover:text-[var(--primary-color)] cursor-pointer transition-colors font-medium"
+                        >
                             Forgot Password?
                         </span>
 

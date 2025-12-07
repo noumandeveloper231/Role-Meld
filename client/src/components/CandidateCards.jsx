@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { MapPin, Plus, Star } from 'lucide-react'
 import { AppContext } from '../context/AppContext'
 import { toast } from 'react-toastify'
+import Img from './Image'
 
 const CandidateCards = ({ candidate }) => {
     const { userData, followUnfollow } = useContext(AppContext)
@@ -9,10 +10,9 @@ const CandidateCards = ({ candidate }) => {
         <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer max-w-5xl w-full">
             <header className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                    <img
-                        src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&w=120&h=120&q=80"
-                        alt={candidate.name}
-                        className="h-16 w-16 rounded-full object-cover"
+                    <Img
+                        src={candidate.profilePicture}
+                        style="border border-gray-200 bg-[var(--accent-color)] h-16 w-16 rounded-full object-cover"
                     />
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -50,7 +50,7 @@ const CandidateCards = ({ candidate }) => {
                     ))}
                 </div>
                 <div className="mt-5 flex items-center gap-2 justify-end">
-                    <span className="text-2xl text-[var(--primary-color)] font-semibold">{candidate.offeredSalary}/{candidate.salaryType || 'Day'}</span>
+                    <span className="text-2xl text-[var(--primary-color)] font-semibold">{candidate.offeredSalary}$/{candidate.salaryType || '  '}</span>
                 </div>
             </div>
         </div>

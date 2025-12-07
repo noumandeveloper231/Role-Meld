@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import SkillsManager from './SkillsManager';
 import CategoryManager from './CategoryManager';
+import CandidateCategoryManager from './CandidateCategoryManager';
 
 const tabs = [
   { key: 'skills', label: 'Skills Manager' },
-  { key: 'categories', label: 'Category Manager' }
+  { key: 'categories', label: 'Category Manager' },
+  { key: 'candidateCategories', label: 'Candidate Category Manager' }
 ];
 
 const AdminSettings = () => {
   const [active, setActive] = useState('skills');
-
+  
   return (
-    <div className="w-full bg-white">
+    <div className="border border-gray-300 rounded-3xl bg-white w-full overflow-y-auto min-h-screen p-6">
       {/* Tabs header */}
       <div className="mb-6 flex gap-3 border-b border-gray-200">
         {tabs.map((tab) => (
@@ -32,6 +34,7 @@ const AdminSettings = () => {
       {/* Panel */}
       {active === 'skills' && <SkillsManager />} 
       {active === 'categories' && <CategoryManager />} 
+      {active === 'candidateCategories' && <CandidateCategoryManager />} 
     </div>
   );
 };

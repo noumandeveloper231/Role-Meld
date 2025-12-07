@@ -47,9 +47,8 @@ const IconSelect = ({ value, onChange, className }) => {
                                 onChange(option.value);
                                 setOpen(false);
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-2 text-left text-sm hover:bg-gray-50 ${
-                                option.value === value ? "bg-gray-100" : ""
-                            }`}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-left text-sm hover:bg-gray-50 ${option.value === value ? "bg-gray-100" : ""
+                                }`}
                         >
                             {React.createElement(option.icon, { size: 18, className: "text-[var(--primary-color)]" })}
                             <span className="text-gray-700">{option.label}</span>
@@ -154,7 +153,7 @@ const CategoryManager = () => {
     const handleAddCategory = async () => {
         if (!newCategory.trim()) return;
         try {
-            await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon, slug: slugify(newCategory, {lower: true})  });
+            await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon, slug: slugify(newCategory, { lower: true }) });
             setNewCategory("");
             setNewCategoryIcon("Tag");
             fetchCategories();
@@ -224,17 +223,17 @@ const CategoryManager = () => {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    
+
                     // Get the first worksheet
                     const sheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[sheetName];
-                    
+
                     // Convert to JSON
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    
+
                     // Parse the data
                     const parsedCategories = parseExcelData(jsonData);
-                    
+
                     if (parsedCategories.length === 0) {
                         toast.error('No valid category data found in the Excel file');
                         setImporting(false);
@@ -261,7 +260,7 @@ const CategoryManager = () => {
                     setImporting(false);
                 }
             };
-            
+
             reader.readAsArrayBuffer(file);
         } catch (error) {
             console.error('File reading error:', error);
@@ -275,80 +274,80 @@ const CategoryManager = () => {
 
     // Parse Excel data into categories format
     const parseExcelData = (jsonData) => {
-    const categories = [];
+        const categories = [];
 
-    // Skip header row if it exists
-    const startRow = jsonData.length > 0 &&
-        (typeof jsonData[0][0] === 'string' && jsonData[0][0].toLowerCase().includes('name')) ? 1 : 0;
+        // Skip header row if it exists
+        const startRow = jsonData.length > 0 &&
+            (typeof jsonData[0][0] === 'string' && jsonData[0][0].toLowerCase().includes('name')) ? 1 : 0;
 
-    for (let i = startRow; i < jsonData.length; i++) {
-        const row = jsonData[i];
-        if (!row || row.length === 0) continue;
+        for (let i = startRow; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (!row || row.length === 0) continue;
 
-        const name = row[0]?.toString().trim();
-        const icon = row[1]?.toString().trim() || "Tag";
-        const subcategoriesStr = row[2]?.toString().trim() || "";
+            const name = row[0]?.toString().trim();
+            const icon = row[1]?.toString().trim() || "Tag";
+            const subcategoriesStr = row[2]?.toString().trim() || "";
 
-        if (!name) continue;
+            if (!name) continue;
 
-        // Split subcategories by comma
-        const subcategories = subcategoriesStr
-            ? subcategoriesStr.split(',').map(s => s.trim()).filter(Boolean)
-            : [];
+            // Split subcategories by comma
+            const subcategories = subcategoriesStr
+                ? subcategoriesStr.split(',').map(s => s.trim()).filter(Boolean)
+                : [];
 
-        // Optional: generate slug
-        const slug = name.toLowerCase().replace(/\s+/g, '-');
+            // Optional: generate slug
+            const slug = name.toLowerCase().replace(/\s+/g, '-');
 
-        categories.push({
-            name,
-            icon,
-            subcategories,
-            slug
-        });
-    }
+            categories.push({
+                name,
+                icon,
+                subcategories,
+                slug
+            });
+        }
 
-    return categories;
-};
+        return categories;
+    };
 
 
     // Download Excel template
     const downloadTemplate = () => {
-    if (!categories || categories.length === 0) {
-        toast.error('No categories available to download');
-        return;
-    }
+        if (!categories || categories.length === 0) {
+            toast.error('No categories available to download');
+            return;
+        }
 
-    // Build template data
-    const templateData = [
-        ['Name', 'Icon', 'Subcategories'] // Header
-    ];
+        // Build template data
+        const templateData = [
+            ['Name', 'Icon', 'Subcategories'] // Header
+        ];
 
-    categories.forEach(cat => {
-        templateData.push([
-            cat.name,
-            cat.icon || 'Tag',
-            cat.subcategories ? cat.subcategories.join(', ') : ''
-        ]);
-    });
+        categories.forEach(cat => {
+            templateData.push([
+                cat.name,
+                cat.icon || 'Tag',
+                cat.subcategories ? cat.subcategories.join(', ') : ''
+            ]);
+        });
 
-    const worksheet = XLSX.utils.aoa_to_sheet(templateData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+        const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
 
-    // Set column widths for readability
-    worksheet['!cols'] = [
-        { width: 25 }, // Name
-        { width: 20 }, // Icon
-        { width: 60 }  // Subcategories
-    ];
+        // Set column widths for readability
+        worksheet['!cols'] = [
+            { width: 25 }, // Name
+            { width: 20 }, // Icon
+            { width: 60 }  // Subcategories
+        ];
 
-    XLSX.writeFile(workbook, 'categories_template.xlsx');
-    toast.success('Template downloaded successfully!');
-};
+        XLSX.writeFile(workbook, 'categories_template.xlsx');
+        toast.success('Template downloaded successfully!');
+    };
 
 
     return (
-        <div className="border border-gray-300 rounded-3xl bg-white w-full overflow-y-auto min-h-screen p-6">
+        <div className="">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -364,7 +363,6 @@ const CategoryManager = () => {
                                 type="text"
                                 value={newCategory}
                                 placeholder="Enter category name..."
-                                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)]"
                                 onChange={(e) => setNewCategory(e.target.value)}
                             />
                         </div>
@@ -390,10 +388,10 @@ const CategoryManager = () => {
                 <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-3">Import from Excel</h3>
                     <span className="text-gray-600 text-sm mb-4">
-                        Upload an Excel file to bulk import categories and subcategories. 
+                        Upload an Excel file to bulk import categories and subcategories.
                         The file should have two columns: "Category Name" and "Subcategory Name".
                     </span>
-                    
+
                     <div className="flex flex-wrap gap-3 my-4">
                         <button
                             onClick={downloadTemplate}
@@ -402,7 +400,7 @@ const CategoryManager = () => {
                             <Download className="w-4 h-4" />
                             Download Template
                         </button>
-                        
+
                         <label className="bg-white text-[var(--primary-color)] px-4 py-2 rounded-3xl hover:bg-[var(--primary-color)] hover:text-white transition-colors flex items-center gap-2 cursor-pointer">
                             <Upload className="w-4 h-4" />
                             {importing ? 'Importing...' : 'Import Excel File'}
@@ -484,7 +482,7 @@ const CategoryManager = () => {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search categories or subcategories..."
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                                className="!pl-10"
                             />
                         </div>
                         <div className="text-sm text-gray-500">

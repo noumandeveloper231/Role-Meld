@@ -49,19 +49,17 @@ const HorizontalCompanyCard = ({ company }) => {
             </header>
 
             {/* About */}
-            <p className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed">
-                {company?.about || "Not Specified"}
-            </p>
+            <div dangerouslySetInnerHTML={{ __html: company?.about }} className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed" />
 
             {/* Footer: Tags + Jobs */}
             <div className="mt-4 flex flex-wrap justify-between gap-4">
                 <div className="flex flex-wrap gap-3">
                     <span className="rounded-full bg-[var(--accent-color)] px-4 py-1.5 text-sm font-medium text-[var(--primary-color)]">
-                        {company?.industry || "Not Specified"}
+                        {company?.category || "Not Specified"}
                     </span>
                 </div>
                 <div className="text-[var(--primary-color)] font-semibold whitespace-nowrap">
-                    {company?.sentJobs?.length} jobs available
+                    {company?.sentJobs?.length} job{company?.sentJobs?.length > 1 && "s"} available
                 </div>
             </div>
         </div>
@@ -116,15 +114,14 @@ const VerticalCompanyCard = ({ company }) => {
             </header>
 
             {/* About */}
-            <p className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed">
-                {company?.about || "Not Specified"}
-            </p>
+            <div dangerouslySetInnerHTML={{ __html: company?.about || "<p>Not Specified</>" }} className="line-clamp-3 mt-4 text-gray-600 text-base sm:text-lg leading-relaxed" />
+
 
             {/* Footer: Tags + Jobs */}
             <div className="mt-4 flex flex-col  gap-4">
                 <div className="flex flex-wrap gap-3">
                     <span className="rounded-full bg-[var(--accent-color)] px-4 py-1.5 text-sm font-medium text-[var(--primary-color)]">
-                        {company?.industry || "Not Specified"}
+                        {company?.categpry || "Not Specified"}
                     </span>
                 </div>
                 <div className="self-end text-[var(--primary-color)] font-semibold whitespace-nowrap">

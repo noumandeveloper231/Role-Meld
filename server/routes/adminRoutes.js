@@ -2,6 +2,7 @@ import express from 'express'
 import Category from '../models/categoryModel.js';
 import Package from '../models/packageModel.js';
 import Skill from '../models/skillModel.js';
+import CandidateCategory from '../models/candidateCategoryModel.js';
 
 const adminRouter = express.Router()
 
@@ -213,6 +214,56 @@ adminRouter.delete("/skills/:id", async (req, res) => {
     }
     await Skill.findByIdAndDelete(id);
     res.json({ success:true, message: `Skill "${skill.name}" deleted successfully` });
+  } catch (err) {
+    res.status(400).json({ success:false, message: err.message });
+  }
+});
+
+// ============================
+// Candidate Category Management Routes
+// ============================
+
+// Create new candidate category
+adminRouter.post("/candidate-categories", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success:false, message: "Category name is required" });
+    }
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const category = new CandidateCategory({ name: name.trim(), slug });
+    await category.save();
+    res.status(201).json({ success:true, category });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ success:false, message: "Category already exists" });
+    }
+    res.status(400).json({ success:false, message: err.message });
+  }
+});
+
+// Get all candidate categories
+adminRouter.get("/candidate-categories", async (req, res) => {
+  try {
+    const categories = await CandidateCategory.find().sort({ name: 1 });
+    res.json({ success:true, categories });
+  } catch (err) {
+    res.status(500).json({ success:false, message: err.message });
+  }
+});
+
+// Delete a candidate category
+adminRouter.delete("/candidate-categories/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const category = await CandidateCategory.findById(id);
+    if (!category) {
+      return res.status(404).json({ success:false, message: "Category not found" });
+    }
+    await CandidateCategory.findByIdAndDelete(id);
+    res.json({ success:true, message: `Category \"${category.name}\" deleted successfully` });
   } catch (err) {
     res.status(400).json({ success:false, message: err.message });
   }

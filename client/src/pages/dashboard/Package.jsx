@@ -1,14 +1,19 @@
 import React, { Suspense } from "react";
 import Loading from "../../components/Loading";
 
-const SavedJobs = React.lazy(() => import("../../components/SavedJobs"));
-
 const Package = () => {
   return (
     <Suspense fallback={<Loading />}>
-      <SavedJobs />
+      <div>
+        <h1>
+          Packages
+        </h1>
+        <p>
+          Coming Soon...
+        </p>
+      </div>
     </Suspense>
   );
-};a
+};
 
 export default Package;

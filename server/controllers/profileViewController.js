@@ -93,7 +93,6 @@ export const getProfileViewsForPeriod = async (req, res, next) => {
       }
     ]);
 
-    console.log("views:", views);
     return res.json({ success: true, views });
   } catch (err) {
     next(err);

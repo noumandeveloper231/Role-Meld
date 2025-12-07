@@ -72,7 +72,7 @@ const SkillsManager = () => {
   );
 
   return (
-    <div className="border border-gray-300 rounded-3xl bg-white w-full overflow-y-auto min-h-screen p-6">
+    <div className="">
       <div className="">
         {/* Header */}
         <div className="mb-8">
@@ -108,7 +108,7 @@ const SkillsManager = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search skills..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+              className="!pl-10"
             />
           </div>
           <div className="text-sm text-gray-500">

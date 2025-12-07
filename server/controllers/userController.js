@@ -7,7 +7,7 @@ import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 import companyReviewModel from "../models/companyReviewModel.js";
 import ProfileView from "../models/profileViewModel.js";
-    
+
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -62,6 +62,10 @@ function calculateProfileScore(user) {
         score += 2;
     }
 
+    if (user.age && user.age.trim() !== "") {
+        score += 2;
+    }
+
     // Category (3 points)
     if (user.category && user.category.trim() !== "") {
         score += 3;
@@ -80,12 +84,6 @@ function calculateProfileScore(user) {
     // Salary Type (3 points)
     if (user.salaryType && user.salaryType.trim() !== "") {
         score += 3;
-    }
-
-    // ========== PROFESSIONAL (25 points) ==========
-    // Headline (5 points)
-    if (user.headline && user.headline.trim() !== "") {
-        score += 5;
     }
 
     // Qualification (5 points)
@@ -122,11 +120,6 @@ function calculateProfileScore(user) {
     // Resume (4 points)
     if (user.resume && user.resume.trim() !== "") {
         score += 4;
-    }
-
-    // Portfolio (2 points)
-    if (user.portfolio && user.portfolio.trim() !== "") {
-        score += 2;
     }
 
     // Video URL (2 points)
@@ -199,24 +192,28 @@ function calculateProfileScore(user) {
         score += Math.min(socialCount, 5);
     }
 
-    return Math.min(score, 100);
+    const maxScore = 95;
+    const percentage = Math.min(100, Math.round((score / maxScore) * 100));
+
+    return percentage;
 }
 
 function calculateRecruiterProfileScore(user) {
     let score = 0;
-    const totalPossible = 70; // total points if all conditions are met
+    const totalPossible = 75; // total points if all conditions are met
 
     if (user.name?.trim()) score += 10;
     if (user.profilePicture?.trim()) score += 10;
     if (user.banner?.trim()) score += 5;
     if (user.companyType?.trim()) score += 5;
-    if (user.industry?.trim()) score += 5;
+    if (user.category?.trim()) score += 5;
     if (user.about?.trim()) score += 5;
-    if (user.tagline?.trim()) score += 5;
     if (user.contactNumber?.trim()) score += 5;
     if (user.country?.trim()) score += 5;
     if (user.city?.trim()) score += 5;
     if (user.company?.trim() !== "Individual") score += 10;
+    if (user.foundedIn?.trim() !== "Individual") score += 5;
+    if (user.companyType?.trim() !== "Individual") score += 5;
 
     // convert to percentage
     const percentage = (score / totalPossible) * 100;
@@ -275,8 +272,11 @@ export const updateProfile = async (req, res) => {
                 return res.json({ success: false, message: "User Not Found!" });
             }
 
+            console.log(updatedProfile);
+
             updatedProfile.profileScore = calculateProfileScore(updatedProfile);
             await updatedProfile.save();
+            console.log(updatedProfile);
         } else {
             updatedProfile = await recruiterProfileModel.findOneAndUpdate(
                 { authId: userId },

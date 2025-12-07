@@ -138,7 +138,7 @@ const AdminJobRequests = () => {
                   placeholder="Search jobs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                  className="!pl-10"
                 />
               </div>
 
@@ -205,7 +205,7 @@ const AdminJobRequests = () => {
                     <td className="px-6 py-3 font-medium text-gray-700">
                       <div className='w-full flex justify-center items-center gap-2'>
                         <button
-                          onClick={() => viewDetails(job._id)}
+                          onClick={() => navigate(`/jobs/${job?.category}/${job.slug}`)}
                           className='p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-500'
                           title="View Details"
                         >

@@ -77,7 +77,7 @@ const Candidates = () => {
     const uniqueCountries = uniqueExtractor("country");
     const uniqueCities = uniqueExtractor("city");
     const uniqueStates = uniqueExtractor("state");
-    const uniqueExperience = uniqueExtractor("experience");
+    const uniqueExperience = uniqueExtractor("experienceYears");
     const uniqueGender = uniqueExtractor("gender");
     const uniqueQualification = uniqueExtractor("qualification");
     const uniqueSkills = [
@@ -151,10 +151,6 @@ const Candidates = () => {
         setTimeout(() => setIsLocationDropdownOpen(false), 150);
     };
 
-    const handleLocationSearchChange = (e) => {
-        setLocationSearchTerm(e.target.value);
-    };
-
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
     const [isSkillDropdownOpen, setIsSkillDropdownOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -167,11 +163,6 @@ const Candidates = () => {
     const handleSkillBlur = () => {
         setTimeout(() => setIsSkillDropdownOpen(false), 150);
     };
-
-    const handleSkillSearchChange = (e) => {
-        setLocationSearchTerm(e.target.value);
-    };
-
     return (
         <div>
             <Navbar />
@@ -197,7 +188,7 @@ const Candidates = () => {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Candidate title or keywords"
-                                    className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
+                                    className="border-none !p-0"
                                 />
                             </div>
 
@@ -211,7 +202,7 @@ const Candidates = () => {
                                         onChange={(e) => setHeroCity(e.target.value)}
                                         onFocus={() => setIsLocationDropdownOpen(true)}
                                         onBlur={handleLocationBlur}
-                                        className="w-full text-gray-700 placeholder-gray-400 bg-transparent border-none outline-none text-sm flex-1"
+                                        className="border-none !p-0"
                                     />
                                     <ChevronDown
                                         size={16}
@@ -254,7 +245,7 @@ const Candidates = () => {
                                         onChange={(e) => setHeroCategory(e.target.value)}
                                         onFocus={() => setIsSkillDropdownOpen(true)}
                                         onBlur={handleSkillBlur}
-                                        className="w-full text-gray-700 placeholder-gray-400 bg-transparent border-none outline-none text-sm flex-1"
+                                        className="border-none !p-0 "
                                     />
                                     <ChevronDown
                                         size={16}
