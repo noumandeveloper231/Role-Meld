@@ -1,8 +1,12 @@
 import Navbar from '../components/Navbar'
 import { ChevronRight } from 'lucide-react'
 import Img from '../components/Image'
+import { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
+import { openImage } from '../portals/ImagePortalManager'
 
 const PrivacyPolicy = () => {
+    const { setShowImage } = useContext(AppContext)
     return (
         <div>
             <Navbar />

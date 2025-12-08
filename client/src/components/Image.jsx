@@ -1,14 +1,16 @@
-const Img = ({ src, w, h, style, onClick }) => (
+import { openImage } from "../portals/ImagePortalManager";
+
+const Img = ({ src, w, h, style, onClick, willOpen }) => (
     <img
         src={src}
         alt={src}
         width={w}
         height={h}
-        onClick={onClick}
+        onClick={willOpen ? () => openImage(src) : onClick}
         loading="lazy"
         decoding="async"
-        className={style}
+        className={`${style} ${willOpen ? "cursor-pointer" : ""}`}
     />
 );
 
-export default Img
+export default Img;

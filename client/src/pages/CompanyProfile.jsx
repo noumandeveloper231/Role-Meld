@@ -145,7 +145,7 @@ const CompanyProfile = () => {
                   <h4 className="text-xl font-semibold text-gray-900 mb-4">Gallery</h4>
                   <div className="grid grid-cols-4 gap-4">
                     {companyData?.companyImages?.map(img => (
-                      <Img style={"border border-gray-300 w-38 h-38 object-cover rounded-md"} src={img} />
+                      <Img willOpen style={"border border-gray-300 w-38 h-38 object-cover rounded-md"} src={img} />
                     ))}
                   </div>
                 </section>

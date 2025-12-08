@@ -2,12 +2,13 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
-import { Trash, Search } from 'lucide-react';
+import { Trash, Search, Pencil } from 'lucide-react';
 import CustomSelect from './CustomSelect';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const RecruiterJobs = () => {
     const { userData, backendUrl } = useContext(AppContext);
+    const navigate = useNavigate();
     const [filter, setFilter] = useState('all')
     const [jobs, setJobs] = useState([]);
 
@@ -21,7 +22,7 @@ const RecruiterJobs = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const getJobs = async () => {
         try {
-            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobsbyid/${userData.authId}`);
+            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobsbyid/${userData._id}`);
             if (data.success) {
                 setJobs(data.companyJobs);
             }
@@ -61,6 +62,7 @@ const RecruiterJobs = () => {
     const approvedJobs = jobs.filter(job => job.approved === "approved");
     const rejectedJobs = jobs.filter(job => job.approved === "rejected");
     const pendingJobs = jobs.filter(job => job.approved === "pending");
+    const draftJobs = jobs.filter(job => job.approved === "draft");
 
     const filteredJobs = jobs.filter((job) => {
         // Apply status filter
@@ -128,6 +130,10 @@ const RecruiterJobs = () => {
                         <p className="text-gray-600 font-medium">Pending Jobs</p>
                         <h2 className="text-3xl font-bold text-yellow-600 mt-1">{pendingJobs.length}</h2>
                     </div>
+                    <div className="p-5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg border border-blue-200">
+                        <p className="text-gray-600 font-medium">Draft Jobs</p>
+                        <h2 className="text-3xl font-bold text-blue-600 mt-1">{draftJobs.length}</h2>
+                    </div>
                 </div>
 
                 {/* Filter Bar */}
@@ -145,6 +151,7 @@ const RecruiterJobs = () => {
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                     <option value="pending">Pending</option>
+                                    <option value="draft">Draft</option>
                                 </CustomSelect>
 
                                 {/* Search Input */}
@@ -201,6 +208,11 @@ const RecruiterJobs = () => {
                                                 {new Date(job.applicationDeadline).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-3">
+                                                {job.approved === "draft" && (
+                                                    <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 font-semibold">
+                                                        Draft
+                                                    </span>
+                                                )}
                                                 {job.approved === "approved" && (
                                                     <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
                                                         Approved
@@ -223,7 +235,20 @@ const RecruiterJobs = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-3 font-medium text-gray-700">
-                                                <div className='w-full flex justify-center items-center'>
+                                                <div className='w-full flex justify-center items-center gap-2'>
+                                                    {/* Edit icon for draft jobs */}
+                                                    {job.approved === "draft" && (
+                                                        <button
+                                                            onClick={() => navigate('/dashboard/jobs/post', { state: { editJob: job } })}
+                                                            className='p-2 rounded-full hover:bg-blue-50 transition-colors'
+                                                            aria-label={`Edit job: ${job.title}`}
+                                                            title="Edit Draft"
+                                                        >
+                                                            <Pencil className='text-blue-500 cursor-pointer' size={18} />
+                                                        </button>
+                                                    )}
+
+                                                    {/* Delete button */}
                                                     <button
                                                         onClick={() => removeJob(job._id)}
                                                         className='p-2 rounded-full hover:bg-red-50 transition-colors'
@@ -366,7 +391,7 @@ const RecruiterJobs = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     )
 }
 

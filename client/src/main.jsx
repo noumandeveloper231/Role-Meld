@@ -5,11 +5,13 @@ import 'react-awesome-slider/dist/styles.css';
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { AppContextProvider } from './context/AppContext.jsx'
+import ImagePortalManager from './portals/ImagePortalManager.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <AppContextProvider>
       <App />
+      <ImagePortalManager />
     </AppContextProvider>
   </BrowserRouter>,
 )

@@ -126,7 +126,7 @@ const Sidebar = ({ activeTab }) => {
         {/* Logo Section */}
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <Img src={'/logo.webp'}/>
+            <Img src={'/logo.webp'} />
           </div>
 
           {/* Desktop collapse button */}
@@ -195,8 +195,14 @@ const Sidebar = ({ activeTab }) => {
               </li>
             ))}
           </ul>
+          {
+            userData?.role === "recruiter" && (
+              <div className="bg-[var(--accent-color)] rounded-lg p-2 border border-[var(--primary-color)]">
+Hello
+              </div>
+            )
+          }
         </nav>
-
       </div>
     </>
   );

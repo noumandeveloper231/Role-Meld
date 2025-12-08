@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
@@ -11,6 +12,8 @@ import { Editor } from "@tinymce/tinymce-react";
 
 const JobForm = ({ setActiveTab }) => {
   const { backendUrl, userData } = useContext(AppContext);
+  const location = useLocation();
+  const editJob = location.state?.editJob;
 
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -48,6 +51,19 @@ const JobForm = ({ setActiveTab }) => {
     benefits: [],
     companyProfile: userData?.profilePicture,
   });
+
+  // Pre-populate form if editing an existing job
+  useEffect(() => {
+    if (editJob) {
+      setJobData({
+        ...editJob,
+        skills: editJob.skills || [],
+        responsibilities: editJob.responsibilities || [],
+        benefits: editJob.benefits || [],
+        gallery: editJob.gallery || [],
+      });
+    }
+  }, [editJob]);
 
   const [jobs, setJobs] = useState([])
   const [isSlugAvailable, setIsSlugAvailable] = useState(true);
@@ -153,8 +169,102 @@ const JobForm = ({ setActiveTab }) => {
         company: userData.company,
       };
 
-      const { data } = await axios.post(`${backendUrl}/api/jobs/addjob`, {
+      const url = editJob
+        ? `${backendUrl}/api/jobs/updatejob/${editJob._id}`
+        : `${backendUrl}/api/jobs/addjob`;
+
+      const method = editJob ? 'put' : 'post';
+
+      const { data } = await axios[method](url, {
         jobData: payload,
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        setJobData({
+          title: "",
+          slug: "",
+          category: "",
+          subCategory: "",
+          jobType: "",
+          skills: [],
+          description: "",
+          careerLevel: "",
+          experience: "",
+          qualifications: "",
+          quantity: 1,
+          gender: "Any",
+          closingDays: 30,
+          salaryType: "fixed",
+          minSalary: "",
+          maxSalary: "",
+          fixedSalary: "",
+          currency: "USD",
+          salaryRate: "Monthly",
+          jobApplyType: "Email",
+          externalUrl: "",
+          userEmail: "",
+          location: "",
+          gallery: [],
+          video: "",
+          responsibilities: [],
+          benefits: []
+        });
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  };
+
+  const saveDraft = async (e) => {
+    if (e) e.preventDefault();
+
+    const hasContent =
+      jobData.title.trim() !== '' ||
+      jobData.description.trim() !== '' ||
+      jobData.category.trim() !== '' ||
+      jobData.location.trim() !== '' ||
+      jobData.skills.length > 0 ||
+      jobData.fixedSalary !== '' ||
+      jobData.minSalary !== '' ||
+      jobData.maxSalary !== '' ||
+      jobData.quantity !== '' ||
+      jobData.gender !== '' ||
+      jobData.closingDays !== '' ||
+      jobData.salaryType !== '' ||
+      jobData.currency !== '' ||
+      jobData.salaryRate !== '' ||
+      jobData.jobApplyType !== '' ||
+      jobData.externalUrl !== '' ||
+      jobData.userEmail !== '' ||
+      jobData.gallery.length > 0 ||
+      jobData.video !== '' ||
+      jobData.responsibilities.length > 0 ||
+      jobData.benefits.length > 0;
+
+    if (!hasContent) {
+      toast.error("Please fill in at least one field to save as a draft.");
+      return;
+    }
+
+    try {
+      const payload = {
+        ...jobData,
+        companyProfile: userData.profilePicture,
+        company: userData.company,
+      };
+
+      const url = editJob
+        ? `${backendUrl}/api/jobs/updatejob/${editJob._id}`
+        : `${backendUrl}/api/jobs/addjob`;
+
+      const method = editJob ? 'put' : 'post';
+
+      const { data } = await axios[method](url, {
+        jobData: payload,
+        saveAsDraft: true,
       });
 
       if (data.success) {
@@ -229,10 +339,10 @@ const JobForm = ({ setActiveTab }) => {
   return (
     <main className="w-full p-6 bg-white rounded-lg shadow-sm overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Create a job post</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{editJob ? 'Edit Job' : 'Create a job post'}</h1>
         <div className="flex gap-3">
           <button type="button" onClick={() => setActiveTab("listed-jobs")} className="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-          <button type="button" className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Save as draft</button>
+          <button type="button" onClick={saveDraft} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Save as draft</button>
           <button type="button" onClick={postJob} className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-md hover:opacity-90">Post Job</button>
         </div>
       </div>
@@ -504,7 +614,6 @@ const JobForm = ({ setActiveTab }) => {
                 <CustomSelect name="jobApplyType" value={jobData.jobApplyType} onChange={handleJobChange}>
                   <option value="Email">By Email</option>
                   <option value="External">External Link</option>
-                  <option value="Internal">Internal</option>
                   <option value="Call">By Call</option>
                 </CustomSelect>
               </div>

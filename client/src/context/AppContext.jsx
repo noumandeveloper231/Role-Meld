@@ -2,6 +2,7 @@ import axios from "axios";
 import { createContext, useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
+import ImagePortal from '../portals/ImagePortalManager';
 
 export const AppContext = createContext();
 
@@ -17,6 +18,8 @@ export const AppContextProvider = (props) => {
   const [savedJobs, setSavedJobs] = useState(() => new Set());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showImage, setShowImage] = useState(false)
+
 
   // follow company 
   async function followUnfollow(followedAccountId) {
@@ -44,7 +47,7 @@ export const AppContextProvider = (props) => {
   axios.defaults.withCredentials = true;
 
   const sendNotification = async (user, subject, type) => {
-    try { 
+    try {
       const { data } = await axios.post(`${backendUrl}/api/notifications/send`, {
         subject,
         user,
@@ -174,7 +177,9 @@ export const AppContextProvider = (props) => {
     isSidebarOpen,
     setIsSidebarOpen,
     isSearchOpen,
-    setIsSearchOpen
+    setIsSearchOpen,
+    setShowImage,
+    setShowImage
   }), [
     frontendUrl,
     backendUrl,
@@ -189,11 +194,18 @@ export const AppContextProvider = (props) => {
     setIsSidebarOpen,
     isSearchOpen,
     setIsSearchOpen,
-    toggleSaveJob
+    toggleSaveJob,
+    setShowImage,
+    setShowImage
   ]);
 
   return (
     <AppContext.Provider value={value}>
+      <ImagePortal
+        src="https://via.placeholder.com/600"
+        show={showImage}
+        setShow={setShowImage}
+      />
       {loading ? <Loading /> : props.children}
     </AppContext.Provider>
   );

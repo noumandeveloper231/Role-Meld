@@ -4,7 +4,7 @@ import recruiterProfileModel from '../models/recruiterProfileModel.js';
 import userProfileModel from "../models/userProfileModel.js";
 
 export const addJob = async (req, res) => {
-    const { jobData } = req.body;
+    const { jobData, saveAsDraft } = req.body;
     const userId = req.user._id;
 
     if (!jobData) {
@@ -13,28 +13,30 @@ export const addJob = async (req, res) => {
 
     try {
         const recruiterProfile = await recruiterProfileModel.findOne({ authId: userId });
+
+        if (!recruiterProfile) {
+            return res.status(404).json({ success: false, message: "Recruiter Profile Not Found" });
+        }
+
         const job = new jobsModel({
             ...jobData,
             postedBy: recruiterProfile._id,
             postedAt: new Date(),
+            approved: saveAsDraft ? "draft" : "pending",
             applicationDeadline: jobData.closingDays
                 ? new Date(Date.now() + jobData.closingDays * 24 * 60 * 60 * 1000)
                 : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         });
-        await job.save();
+        // Skip mongoose validation for drafts
+        await job.save({ validateBeforeSave: !saveAsDraft });
 
-        const recruiter = await recruiterProfileModel.findOne({ authId: userId });
-
-        if (!recruiter) {
-            return res.status(404).json({ success: false, message: "User Not Found" });
+        if (!recruiterProfile.sentJobs.includes(job._id)) {
+            recruiterProfile.sentJobs.push(job._id);
         }
+        await recruiterProfile.save();
 
-        if (!recruiter.sentJobs.includes(job._id)) {
-            recruiter.sentJobs.push(job._id);
-        }
-        await recruiter.save();
-
-        return res.status(201).json({ success: true, message: "Job Listed" });
+        const message = saveAsDraft ? "Job saved as draft" : "Job Listed";
+        return res.status(201).json({ success: true, message });
     } catch (error) {
         if (error.name === "ValidationError") {
             return res.status(400).json({
@@ -331,3 +333,49 @@ export const getCompanyJobsById = async (req, res) => {
         return res.json({ success: false, message: error.message });
     }
 }
+// Update existing job (draft or published)
+export const updateJob = async (req, res) => {
+    const { id } = req.params;
+    const { jobData, saveAsDraft } = req.body;
+    const userId = req.user._id;
+
+    if (!id || !jobData) {
+        return res.status(400).json({ success: false, message: "Missing Details" });
+    }
+
+    try {
+        const recruiterProfile = await recruiterProfileModel.findOne({ authId: userId });
+
+        if (!recruiterProfile) {
+            return res.status(404).json({ success: false, message: "Recruiter Profile Not Found" });
+        }
+
+        const job = await jobsModel.findById(id);
+
+        if (!job) {
+            return res.status(404).json({ success: false, message: "Job Not Found" });
+        }
+
+        // Verify ownership
+        if (job.postedBy.toString() !== recruiterProfile._id.toString()) {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+
+        // Update job fields
+        Object.keys(jobData).forEach(key => {
+            job[key] = jobData[key];
+        });
+
+        job.approved = saveAsDraft ? "draft" : (job.approved === "draft" ? "pending" : job.approved);
+        job.applicationDeadline = jobData.closingDays
+            ? new Date(Date.now() + jobData.closingDays * 24 * 60 * 60 * 1000)
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+        await job.save({ validateBeforeSave: !saveAsDraft });
+
+        const message = saveAsDraft ? "Draft updated successfully" : "Job updated successfully";
+        return res.status(200).json({ success: true, message });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
