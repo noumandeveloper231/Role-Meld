@@ -350,7 +350,7 @@ const MyProfile = () => {
     return (
         <div className='w-full min-h-[calc(100vh-4.6rem)] bg-gray-50 p-6'>
             <div className='max-w-6xl mx-auto flex gap-6'>
-                <div className=' bg-white rounded-xl border border-gray-200 p-6 md:p-8'>
+                <div className='w-full bg-white rounded-xl border border-gray-200 p-6 md:p-8'>
                     <div className='flex justify-between items-center mb-6'>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
@@ -365,7 +365,6 @@ const MyProfile = () => {
                         </button>
                     </div>
                     <div className='mb-6'>
-
                         <div className='flex min-w-max'>
                             {tabs.map(tab => (
                                 <button
@@ -383,9 +382,9 @@ const MyProfile = () => {
                     </div>
 
                     <div className='w-full flex gap-8'>
-                        <div className='w-[65%]'>
+                        <div className='w-[70%]'>
                             {/* Content */}
-                            <div className=''>
+                            <div className='w-full'>
                                 {/* 1️⃣ Basic Info Tab */}
                                 {activeTab === 'basic' && (
                                     <div className='space-y-8'>
@@ -394,10 +393,10 @@ const MyProfile = () => {
                                             <div className='flex mb-4 items-center gap-4'>
                                                 <div>
                                                     <label htmlFor="profilePicture" className=''>Profile Picture</label>
-                                                    <div className='mt-1 relative w-36 h-36 rounded-md overflow-hidden flex items-center justify-center'>
+                                                    <div className='relative w-36 h-36 rounded-md overflow-hidden flex items-center justify-center'>
                                                         <div className='flex items-center justify-center border border-gray-300 w-36 h-36 rounded-md object-cover'>
                                                             {profilePictureLoading ? <div className='flex items-center justify-center'>
-                                                                <Loader2 className='w-12 h-12 animate-spin' />
+                                                                <Loader className='w-12 h-12 animate-spin' />
                                                             </div> :
                                                                 <Img
                                                                     src={userData?.profilePicture || '/placeholder.png'}
@@ -405,15 +404,15 @@ const MyProfile = () => {
                                                                 />
                                                             }
                                                         </div>
-                                                        <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-700 transition'>
-                                                            <FaCamera size={14} />
+                                                        <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer hover:bg-[var(--primary-color)]/80 transition'>
+                                                            <FaCamera size={14} className='text-white' />
                                                             <input type="file" accept="image/*" className='hidden' onChange={handleProfilePictureSelect} />
                                                         </label>
                                                     </div>
                                                 </div>
                                                 <div className='w-full'>
                                                     <label className=' '>Cover Image</label>
-                                                    <div className='mt-1 relative w-full h-36 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
+                                                    <div className='relative w-full h-36 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
                                                         {userData?.coverImage ? (
                                                             <>
                                                                 {coverImageloading ? <div className='flex w-full h-full items-center justify-center'>
@@ -430,8 +429,8 @@ const MyProfile = () => {
                                                                 <ImageIcon size={48} className='opacity-50' />
                                                             </div>
                                                         )}
-                                                        <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-blue-700 transition'>
-                                                            <FaCamera size={14} />
+                                                        <label className='absolute bottom-0 right-0 bg-[var(--primary-color)] p-2 rounded-full cursor-pointer hover:bg-[var(--primary-color)]/80 transition'>
+                                                            <FaCamera size={14} className='text-white' />
                                                             <input type="file" accept="image/*" className='hidden' onChange={handleCoverImageSelect} />
                                                         </label>
                                                     </div>

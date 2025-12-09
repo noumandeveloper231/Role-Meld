@@ -196,7 +196,7 @@ const Sidebar = ({ activeTab }) => {
             ))}
           </ul>
           {
-            userData?.role === "recruiter" && (
+            userData?.role === "recruiter" ? (
               <div className="mt-5 flex flex-col items-center gap-2 text-center bg-[var(--accent-color)] rounded-2xl p-3 border border-[var(--primary-color)]/10">
                 <h4 className="text-md font-semibold">
                   Post Your First Job!
@@ -208,7 +208,22 @@ const Sidebar = ({ activeTab }) => {
                   <Plus className="text-white" size={20} /> Post a job
                 </button>
               </div>
-            )
+            ) :
+              <div className="mt-5 pl-3 text-black">
+                <div className="flex items-center gap-2">
+                  Profile Strength: <span className="font-medium text-[var(--primary-color)]">{userData?.profileScore}%</span>
+                </div>
+                <div className="relative w-full h-1.5 bg-gray-300 rounded-2xl mt-2">
+                  <div
+                    className="h-full absolute top-0 left-0 rounded-2xl"
+                    style={{
+                      width: `${userData?.profileScore}%`,
+                      backgroundColor: 'var(--primary-color)',
+                    }}
+                  />
+                </div>
+              </div>
+
           }
         </nav>
       </div>
