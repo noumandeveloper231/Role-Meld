@@ -49,10 +49,9 @@ const AdminSidebar = ({ activeTab }) => {
     { name: "Job Requests", key: "job-requests", icon: <Building size={20} />, path: "/admin/job-requests" },
     { name: "Users", key: "users", icon: <User size={20} />, path: "/admin/users" },
     { name: "Employers", key: "employers", icon: <Users2 size={20} />, path: "/admin/employers" },
-    { name: "Employee Requests", key: "employee-profile-requests", icon: <MdRequestPage size={20} />, path: "/admin/employee-profile-requests" },
+    // { name: "Employee Requests", key: "employee-profile-requests", icon: <MdRequestPage size={20} />, path: "/admin/employee-profile-requests" },
     { name: "All Jobs", key: "jobs", icon: <Briefcase size={20} />, path: "/admin/jobs" },
     { name: "Packages", key: "packages", icon: <Package size={20} />, path: "/admin/packages" },
-    { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/admin/settings" },
     {
       name: "All Assistant", key: "all-assistant", icon: <MdAssistant size={20} />, path: "/admin/all-assistant",
       subTabs: [
@@ -60,10 +59,11 @@ const AdminSidebar = ({ activeTab }) => {
       ]
     },
     {
-      name: "Blog Management", key: "blog-management", icon: <Blocks size={20} />, path: "/admin/blog-management", subTabs: [
+      name: "Blogs", key: "blog-management", icon: <Blocks size={20} />, path: "/admin/blog-management", subTabs: [
         { name: "Add Blog", key: "add-blog", icon: <Blocks size={20} />, path: "/admin/add-blog" },
       ]
     },
+    { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/admin/settings" },
     { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
   ];
 
@@ -122,7 +122,7 @@ const AdminSidebar = ({ activeTab }) => {
       {/* Sidebar */}
       <div className={`
         sidebar
-        ${isMobile ? 'w-72' : isSidebarOpen ? 'w-16' : 'w-72'} 
+        ${isMobile ? 'w-72' : isSidebarOpen ? 'w-16' : 'w-64'} 
         bg-white border-r border-gray-200 h-screen flex flex-col transition-all duration-300 
         fixed left-0 top-0 z-9999
         ${isMobileOpen ? 'translate-x-0 absolute' : '-translate-x-full lg:translate-x-0'}
@@ -151,7 +151,7 @@ const AdminSidebar = ({ activeTab }) => {
         </div>
 
         {/* Navigation Links */}
-        <nav className={`${isSidebarOpen ? 'flex-1 px-2' : 'flex-1 px-7'} py-4`}>
+        <nav className={`overflow-y-auto ${isSidebarOpen ? 'flex-1 px-2' : 'flex-1 px-7'} py-4`}>
           <ul className="space-y-1">
             {navLinks.map((item) => (
               <li key={item.key} className="relative group">

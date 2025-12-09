@@ -3,6 +3,7 @@ import { createContext, useEffect, useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
 import ImagePortal from '../portals/ImagePortalManager';
+import { openLoginPortal } from "../portals/LoginPortal";
 
 export const AppContext = createContext();
 
@@ -24,7 +25,8 @@ export const AppContextProvider = (props) => {
   // follow company 
   async function followUnfollow(followedAccountId) {
     if (!isLoggedIn) {
-      return toast.error("Please Login to Follow");
+      openLoginPortal();
+      return toast.warn("Please Login to Follow");
     }
 
     const toastId = toast.loading("Processing...")
@@ -42,7 +44,6 @@ export const AppContextProvider = (props) => {
       getUserData();
     }
   }
-
 
   axios.defaults.withCredentials = true;
 
@@ -68,11 +69,12 @@ export const AppContextProvider = (props) => {
   // Example toggleSaveJob
   const toggleSaveJob = async (id) => {
     if (!isLoggedIn) {
-      return toast.error("Please Login to Save Jobs");
+      openLoginPortal();
+      return toast.warn("Please Login to Save Jobs");
     }
 
     if (userData.role === "recruiter") {
-      return toast.error("Employers cannot save jobs");
+      return toast.info("Employers cannot save jobs");
     }
 
     try {
@@ -178,7 +180,7 @@ export const AppContextProvider = (props) => {
     setIsSidebarOpen,
     isSearchOpen,
     setIsSearchOpen,
-    setShowImage,
+    showImage,
     setShowImage
   }), [
     frontendUrl,

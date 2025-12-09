@@ -1,26 +1,22 @@
-import React, { Suspense, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Search from '../components/Search'
 import { Link, useLocation, } from 'react-router-dom'
 import axios from 'axios'
 import { AppContext } from '../context/AppContext'
 import { toast } from 'react-toastify'
-const FeaturedJobs = React.lazy(() => import('../components/FeaturedJobs'))
 import JobCard from '../components/JobCard'
-import NotFound404 from '../components/NotFound404'
 import Loading from '../components/Loading'
 import CoverLetterModal from '../components/CoverLetterModal'
-import LoginReminderModal from '../components/LoginReminderModal'
 
 // React Icons
-import { FaDollarSign, FaStar, FaClock, FaMapMarkerAlt, FaBriefcase, FaMoneyBill } from "react-icons/fa";
-import { MdFeaturedPlayList, MdClear } from "react-icons/md";
-import { HiAdjustments } from "react-icons/hi";
+import { MdClear } from "react-icons/md";
 import Navbar from '../components/Navbar'
 import Img from '../components/Image'
 import assets from '../assets/assets'
 import Currency from '../components/CurrencyCovertor'
-import { Calendar, Clipboard, DollarSignIcon, ExternalLink, Filter, GraduationCap, MapPin, Star } from 'lucide-react'
-import { IoWarning } from 'react-icons/io5'
+import { Calendar, DollarSignIcon, ExternalLink, Filter, GraduationCap, MapPin, Star } from 'lucide-react'
+import { openLoginPortal } from '../portals/LoginPortal'
+import { openApplyJobPortal } from '../portals/ApplyJobPortal'
 
 const FindJobs = () => {
   // Auto Scroll to Top
@@ -34,7 +30,6 @@ const FindJobs = () => {
   // Using Parameters for getting the job 
   const search = new URLSearchParams(location.search);
   const query = search.get('job');
-  const categoryParam = search.get('category') || '';
   const locationParam = search.get('location') || '';
 
   console.log('query', query)
@@ -481,11 +476,10 @@ const FindJobs = () => {
                         <button
                           onClick={() => {
                             if (!userData) {
-                              setLoginReminder(true);
+                              openLoginPortal();
                               return;
                             }
-                            setapplJobId(selectedJob._id);
-                            setToggleApplyJob(true);
+                            openApplyJobPortal(selectedJob, selectedJob._id);
                           }}
                           className='primary-btn'
                         >
@@ -628,13 +622,6 @@ const FindJobs = () => {
         coverLetter={coverLetter}
         setCoverLetter={setCoverLetter}
         onApply={() => applyJob(applJobId)}
-      />
-
-      {/* Login Reminder Modal */}
-      <LoginReminderModal
-        isOpen={loginReminder}
-        onClose={() => setLoginReminder(false)}
-        showLoginForm={true}
       />
     </div>
   )

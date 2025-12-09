@@ -1,41 +1,81 @@
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 
-const LoginPortal = ({ loginReminder, setLoginReminder }) => {
-  const [show, setShow] = useState(false);
-  const navigate = useNavigate();
+let showLoginFn;
 
-  useEffect(() => {
-    if (loginReminder) {
-      setShow(true); // trigger animation
-    } else {
-      // delay unmount to allow animation to finish
-      const timeout = setTimeout(() => setShow(false), 300);
-      return () => clearTimeout(timeout);
-    }
-  }, [loginReminder]);
-
-  if (!show && !loginReminder) return null; // unmount after animation
-
-  return createPortal(
-    <div className={`fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm transition-all duration-300 ${loginReminder ? 'opacity-100' : 'opacity-0'}`}>
-      <div className={`relative bg-white flex flex-col items-center gap-4 shadow-2xl rounded-lg p-8 transition-all duration-300 transform ${loginReminder ? 'scale-100' : 'scale-0'}`}>
-        <span className="absolute top-4 right-4 cursor-pointer" onClick={() => setLoginReminder(false)}>
-          <X />
-        </span>
-        <h3 className="font-bold">Please Login First</h3>
-        <button className="primary-btn" onClick={() => navigate('/login')}>
-          Login
-        </button>
-        <p>
-          You need to be <span className="font-semibold">Login</span> to continue
-        </p>
-      </div>
-    </div>,
-    document.body
-  );
+export const openLoginPortal = () => {
+    if (showLoginFn) showLoginFn(true);
 };
 
-export default LoginPortal;
+export const closeLoginPortal = () => {
+    if (showLoginFn) showLoginFn(false);
+};
+
+const LoginPortalManager = () => {
+    const [visible, setVisible] = useState(false);
+    const [anim, setAnim] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        showLoginFn = (state) => {
+            if (state) {
+                setVisible(true);
+                setTimeout(() => setAnim(true), 10);
+            } else {
+                setAnim(false);
+                setTimeout(() => setVisible(false), 300);
+            }
+        };
+
+        return () => {
+            showLoginFn = null;
+        };
+    }, []);
+
+    if (!visible) return null;
+
+    return createPortal(
+        <div
+            className={`fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm transition-all duration-300 z-999 ${
+                anim ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={() => closeLoginPortal()}
+        >
+            <div
+                className={`relative bg-[var(--accent-color)] border border-[var(--primary-color)]/20 flex flex-col items-center gap-4 shadow-xl rounded-2xl p-8 transition-all duration-300 transform ${
+                    anim ? "scale-100" : "scale-90"
+                }`}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <span
+                    className="absolute top-4 right-4 cursor-pointer"
+                    onClick={() => closeLoginPortal()}
+                >
+                    <X />
+                </span>
+
+                <h3 className="font-bold">Please <span className="font-semibold text-[var(--primary-color)]">Login</span> First</h3>
+
+                <button
+                    className="primary-btn w-full"
+                    onClick={() => {
+                        closeLoginPortal();
+                        navigate("/login");
+                    }}
+                >
+                    Login
+                </button>
+
+                <p>
+                    You need to be <span className="font-semibold text-[var(--primary-color)]">logged in</span> to
+                    continue.
+                </p>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
+export default LoginPortalManager;

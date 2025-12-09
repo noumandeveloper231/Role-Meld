@@ -37,7 +37,7 @@ const userProfileSchema = new mongoose.Schema({
   category: { type: String, default: "" },
   description: { type: String, default: "" },
   dob: { type: Date, default: new Date() },
-  languages: { type: Array, default: [] },
+  language: { type: String, default: "" },
   qualification: { type: String, default: "" },
   experienceYears: { type: String, default: "" },
   offeredSalary: { type: Number, default: 30 },

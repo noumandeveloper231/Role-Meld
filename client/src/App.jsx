@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-import { useContext, useEffect, useState, Suspense, lazy } from "react";
+import { useContext, useEffect, useState, lazy } from "react";
 import axios from "axios";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -19,13 +19,11 @@ import FAQs from "./pages/FAQs";
 import ManageJobs from "./pages/dashboard/Jobs/Jobs";
 import PostJobPage from "./pages/dashboard/Jobs/PostJob";
 import JobSeekerFollowing from "./components/JobSeekerFollowing";
-import SkillsManager from "./components/SkillsManager";
 import AdminSettings from "./components/AdminSettings";
 import PrivacyPolicy from "./pages/Privacy-Policy";
 
 
 // Lazy-loaded components
-const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const ChatBotBubble = lazy(() => import("./components/ChatBotBubble"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
@@ -65,7 +63,6 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminRecruiters = lazy(() => import("./pages/admin/AdminRecruiters"));
 const AdminEmployeeProfileRequests = lazy(() => import("./pages/admin/AdminEmployeeProfileRequests"));
 const AdminJobs = lazy(() => import("./pages/admin/AdminJobs"));
-const AdminCategoryManager = lazy(() => import("./pages/admin/AdminCategoryManager"));
 const AdminAddAssistant = lazy(() => import("./pages/admin/AdminAddAssistant"));
 const AdminAllAssistants = lazy(() => import("./pages/admin/AdminAllAssistants"));
 const AdminBlogManagement = lazy(() => import("./pages/admin/AdminBlogManagement"));
@@ -76,8 +73,6 @@ const AdminPackages = lazy(() => import("./pages/admin/AdminPackages"));
 export const AdminRoute = ({ children }) => {
   const { backendUrl, isLoggedIn } = useContext(AppContext);
   const [isAdmin, setIsAdmin] = useState(null);
-
-  const location = useLocation()
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -155,7 +150,7 @@ const App = () => {
     <div className="flex flex-col min-h-screen">
       <ToastContainer
         className="toastify-container"
-        position="bottom-right"
+        position="top-center"
         autoClose={3000}
         hideProgressBar
         newestOnTop={false}

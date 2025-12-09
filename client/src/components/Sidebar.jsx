@@ -19,7 +19,8 @@ import {
   X,
   FileText,
   User,
-  ChevronRight
+  ChevronRight,
+  Plus
 } from "lucide-react";
 import Img from "./Image";
 import { FaArrowLeft } from "react-icons/fa";
@@ -101,7 +102,7 @@ const Sidebar = ({ activeTab }) => {
   };
 
   return (
-    <>
+    <div className="overflow-auto">
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -147,8 +148,7 @@ const Sidebar = ({ activeTab }) => {
         </div>
 
         {/* Navigation Links */}
-        {/* Navigation Links */}
-        <nav className={`${isSidebarOpen ? 'flex-1 px-2' : 'flex-1 px-7'} py-4`}>
+        <nav className={`overflow-y-auto ${isSidebarOpen ? 'flex-1 px-2' : 'flex-1 px-7'} py-4`}>
           <ul className="space-y-1">
             {navLinks.map((item) => (
               <li key={item.key} className="relative group">
@@ -197,14 +197,22 @@ const Sidebar = ({ activeTab }) => {
           </ul>
           {
             userData?.role === "recruiter" && (
-              <div className="bg-[var(--accent-color)] rounded-lg p-2 border border-[var(--primary-color)]">
-Hello
+              <div className="mt-5 flex flex-col items-center gap-2 text-center bg-[var(--accent-color)] rounded-2xl p-3 border border-[var(--primary-color)]/10">
+                <h4 className="text-md font-semibold">
+                  Post Your First Job!
+                </h4>
+                <p className="text-md">
+                  Your first 2 job postings for just $50 each.
+                </p>
+                <button onClick={() => navigate("/dashboard/jobs/post")} className="primary-btn flex items-center gap-2 whitespace-nowrap">
+                  <Plus className="text-white" size={20} /> Post a job
+                </button>
               </div>
             )
           }
         </nav>
       </div>
-    </>
+    </div>
   );
 };
 

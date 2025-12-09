@@ -42,7 +42,7 @@ const AdminDashboardLayout = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <AdminSidebar activeTab={activeTab} />
-      <div className={`flex-1 transition-all duration-300 ${isMobile ? "ml-0" : isSidebarOpen ? "ml-8" : "ml-72"}`}>
+      <div className={`flex-1 transition-all duration-300 ${isMobile ? "ml-0" : isSidebarOpen ? "ml-8" : "ml-64"}`}>
         <Navbar className={isSidebarOpen && "ml-8"} />
         <main className="p-2 md:p-4 lg:p-6">
           <Outlet />

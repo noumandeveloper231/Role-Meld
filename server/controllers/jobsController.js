@@ -1,4 +1,3 @@
-import applicationModel from '../models/applicationModel.js';
 import jobsModel from '../models/jobsModel.js';
 import recruiterProfileModel from '../models/recruiterProfileModel.js';
 import userProfileModel from "../models/userProfileModel.js";

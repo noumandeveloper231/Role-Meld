@@ -71,14 +71,9 @@ function calculateProfileScore(user) {
         score += 3;
     }
 
-    // Languages (3 points if at least 1)
-    if (user.languages && user.languages.length > 0) {
+    // Language (3 points if at least 1)
+    if (user.language && user.language.trim() !== "") {
         score += 3;
-    }
-
-    // Currency (2 points)
-    if (user.currency && user.currency.trim() !== "") {
-        score += 2;
     }
 
     // Salary Type (3 points)
@@ -97,7 +92,7 @@ function calculateProfileScore(user) {
     }
 
     // Skills (5 points if at least 3)
-    if (user.skills && user.skills.length >= 3) {
+    if (user.skills && user.skills.length >= 2) {
         score += 5;
     }
 
@@ -118,9 +113,9 @@ function calculateProfileScore(user) {
     }
 
     // Resume (4 points)
-    if (user.resume && user.resume.trim() !== "") {
-        score += 4;
-    }
+    // if (user.resume && user.resume.trim() !== "") {
+    //     score += 4;
+    // }
 
     // Video URL (2 points)
     if (user.videoUrl && user.videoUrl.trim() !== "") {
@@ -192,10 +187,11 @@ function calculateProfileScore(user) {
         score += Math.min(socialCount, 5);
     }
 
-    const maxScore = 95;
-    const percentage = Math.min(100, Math.round((score / maxScore) * 100));
+    const maxScore = 89;
+    // const percentage = Math.min(100, Math.round((score / maxScore) * 100));
+    const percentage = score / maxScore * 100;
 
-    return percentage;
+    return percentage.toFixed(0);
 }
 
 function calculateRecruiterProfileScore(user) {

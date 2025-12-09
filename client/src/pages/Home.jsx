@@ -123,7 +123,7 @@ const Home = () => {
                         onClick={() => navigate(`/find-jobs?job=${encodeURIComponent(job.title)}`)}
                       >
                         <span className="text-gray-600 text-sm">{job.location}</span>
-                        <h4 className="text-black font-semibold text-xl">{job.title}</h4>
+                        <h4 className="text-black font-semibold text-xl capitalize">{job.title}</h4>
                       </div>
                     )
                   })}
@@ -193,7 +193,7 @@ const Home = () => {
                     <Link
                       key={category._id}
                       to={'/category-jobs/' + category?.slug}
-                      className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
+                      className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow-lg  rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
                     >
                       <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
                         <Icon size={24} className="text-white" />

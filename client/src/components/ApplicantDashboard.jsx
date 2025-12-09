@@ -49,11 +49,12 @@ const ApplicantDashboard = () => {
     if (!user) return [];
     const recommendations = [];
 
-    // Basic Info
+    // ===== BASIC INFO =====
     if (!user.phone || user.phone.trim() === "") {
-      recommendations.push({ field: 'phone', label: 'Add Phone Number', icon: Phone, score: 3, tab: 'basic', focusField: 'phone', bgColor: 'bg-[#b7e4cb]' });
+      recommendations.push({ field: "phone", label: "Add Phone Number", icon: Phone, score: 3, tab: "basic", focusField: "phone", bgColor: "bg-[#b7e4cb]" });
     }
     if (!user.currentPosition || user.currentPosition.trim() === "") {
+      recommendations.push({ field: "currentPosition", label: "Add Current Position", icon: Briefcase, score: 3, tab: "basic", focusField: "currentPosition", bgColor: "bg-[#cabffd]" });
       recommendations.push({ field: 'currentPosition', label: 'Add Current Position', icon: Briefcase, score: 3, tab: 'basic', focusField: 'currentPosition', bgColor: 'bg-[#cabffd]' });
     }
     if (!user.description || user.description.trim() === "") {
@@ -65,7 +66,7 @@ const ApplicantDashboard = () => {
     if (!user.category || user.category.trim() === "") {
       recommendations.push({ field: 'category', label: 'Add Job Category', icon: Tag, score: 3, tab: 'basic', focusField: 'category', bgColor: 'bg-[#caffbf]' });
     }
-    if (!user.languages || user.languages.length === 0) {
+    if (!user.language || user.language.trim === "") {
       recommendations.push({ field: 'languages', label: 'Add Languages', icon: Globe, score: 3, tab: 'basic', focusField: 'languages', bgColor: 'bg-[#9bf6ff]' });
     }
 
@@ -79,18 +80,13 @@ const ApplicantDashboard = () => {
     if (!user.address || user.address.trim() === "") {
       recommendations.push({ field: 'address', label: 'Add Address', icon: Home, score: 3, tab: 'basic', focusField: 'address', bgColor: 'bg-[#fdffb6]' });
     }
-
-    // Professional
-    if (!user.headline || user.headline.trim() === "") {
-      recommendations.push({ field: 'headline', label: 'Add Headline', icon: Award, score: 5, tab: 'basic', focusField: 'headline', bgColor: 'bg-[#a0c4ff]' });
-    }
     if (!user.qualification || user.qualification.trim() === "") {
       recommendations.push({ field: 'qualification', label: 'Add Qualification', icon: GraduationCap, score: 5, tab: 'basic', focusField: 'qualification', bgColor: 'bg-[#b7e4cb]' });
     }
     if (!user.experienceYears || user.experienceYears.trim() === "") {
       recommendations.push({ field: 'experienceYears', label: 'Add Experience Years', icon: Clock, score: 5, tab: 'basic', focusField: 'experienceYears', bgColor: 'bg-[#cabffd]' });
     }
-    if (!user.skills || user.skills.length < 3) {
+    if (!user.skills || user.skills.length < 2) {
       recommendations.push({ field: 'skills', label: 'Add Skills (min 3)', icon: Zap, score: 5, tab: 'skills', focusField: 'skills', bgColor: 'bg-[#ffd6a5]' });
     }
     if (!user.offeredSalary || user.offeredSalary <= 0) {
@@ -104,30 +100,27 @@ const ApplicantDashboard = () => {
     if (!user.coverImage || user.coverImage.trim() === "") {
       recommendations.push({ field: 'coverImage', label: 'Add Cover Image', icon: ImageIcon, score: 3, tab: 'basic', focusField: 'coverImage', bgColor: 'bg-[#9bf6ff]' });
     }
-    if (!user.resume || user.resume.trim() === "") {
-      recommendations.push({ field: 'resume', label: 'Add Resume', icon: FileText, score: 4, tab: 'basic', focusField: 'resume', bgColor: 'bg-[#bdb2ff]' });
-    }
-    if (!user.portfolio || user.portfolio.trim() === "") {
-      recommendations.push({ field: 'portfolio', label: 'Add Portfolio Link', icon: LinkIcon, score: 2, tab: 'basic', focusField: 'portfolio', bgColor: 'bg-[#ffc6ff]' });
-    }
+    // if (!user.resume || user.resume.trim() === "") {
+    //   recommendations.push({ field: 'resume', label: 'Add Resume', icon: FileText, score: 4, tab: 'basic', focusField: 'resume', bgColor: 'bg-[#bdb2ff]' });
+    // }
     if (!user.videoUrl || user.videoUrl.trim() === "") {
       recommendations.push({ field: 'videoUrl', label: 'Add Video Introduction', icon: Video, score: 2, tab: 'basic', focusField: 'videoUrl', bgColor: 'bg-[#fdffb6]' });
     }
 
     // Experience & Education
     if (!user.education || user.education.length === 0) {
-      recommendations.push({ field: 'education', label: 'Add Education', icon: GraduationCap, score: 5, tab: 'education', focusField: 'education', bgColor: 'bg-[#a0c4ff]' });
+      recommendations.push({ field: 'education', label: 'Add Education', icon: GraduationCap, score: 5, tab: 'education', bgColor: 'bg-[#a0c4ff]' });
     }
     if (!user.experience || user.experience.length === 0) {
-      recommendations.push({ field: 'experience', label: 'Add Work Experience', icon: Briefcase, score: 5, tab: 'experience', focusField: 'experience', bgColor: 'bg-[#b7e4cb]' });
+      recommendations.push({ field: 'experience', label: 'Add Work Experience', icon: Briefcase, score: 5, tab: 'experience', bgColor: 'bg-[#b7e4cb]' });
     }
 
     // Projects & Awards
     if (!user.projects || user.projects.length === 0) {
-      recommendations.push({ field: 'projects', label: 'Add Projects', icon: Folder, score: 3, tab: 'projects', focusField: 'projects', bgColor: 'bg-[#cabffd]' });
+      recommendations.push({ field: 'projects', label: 'Add Projects', icon: Folder, score: 3, tab: 'projects', bgColor: 'bg-[#cabffd]' });
     }
     if (!user.awards || user.awards.length === 0) {
-      recommendations.push({ field: 'awards', label: 'Add Awards', icon: Trophy, score: 2, tab: 'awards', focusField: 'awards', bgColor: 'bg-[#ffd6a5]' });
+      recommendations.push({ field: 'awards', label: 'Add Awards', icon: Trophy, score: 2, tab: 'awards', bgColor: 'bg-[#ffd6a5]' });
     }
 
     // Social Links (recommend if less than 2)
@@ -154,7 +147,7 @@ const ApplicantDashboard = () => {
   const totalPotentialScore = recommendations.reduce((sum, rec) => sum + rec.score, 0);
 
   const handleRecommendationClick = (recommendation) => {
-    navigate('/dashboard/profile?tab=' + recommendation.tab + '&focusField=' + recommendation.focusField);
+    navigate('/dashboard/profile?tab=' + recommendation.tab + (recommendation.focusField ? ('&focusField=' + recommendation.focusField) : ''));
   };
 
   const fetchViewsData = async (period) => {

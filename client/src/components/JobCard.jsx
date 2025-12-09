@@ -3,8 +3,7 @@ import { AppContext } from '../context/AppContext'
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // Lucide React Icons for consistency (replacing mixed imports)
-import { Heart, Clock, MapPin, Crown } from 'lucide-react';
-import { FaPaperPlane } from 'react-icons/fa';
+import { Heart, MapPin, Crown } from 'lucide-react';
 import Img from './Image';
 import Currency from './CurrencyCovertor';
 
@@ -51,7 +50,7 @@ const JobCard = ({ e, className }) => {
 
                         {/* Company Name & Category */}
                         <div className='flex flex-col'>
-                            <h4 className='font-semibold text-lg text-gray-800 line-clamp-1'>
+                            <h4 className='capitalize font-semibold text-lg text-gray-800 line-clamp-1'>
                                 {e?.title || '...'}
                             </h4>
                             <span className='text-md text-gray-500 line-clamp-1'>
