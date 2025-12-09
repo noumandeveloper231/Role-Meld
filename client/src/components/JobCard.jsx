@@ -66,8 +66,8 @@ const JobCard = ({ e, className }) => {
                             <Crown className='text-yellow-500' />
                         )}
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation()
+                            onClick={(event) => {
+                                event.stopPropagation()
                                 toggleSaveJob(e?._id)
                             }}
                             className={`p-2 rounded-full transition-all duration-200 flex-shrink-0

@@ -20,8 +20,8 @@ import {
 } from "lucide-react";
 import Currency from '../components/CurrencyCovertor';
 import Navbar from '../components/Navbar';
-import LoginPortal from '../portals/LoginPortal';
-import ApplyJobPortal from '../portals/ApplyJobPortal';
+import LoginPortal, { openLoginPortal } from '../portals/LoginPortal';
+import ApplyJobPortal, { openApplyJobPortal } from '../portals/ApplyJobPortal';
 import { FaLevelUpAlt } from 'react-icons/fa';
 
 
@@ -316,17 +316,17 @@ const JobDetails = () => {
                             </div>
 
                             <button
-                                disabled={userData?.appliedJobs?.includes(id)}
+                                disabled={userData?.appliedJobs?.includes(jobData?._id)}
                                 onClick={() => {
                                     if (!isLoggedIn) {
-                                        setLoginReminder(true);
+                                        openLoginPortal();
                                     } else {
-                                        setApplyJobModel(true);
+                                        openApplyJobPortal(jobData, jobData?._id);
                                     }
                                 }}
-                                className={`primary-btn ${userData?.appliedJobs?.includes(id) && "bg-gray-400 cursor-not-allowed"}`}
+                                className={`primary-btn ${userData?.appliedJobs?.includes(jobData?._id) && "bg-gray-400 cursor-not-allowed"}`}
                             >
-                                {userData?.appliedJobs?.includes(id) ? "Already Applied" : "Apply now"}
+                                {userData?.appliedJobs?.includes(jobData?._id) ? "Already Applied" : "Apply now"}
                             </button>
                         </div>
 
@@ -369,17 +369,17 @@ const JobDetails = () => {
                                         : 'Deadline passed'}
                                 </div>
                                 <button
-                                    disabled={userData?.appliedJobs?.includes(id)}
+                                    disabled={userData?.appliedJobs?.includes(jobData?.id)}
                                     onClick={() => {
                                         if (!isLoggedIn) {
-                                            setLoginReminder(true);
+                                            openLoginPortal();
                                         } else {
-                                            setApplyJobModel(true);
+                                            openApplyJobPortal(jobData, jobData?.id);
                                         }
                                     }}
-                                    className={`primary-btn w-full ${userData?.appliedJobs?.includes(id) && "bg-gray-400 cursor-not-allowed"}`}
+                                    className={`primary-btn w-full ${userData?.appliedJobs?.includes(jobData?.id) && "bg-gray-400 cursor-not-allowed"}`}
                                 >
-                                    {userData?.appliedJobs?.includes(id) ? "Already Applied" : "Apply now"}
+                                    {userData?.appliedJobs?.includes(jobData?.id) ? "Already Applied" : "Apply now"}
                                 </button>
                             </div>
 

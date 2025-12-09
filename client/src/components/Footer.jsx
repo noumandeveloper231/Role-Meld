@@ -2,6 +2,7 @@ import { Facebook, Twitter, Linkedin, Instagram, Youtube, Monitor, ChevronDown }
 import { useState } from "react";
 import FooterBottom from "./FooterBottom";
 import { Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Footer = () => {
   const [openSections, setOpenSections] = useState({});
@@ -45,9 +46,9 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent text-sm"
+              className="!rounded-full"
             />
-            <button className="px-6 py-3 bg-[var(--primary-color)] text-white font-medium rounded-lg hover:bg-[var(--secondary-color)] transition-colors whitespace-nowrap">
+            <button onClick={() => toast.info("Feature is not available yet")} className="primary-btn">
               Subscribe
             </button>
           </div>
@@ -60,8 +61,11 @@ const Footer = () => {
             <div className="lg:col-span-2">
               <h4 className="text-lg font-semibold mb-4">About Us</h4>
               <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam mauris
-                risus, lobortis a commodo at, varius sit amet ipsum.
+                Alfa Careers is a job portal that specializes in connecting job
+                seekers with employers in need of skilled professionals. We
+                provide a user-friendly platform for employers to post job
+                openings and for job seekers to browse and apply for suitable
+                positions.
               </p>
               <p className="text-sm mb-1">
                 <span className="font-semibold">T.</span> (00) 658 54332
@@ -69,7 +73,7 @@ const Footer = () => {
               <p className="text-sm">
                 <span className="font-semibold">E.</span>{" "}
                 <a href="mailto:hello@uxper.co" className="hover:underline">
-                  hello@uxper.co
+                  hello@alfacareers.com
                 </a>
               </p>
             </div>

@@ -3,8 +3,10 @@ import Navbar from '../components/Navbar'
 import Testimonials from '../components/Testimonials'
 import Img from '../components/Image'
 import { Users, Award, Briefcase, Trophy, Facebook, Instagram, Twitter, MapPin } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const AboutUs = () => {
+  const navigate  = useNavigate()
   return (
     <div>
       <Navbar />
@@ -128,16 +130,7 @@ const AboutUs = () => {
             <p className='text-sm font-semibold text-white uppercase'>WE CAN’T WAIT TO MEET YOU!</p>
 
             <h2 className='mt-2 text-2xl md:text-3xl font-semibold text-white'>Join us as we transform healthcare hiring — one job at a time.</h2>
-            <button className='mt-3 secondary-btn bg-white border-white '>Join as employer</button>
-          </div>
-        </section>
-
-        <section className='max-w-3xl mx-auto px-4 py-14'>
-          <h2 className='text-center text-2xl font-semibold text-black'>Subscribe to our newsletter</h2>
-          <p className='text-center text-gray-600 mt-1'>Hiring news and product updates in your inbox</p>
-          <div className='mt-6 flex flex-col sm:flex-row gap-3'>
-            <input className='flex-1 rounded-full border border-gray-300 px-4 py-3' placeholder='Enter your email' />
-            <button className='primary-btn'>Subscribe</button>
+            <button onClick={() => navigate('/register?user=employee')} className='mt-3 secondary-btn bg-white !border-white !hover:border-white !hover:bg-white'>Join as employer</button>
           </div>
         </section>
       </main>

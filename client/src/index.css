@@ -50,6 +50,11 @@ body {
   background-color: white;
 }
 
+::selection {
+  background-color: #9bf0e0; /* soft teal highlight */
+  color: #004a38; /* dark text for contrast */
+}
+
 
 /* Primary Button */
 button.primary-btn {

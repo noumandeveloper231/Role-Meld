@@ -572,10 +572,10 @@ const FindJobs = () => {
                         <div className='text-sm font-semibold text-black'>Salary</div>
                         <div className='text-sm text-gray-500'>
                           {selectedJob?.salaryType === "fixed" ? <span>
-                            <Currency amount={selectedJob?.fixedSalary} from={selectedJob?.jobsCurrency} />
+                            <Currency amount={selectedJob?.fixedSalary} from={selectedJob?.currency} />
                           </span> : <span>
 
-                            <Currency amount={selectedJob?.minSalary} from={selectedJob?.jobsCurrency} /> - <Currency amount={selectedJob?.maxSalary} from={selectedJob?.jobsCurrency} /></span>}
+                            <Currency amount={selectedJob?.minSalary} from={selectedJob?.currency} /> - <Currency amount={selectedJob?.maxSalary} from={selectedJob?.currency} /></span>}
                         </div>
                       </div>
                     </div>

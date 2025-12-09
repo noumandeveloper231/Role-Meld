@@ -24,24 +24,27 @@ export const AppContextProvider = (props) => {
 
   // follow company 
   async function followUnfollow(followedAccountId) {
+    console.log('followedAccountId', followedAccountId)
     if (!isLoggedIn) {
       openLoginPortal();
-      return toast.warn("Please Login to Follow");
+      return toast.warn("Please Login to Follow", { autoClose: 5000 });
     }
 
-    const toastId = toast.loading("Processing...")
+    const toastId = toast.loading("Processing...", { autoClose: 5000 })
     try {
       const { data } = await axios.patch(`${backendUrl}/api/user/follow-unfollow-acc/${followedAccountId}`)
       if (data.success) {
-        toast.update(toastId, { render: data.message, type: "success", isLoading: false })
+        toast.update(toastId, { render: data.message, type: "success", autoClose: 5000, isLoading: false })
         getUserData();
       } else {
-        toast.update(toastId, { render: data.message, type: "error", isLoading: false })
+        toast.update(toastId, { render: data.message, type: "error", autoClose: 5000, isLoading: false })
         getUserData();
       }
     } catch (error) {
-      toast.update(toastId, { render: error.response.data.message, type: "error", isLoading: false })
+      toast.update(toastId, { render: error.response.data.message, type: "error", autoClose: 5000, isLoading: false })
       getUserData();
+    } finally {
+      toast.dismiss(toastId)
     }
   }
 
@@ -68,6 +71,7 @@ export const AppContextProvider = (props) => {
 
   // Example toggleSaveJob
   const toggleSaveJob = async (id) => {
+    console.log('id', id)
     if (!isLoggedIn) {
       openLoginPortal();
       return toast.warn("Please Login to Save Jobs");

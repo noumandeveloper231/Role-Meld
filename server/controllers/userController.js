@@ -555,6 +555,8 @@ export const followUnfollowAccount = async (req, res) => {
     const { id: followedAccountId } = req.params;
     const userId = req.user._id;
 
+    console.log('followedAccountId', followedAccountId)
+
     if (!followedAccountId) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
@@ -563,6 +565,9 @@ export const followUnfollowAccount = async (req, res) => {
         // 1. Fetch both accounts from authModel
         const followedAccount = await authModel.findById(followedAccountId);
         const followerAccount = await authModel.findById(userId);
+
+        console.log('followedAccount', followedAccount)
+        console.log('followerAccount', followerAccount)
 
         if (!followedAccount || !followerAccount) {
             return res.status(404).json({ success: false, message: 'User not found' });

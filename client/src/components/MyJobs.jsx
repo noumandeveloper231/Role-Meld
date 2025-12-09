@@ -313,13 +313,11 @@ const MyJobs = () => {
                                                             {item?.title || "Title not found"}
                                                         </td>
                                                         <td className="px-6 py-3 text-sm text-gray-600">
-                                                            <div className="flex font-semibold items-center gap-3">
-                                                                <span className="border p-2 rounded-xl border-gray-300">
-                                                                    <Img
-                                                                        src={item?.companyProfile || item?.image}
-                                                                        style="w-[30px] h-[30px] rounded-md object-cover"
-                                                                    />
-                                                                </span>
+                                                            <div className="flex font-semibold items-center gap-3 rounded-full">
+                                                                <Img
+                                                                    src={item?.companyProfile || item?.image}
+                                                                    style="w-7 h-7 object-cover rounded-full"
+                                                                />
                                                                 {item?.company || "Company not found"}
                                                             </div>
                                                         </td>
@@ -341,10 +339,10 @@ const MyJobs = () => {
                                                         </td>
                                                         <td className="px-6 py-3 text-sm text-gray-600 whitespace-nowrap">
                                                             {item?.salaryType === "fixed" ? (
-                                                                <Currency amount={item?.fixedSalary} from={item?.jobsCurrency} />
+                                                                <Currency amount={item?.fixedSalary} from={item?.currency} />
                                                             ) : (
                                                                 <span>
-                                                                    <Currency amount={item?.minSalary} from={item?.jobsCurrency} /> - <Currency amount={item?.maxSalary} from={item?.jobsCurrency} />
+                                                                    <Currency amount={item?.minSalary} from={item?.currency} /> - <Currency amount={item?.maxSalary} from={item?.currency} />
                                                                 </span>
                                                             )}
                                                         </td>
@@ -358,7 +356,7 @@ const MyJobs = () => {
                                                                     <FaTrash size={16} />
                                                                 </button>
                                                                 <Link
-                                                                    to={`/jobdetails/${item._id}`}
+                                                                    to={`/jobs/${item?.category}/${item.slug}`}
                                                                     className='p-2 rounded-md hover:bg-gray-100'
                                                                     title="View job"
                                                                 >

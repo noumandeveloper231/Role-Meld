@@ -151,7 +151,7 @@ const App = () => {
       <ToastContainer
         className="toastify-container"
         position="top-center"
-        autoClose={3000}
+        autoClose={1000}
         hideProgressBar
         newestOnTop={false}
         closeOnClick

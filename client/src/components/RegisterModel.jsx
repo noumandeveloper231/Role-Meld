@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Lucide React Icons
@@ -9,6 +9,12 @@ import { User, Mail, Lock, Briefcase, Eye, EyeOff, XCircle, CheckCircle, Search,
 import ForgotPasswordModel from "./ForgotPasswordModel";
 
 const RegisterModel = ({ setRegStep }) => {
+    // const location = useLocation()
+    // const search = location.search
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('user');
+
+    console.log('user', user)
     const { backendUrl } = useContext(AppContext);
 
     // Form Data States
@@ -17,7 +23,7 @@ const RegisterModel = ({ setRegStep }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('user'); // 'user' (Job Seeker) or 'recruiter'
+    const [role, setRole] = useState(user === 'employee' && "recruiter" || 'user'); // 'user' (Job Seeker) or 'recruiter'
 
     // State for Password Visibility
     const [showPassword, setShowPassword] = useState(false);

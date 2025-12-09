@@ -3,6 +3,7 @@ import Img from './Image'
 import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { useNavigate } from 'react-router-dom'
+import FollowButton from './FollowButton'
 
 const HorizontalCompanyCard = ({ company }) => {
     const { userData, followUnfollow } = useContext(AppContext);
@@ -34,18 +35,7 @@ const HorizontalCompanyCard = ({ company }) => {
                         </div>
                     </div>
                 </div>
-                {userData?.role !== "recruiter" &&
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            followUnfollow(company._id)
-                        }
-                        }
-                        className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
-                        <Plus size={20} />Follow
-                    </button>
-                }
-
+                <FollowButton company={company} />
             </header>
 
             {/* About */}
@@ -82,17 +72,7 @@ const VerticalCompanyCard = ({ company }) => {
                             src={company?.profilePicture || "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=facearea&w=120&h=120&q=80"}
                             style="h-16 w-16 rounded-full object-cover flex-shrink-0"
                         />
-                        {userData?.role !== "recruiter" &&
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    followUnfollow(company._id)
-                                }
-                                }
-                                className="secondary-btn flex items-center gap-2 mt-3 sm:mt-0 self-start sm:self-center">
-                                <Plus size={20} />Follow
-                            </button>
-                        }
+                        <FollowButton company={company} />
                     </div>
                     <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
