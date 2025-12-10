@@ -3,6 +3,8 @@ import Category from '../models/categoryModel.js';
 import Package from '../models/packageModel.js';
 import Skill from '../models/skillModel.js';
 import CandidateCategory from '../models/candidateCategoryModel.js';
+import slugify from 'slugify'
+
 
 const adminRouter = express.Router()
 
@@ -10,9 +12,9 @@ adminRouter.post("/categories", async (req, res) => {
   const { name, icon = "Tag", slug } = req.body;
 
   try {
-    const category = new Category({ name, icon, subcategories: [], slug });
+    const category = new Category({ name, icon, subcategories: [], slug: slug || slugify(name, { lower: true }) });
     await category.save();
-    res.status(201).json(category);
+    res.status(201).json({ success: true, message: "Category added successfully", category });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -28,7 +30,7 @@ adminRouter.post("/categories/:id/subcategories", async (req, res) => {
 
     category.subcategories.push(subcategory);
     await category.save();
-    res.json(category);
+    res.json({success: true, message: "Subcategory added successfully", category});
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -49,7 +51,7 @@ adminRouter.post("/categories/:id/subcategories/remove", async (req, res) => {
 
     category.subcategories = category.subcategories.filter(sub => sub !== subcategory);
     await category.save();
-    res.json(category);
+    res.json({success: true, message: "Subcategory removed successfully", category});
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -99,7 +101,7 @@ adminRouter.patch("/categories/:id", async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
-    res.json({ success: true, category });
+    res.json({ success: true, message: "Category updated successfully", category });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -119,7 +121,7 @@ adminRouter.post("/categories/bulk-import", async (req, res) => {
 
     for (const categoryData of categories) {
       try {
-        const { name, subcategories = [], icon = "Tag" } = categoryData;
+        const { name, subcategories = [], icon = "Tag", slug } = categoryData;
 
         if (!name || !name.trim()) {
           results.errors.push(`Category name is required for entry: ${JSON.stringify(categoryData)}`);
@@ -145,7 +147,8 @@ adminRouter.post("/categories/bulk-import", async (req, res) => {
           const newCategory = new Category({
             name: name.trim(),
             icon: icon || "Tag",
-            subcategories: subcategories.filter(sub => sub && sub.trim()).map(sub => sub.trim())
+            subcategories: subcategories.filter(sub => sub && sub.trim()).map(sub => sub.trim()),
+            slug: slug || slugify(name, { lower: true })
           });
           await newCategory.save();
           results.created++;
@@ -179,18 +182,18 @@ adminRouter.post("/skills", async (req, res) => {
 
   try {
     if (!name || !name.trim()) {
-      return res.status(400).json({ success:false, message: "Skill name is required" });
+      return res.status(400).json({ success: false, message: "Skill name is required" });
     }
 
     const slug = name.toLowerCase().replace(/\s+/g, '-');
     const skill = new Skill({ name: name.trim(), slug });
     await skill.save();
-    res.status(201).json({ success:true, skill });
+    res.status(201).json({ success: true, skill });
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(400).json({ success:false, message: "Skill already exists" });
+      return res.status(400).json({ success: false, message: "Skill already exists" });
     }
-    res.status(400).json({ success:false, message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -198,9 +201,63 @@ adminRouter.post("/skills", async (req, res) => {
 adminRouter.get("/skills", async (req, res) => {
   try {
     const skills = await Skill.find().sort({ name: 1 });
-    res.json({ success:true, skills });
+    res.json({ success: true, skills });
   } catch (err) {
-    res.status(500).json({ success:false, message: err.message });
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Bulk import skills
+adminRouter.post("/skills/bulk-import", async (req, res) => {
+  const { skills } = req.body;
+
+  try {
+    const results = {
+      created: 0,
+      skipped: 0,
+      errors: []
+    };
+
+    for (const skillData of skills) {
+      try {
+        const { name, slug } = skillData;
+
+        if (!name || !name.trim()) {
+          results.errors.push(`Skill name is required for entry: ${JSON.stringify(skillData)}`);
+          continue;
+        }
+
+        // Check if skill already exists
+        const existingSkill = await Skill.findOne({ name: name.trim() });
+
+        if (existingSkill) {
+          results.skipped++;
+          continue;
+        }
+
+        const newSkill = new Skill({
+          name: name.trim(),
+          slug: slug || slugify(name, { lower: true })
+        });
+
+        await newSkill.save();
+        results.created++;
+      } catch (err) {
+        results.errors.push(`Error processing skill "${skillData.name}": ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Import completed. Created: ${results.created}, Skipped: ${results.skipped}, Errors: ${results.errors.length}`,
+      results
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: "Bulk import failed",
+      details: err.message
+    });
   }
 });
 
@@ -210,12 +267,12 @@ adminRouter.delete("/skills/:id", async (req, res) => {
   try {
     const skill = await Skill.findById(id);
     if (!skill) {
-      return res.status(404).json({ success:false, message: "Skill not found" });
+      return res.status(404).json({ success: false, message: "Skill not found" });
     }
     await Skill.findByIdAndDelete(id);
-    res.json({ success:true, message: `Skill "${skill.name}" deleted successfully` });
+    res.json({ success: true, message: `Skill "${skill.name}" deleted successfully` });
   } catch (err) {
-    res.status(400).json({ success:false, message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -229,18 +286,18 @@ adminRouter.post("/candidate-categories", async (req, res) => {
 
   try {
     if (!name || !name.trim()) {
-      return res.status(400).json({ success:false, message: "Category name is required" });
+      return res.status(400).json({ success: false, message: "Category name is required" });
     }
 
     const slug = name.toLowerCase().replace(/\s+/g, '-');
     const category = new CandidateCategory({ name: name.trim(), slug });
     await category.save();
-    res.status(201).json({ success:true, category });
+    res.status(201).json({ success: true, category });
   } catch (err) {
     if (err.code === 11000) {
-      return res.status(400).json({ success:false, message: "Category already exists" });
+      return res.status(400).json({ success: false, message: "Category already exists" });
     }
-    res.status(400).json({ success:false, message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
@@ -248,9 +305,9 @@ adminRouter.post("/candidate-categories", async (req, res) => {
 adminRouter.get("/candidate-categories", async (req, res) => {
   try {
     const categories = await CandidateCategory.find().sort({ name: 1 });
-    res.json({ success:true, categories });
+    res.json({ success: true, categories });
   } catch (err) {
-    res.status(500).json({ success:false, message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -260,12 +317,12 @@ adminRouter.delete("/candidate-categories/:id", async (req, res) => {
   try {
     const category = await CandidateCategory.findById(id);
     if (!category) {
-      return res.status(404).json({ success:false, message: "Category not found" });
+      return res.status(404).json({ success: false, message: "Category not found" });
     }
     await CandidateCategory.findByIdAndDelete(id);
-    res.json({ success:true, message: `Category \"${category.name}\" deleted successfully` });
+    res.json({ success: true, message: `Category \"${category.name}\" deleted successfully` });
   } catch (err) {
-    res.status(400).json({ success:false, message: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 

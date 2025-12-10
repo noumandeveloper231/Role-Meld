@@ -96,7 +96,7 @@ userRouter.get("/allrecruiters", getAllRecruiters);
 
 // Social & company
 userRouter.patch("/follow-unfollow-acc/:id", userAuth, followUnfollowAccount);
-userRouter.get("/getcompanydetails/:id", getCompanyDetails);
+userRouter.get("/getcompanydetails/:slug", getCompanyDetails);
 userRouter.get("/followedaccounts", userAuth, followedAccountsDetails);
 userRouter.get("/getFollowing", userAuth, getFollowing);
 userRouter.get("/getFollowers", userAuth, getFollowers);

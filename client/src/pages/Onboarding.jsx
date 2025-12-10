@@ -9,6 +9,7 @@ import SearchSelect from '../components/SelectSearch';
 import ImageCropPortal from '../portals/ImageCropPortal';
 import Img from '../components/Image';
 import LocationSelector from '../components/LocationSelector';
+import SkillsSelector from '../components/SkillsSelector';
 
 const Onboarding = () => {
     const { userData, backendUrl, setUserData, getUserData } = useContext(AppContext);
@@ -161,6 +162,7 @@ const Onboarding = () => {
 
     const handleSubmit = async () => {
         setLoading(true);
+        console.log('formData?.skills', formData?.skills)
         try {
             // 1. Update Profile Text Data
             const updateData = {
@@ -174,7 +176,7 @@ const Onboarding = () => {
                 updateData.currentPosition = formData.currentPosition;
                 updateData.category = formData.category;
                 updateData.experienceYears = formData.experienceYears;
-                updateData.skills = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+                updateData.skills = formData.skills
             } else {
                 updateData.company = formData.company;
                 updateData.industry = formData.industry;
@@ -302,7 +304,7 @@ const Onboarding = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <label className="absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2.5 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-md transform hover:scale-105">
+                                    <label className="absolute bottom-0 right-0 bg-[var(--primary-color)] !text-white p-2.5 rounded-full cursor-pointer hover:bg-[var(--primary-color)]/70 transition-colors">
                                         <Camera size={18} />
                                         <input type="file" onChange={(e) => handleFileChange(e, 'profilePicture')} accept="image/*" className="hidden" />
                                     </label>
@@ -317,13 +319,11 @@ const Onboarding = () => {
                                         name="name"
                                         value={formData.name}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                                         placeholder="John Doe"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                                     <LocationSelector
                                         selectedCountry={formData.country}
                                         selectedCity={formData.city}
@@ -365,8 +365,8 @@ const Onboarding = () => {
                                             name="currentPosition"
                                             value={formData.currentPosition}
                                             onChange={handleInputChange}
-                                            className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                             placeholder="Software Engineer"
+                                            className='!pl-10'
                                         />
                                     </div>
                                 </div>
@@ -404,13 +404,9 @@ const Onboarding = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Skills (Comma separated)</label>
-                                <input
-                                    type="text"
-                                    name="skills"
-                                    value={formData.skills}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                    placeholder="React, Node.js, Python"
+                                <SkillsSelector
+                                    selectedSkills={formData.skills || []}
+                                    onSkillsChange={(skills) => setFormData(prev => ({ ...prev, skills }))}
                                 />
                             </div>
 

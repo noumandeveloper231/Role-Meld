@@ -36,8 +36,6 @@ const jobsSchema = new mongoose.Schema({
   },
 
   // Company & recruiter
-  company: { type: String, required: true },
-  companyProfile: { type: String },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "RecruiterProfile", required: true },
 
   // Job category

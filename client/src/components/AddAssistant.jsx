@@ -106,7 +106,7 @@ const AddAssistant = () => {
       <form onSubmit={handleSubmit} className="mt-10 space-y-8 max-w-5xl">
         {/* Email Input */}
         <div>
-          <label className="block font-semibold mb-2">
+          <label>
             Assistant Email
           </label>
           <input
@@ -114,14 +114,12 @@ const AddAssistant = () => {
             placeholder="Enter assistant's email..."
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-8 py-4 border-2 border-gray-300 rounded-xl focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)] hover:shadow-md transition-all outline-none"
-
           />
         </div>
 
         {/* Role Selection */}
         <div>
-          <label className="block font-semibold mb-3">
+          <label>
             Select Roles
           </label>
           <div className="grid sm:grid-cols-2 gap-8">
@@ -133,9 +131,9 @@ const AddAssistant = () => {
                   onClick={() => handleRoleToggle(role.id)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  className={`w-full relative cursor-pointer p-6 rounded-2xl transition-all duration-300 shadow-lg border-2 border-gray-300 flex items-center justify-between ${selected
-                    ? "ring-4 ring-white/30 scale-[1.02]"
-                    : "hover:shadow-xl"
+                  className={`w-full relative cursor-pointer p-6 rounded-2xl transition-all duration-300 border-2 border-gray-300 flex items-center justify-between ${selected
+                    ? "ring-4 ring-white/30 "
+                    : ""
                     }`}
                 >
                   {/* Gradient Layer */}
@@ -161,7 +159,7 @@ const AddAssistant = () => {
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="absolute -top-3 -right-3 bg-white text-green-500 border-4 border-green-500 rounded-full w-8 h-8 flex items-center justify-center shadow-md z-999"
+                      className="absolute -top-3 -right-3 bg-white text-[var(--primary-color)]/80 border-4 border-[var(--primary-color)]/80 rounded-full w-8 h-8 flex items-center justify-center shadow-md z-999"
                     >
                       <Check className="w-4 h-4" strokeWidth={3} />
                     </motion.div>
@@ -177,7 +175,7 @@ const AddAssistant = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full sm:w-auto px-10 py-3 rounded-md text-white font-semibold transition-all cursor-pointer duration-300 ${loading
+            className={`primary-btn ${loading
               ? "bg-gray-600 cursor-not-allowed"
               : "bg-[var(--primary-color)]/90 hover:bg-[var(--primary-color)]"
               }`}

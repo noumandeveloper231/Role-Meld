@@ -278,7 +278,7 @@ export const updateProfile = async (req, res) => {
                 { authId: userId },
                 { $set: updateUser },   // 👈 directly update
                 { new: true }
-            );
+            );  
 
             if (!updatedProfile) {
                 return res.json({ success: false, message: "User Not Found!" });
@@ -639,14 +639,14 @@ export const followUnfollowAccount = async (req, res) => {
 };
 
 export const getCompanyDetails = async (req, res) => {
-    const { id } = req.params;
+    const { slug } = req.params;
 
-    if (!id) {
+    if (!slug) {
         return res.status(400).json({ success: false, message: 'Company ID is required' });
     }
 
     try {
-        let company = await recruiterProfileModel.findById(id)
+        let company = await recruiterProfileModel.findByOne({slug: slug})
             .populate("sentJobs");
 
         if (!company) {

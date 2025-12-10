@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Search from "./Search";
 
 // React iCONS
-import { Gauge, HelpCircle, Building2, UserCircle, LogOut } from "lucide-react";
+import { Gauge, HelpCircle, Building2, UserCircle, LogOut, User, FileText } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 
 import {
@@ -49,18 +49,33 @@ const Navbar = ({ className }) => {
     setIsMenuOpen(false);
   };
 
-  const navLinks = [
-    { name: "Dashboard", key: "dashboard", icon: <LayoutDashboard size={20} />, path: "/dashboard" },
-    { name: "Jobs", key: "jobs", icon: <Briefcase size={20} />, path: "/dashboard/jobs" },
-    { name: "Applicants", key: "applicants", icon: <Users size={20} />, path: "/dashboard/applicants" },
-    { name: "Candidates", key: "candidates", icon: <UserCheck size={20} />, path: "/dashboard/candidates" },
-    { name: "Package", key: "package", icon: <Heart size={20} />, path: "/dashboard/package" },
-    { name: "Messages", key: "messages", icon: <MessageSquare size={20} />, path: "/dashboard/messages" },
-    { name: "Meetings", key: "meetings", icon: <Calendar size={20} />, path: "/dashboard/meetings" },
-    { name: "Company", key: "company", icon: <Building2 size={20} />, path: "/dashboard/company" },
-    { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/dashboard/settings" },
-    { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
-  ];
+  let navLinks;
+
+  if (userData?.role === "recruiter") {
+    navLinks = [
+      { name: "Dashboard", key: "dashboard", icon: <LayoutDashboard size={20} />, path: "/dashboard" },
+      { name: "Jobs", key: "jobs", icon: <Briefcase size={20} />, path: "/dashboard/jobs" },
+      { name: "Applicants", key: "applicants", icon: <Users size={20} />, path: "/dashboard/applicants" },
+      { name: "Candidates", key: "candidates", icon: <UserCheck size={20} />, path: "/dashboard/candidates" },
+      { name: "Package", key: "package", icon: <Heart size={20} />, path: "/dashboard/package" },
+      { name: "Messages", key: "messages", icon: <MessageSquare size={20} />, path: "/dashboard/messages" },
+      { name: "Meetings", key: "meetings", icon: <Calendar size={20} />, path: "/dashboard/meetings" },
+      { name: "Company", key: "company", icon: <Building2 size={20} />, path: "/dashboard/company" },
+      { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/dashboard/settings" },
+      { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
+    ];
+  } else {
+    navLinks = [
+      { name: "Dashboard", key: "dashboard", icon: <LayoutDashboard size={20} />, path: "/dashboard" },
+      { name: "Profile", key: "profile", icon: <User size={20} />, path: "/dashboard/profile" },
+      { name: "My Resume", key: "resume", icon: <FileText size={20} />, path: "/dashboard/resume" },
+      { name: "My Jobs", key: "my-jobs", icon: <Briefcase size={20} />, path: "/dashboard/my-jobs" },
+      { name: "Following", key: "my-following", icon: <Briefcase size={20} />, path: "/dashboard/my-following" },
+      { name: "Setting", key: "setting", icon: <Settings size={20} />, path: "/dashboard/settings" },
+      { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
+    ]
+  }
+
 
   if (userData && userData.isAdmin) {
     navLinks.push({ name: "Admin", key: "admin", icon: <UserCircle size={20} />, path: "/admin" });

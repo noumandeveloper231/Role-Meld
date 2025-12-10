@@ -65,7 +65,6 @@ function InputOTP({ length = 6, onComplete }) {
                         onChange={(e) => handleChange(e, idx)}
                         onKeyDown={(e) => handleKeyDown(e, idx)}
                         maxLength={1}
-                        className="w-10 h-10 border border-gray-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                     />
                     {idx === 2 && <InputOTPSeparator />}
                 </React.Fragment>
@@ -112,16 +111,16 @@ const VerificationModel = () => {
     };
 
     return (
-        <div className='w-full'>
-            <div className="flex flex-col border-2 p-4 border-gray-300 rounded-2xl items-center justify-center min-h-screen gap-4">
+        <div className='max-w-sm mx-auto'>
+            <div className="bg-white rounded-lg flex flex-col gap-4 border border-gray-200 p-8 items-center">
                 <img loading="lazy" src="/fav_logo.webp" alt="Logo" className="w-15" />
                 <h2 className="text-xl font-semibold">Enter OTP</h2>
-                <p>
+                <p className="text-sm text-gray-500">
                     An OTP has sent to your Registered Email
                 </p>
                 <form onSubmit={checkOTP}>
                     <InputOTP length={6} onComplete={handleComplete} />
-                    <button type="submit" disabled={loading} className="mt-5 w-full ">
+                    <button type="submit" disabled={loading} className="primary-btn mt-5 w-full">
                         {loading ? "Verifying..." : "Verify"}
                     </button>
                 </form>

@@ -102,7 +102,7 @@ const JobDetails = () => {
                             Jobs
                         </NavLink>
                         <span className='mx-2'>/</span>
-                        <NavLink to={'/find-jobs?category=' + jobData?.category  } className='cursor-pointer flex items-center gap-1'>
+                        <NavLink to={'/find-jobs?category=' + jobData?.category} className='cursor-pointer flex items-center gap-1'>
                             {jobData?.category}
                         </NavLink>
                         <span className='mx-2'>/</span>
@@ -125,7 +125,7 @@ const JobDetails = () => {
                                             {jobData?.companyProfile ? (
                                                 <Img
                                                     style="w-16 h-16 rounded-full object-cover border border-gray-100 flex-shrink-0"
-                                                    src={jobData?.companyProfile}
+                                                    src={jobData?.postedBy?.profilePicture}
                                                 />
                                             ) : (
                                                 <div className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center bg-gray-100 text-[var(--primary-color)] font-bold text-xl flex-shrink-0"
@@ -386,7 +386,7 @@ const JobDetails = () => {
                             {/* Company Info */}
                             <div className='p-6 bg-white  border border-gray-300 rounded-2xl'>
                                 <div className='flex items-center gap-3 mb-4'>
-                                    <Img src={jobData?.companyProfile} style='w-12 h-12 rounded-full object-cover' />
+                                    <Img src={jobData?.postedBy?.profilePicture} style='w-12 h-12 rounded-full object-cover' />
                                     <div>
                                         <h4 className='font-medium text-gray-900'>{jobData?.company}</h4>
                                         <Link to={`/company-profile/${jobData?.postedBy?.authId}`} className='text-[var(--primary-color)] font-medium text-md'>
@@ -408,9 +408,10 @@ const JobDetails = () => {
                                 {/* Company Details */}
                                 <div className='space-y-4'>
                                     {tab === 'Overview' ?
-                                        <>
+                                        <div className='space-y-3'>
                                             <div>
-                                                <p className='text-gray-500 font-medium'>{jobData?.postedBy?.about || " Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia tempora earum eaque? Repellat quia maxime voluptates voluptatem, delectus iusto fugit voluptas itaque id?"}</p>
+                                                <div className='text-black'>About</div>
+                                                <div className='job-description' dangerouslySetInnerHTML={{ __html: jobData?.postedBy?.about }} />
                                             </div>
 
                                             <div>
@@ -468,7 +469,7 @@ const JobDetails = () => {
                                                 <Mail size={16} />
                                                 Send message
                                             </button>
-                                        </>
+                                        </div>
                                         :
                                         <div className='px-2'>
                                             {companyJobs.map(companyJob => (

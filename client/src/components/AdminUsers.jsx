@@ -179,9 +179,9 @@ const AdminUsers = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-gray-200">
+      <div className="bg-white border border-gray-200">
         <table className="w-full text-sm text-left text-gray-700">
-          <thead className="border-b border-gray-300 bg-white text-gray-500 uppercase text-xs tracking-wide">
+          <thead className="border-b border-gray-300 bg-white text-black uppercase text-sm tracking-wide">
             <tr>
               <th className="px-6 py-6">Name</th>
               <th className="px-6 py-6">Email</th>

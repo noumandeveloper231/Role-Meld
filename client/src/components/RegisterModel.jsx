@@ -1,21 +1,20 @@
 import axios from "axios";
-import React, { useContext, useState, useMemo } from "react";
+import { useContext, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 // Lucide React Icons
-import { User, Mail, Lock, Briefcase, Eye, EyeOff, XCircle, CheckCircle, Search, Building } from "lucide-react";
+import { Eye, EyeOff, XCircle, CheckCircle, Search, Building } from "lucide-react";
 import ForgotPasswordModel from "./ForgotPasswordModel";
 
 const RegisterModel = ({ setRegStep }) => {
-    // const location = useLocation()
-    // const search = location.search
     const params = new URLSearchParams(window.location.search);
     const user = params.get('user');
 
     console.log('user', user)
     const { backendUrl } = useContext(AppContext);
+    const navigate = useNavigate()
 
     // Form Data States
     const [showForgotPassword, setShowForgotPassword] = useState(false)
@@ -41,6 +40,15 @@ const RegisterModel = ({ setRegStep }) => {
         return null;
     }, [password, confirmPassword]);
 
+    // --- Real-time Password Strength/Validation Check ---
+    const passwordValidation = useMemo(() => ({
+        length: password.length >= 8,
+        number: /\d/.test(password),
+        special: /[^A-Za-z0-9]/.test(password),
+    }), [password]);
+
+    const isPasswordValid = Object.values(passwordValidation).every(Boolean);
+
     const register = async (e) => {
         e.preventDefault();
 
@@ -55,6 +63,12 @@ const RegisterModel = ({ setRegStep }) => {
             return;
         }
 
+        // Validate password strength on submit
+        if (!isPasswordValid) {
+            toast.error("Password must be at least 8 characters long and include a number and special character.");
+            return;
+        }
+
         setLoading(true);
         localStorage.setItem("email", email);
         axios.defaults.withCredentials = true;
@@ -64,7 +78,7 @@ const RegisterModel = ({ setRegStep }) => {
 
             if (data.success) {
                 toast.success(data.message);
-                setRegStep(1);
+                navigate('/register?verification=true')
             } else {
                 toast.error(data.message);
             }
@@ -104,10 +118,10 @@ const RegisterModel = ({ setRegStep }) => {
                     {/* Name Field */}
                     <div className="flex items-center gap-4">
                         <div className="">
-                            <label htmlFor="email" className='font-medium text-sm'>Name</label>
+                            <label htmlFor="email" className='font-medium text-sm'>First Name</label>
                             <input
                                 type="text"
-                                placeholder="Full Name"
+                                placeholder="First Name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
@@ -147,6 +161,22 @@ const RegisterModel = ({ setRegStep }) => {
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Password Validation Feedback */}
+                    <div className="flex flex-col gap-1 ml-2 mt-2">
+                        <div className={`flex items-center gap-1.5 ${passwordValidation.length ? 'text-green-600' : 'text-red-500'}`}> 
+                            {passwordValidation.length ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                            <span className="text-xs font-medium">At least 8 characters</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passwordValidation.number ? 'text-green-600' : 'text-red-500'}`}> 
+                            {passwordValidation.number ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                            <span className="text-xs font-medium">Contains a number</span>
+                        </div>
+                        <div className={`flex items-center gap-1.5 ${passwordValidation.special ? 'text-green-600' : 'text-red-500'}`}> 
+                            {passwordValidation.special ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                            <span className="text-xs font-medium">Contains a special character</span>
                         </div>
                     </div>
 
@@ -212,7 +242,7 @@ const RegisterModel = ({ setRegStep }) => {
                     <button
                         type="submit"
                         // Disable button if loading, passwords don't match, or required fields are empty
-                        disabled={loading || password.length === 0 || confirmPassword.length === 0 || !passwordsMatch}
+                        disabled={loading || password.length === 0 || confirmPassword.length === 0 || !passwordsMatch || !isPasswordValid}
                         className="primary-btn mt-2"
                     >
                         {loading ? "Registering..." : "Register"}

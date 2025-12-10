@@ -77,7 +77,7 @@ export const getJobBySlug = async (req, res) => {
     }
 
     try {
-        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedIn city country category authId about');
+        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedIn city country category authId about profilePicture company');
 
         if (!job) {
             return res.json({ success: false, message: "Job Not Found, Expired" })
@@ -88,6 +88,7 @@ export const getJobBySlug = async (req, res) => {
         return res.json({ success: false, message: error.message })
     }
 }
+
 export const getJob = async (req, res) => {
     const { id } = req.body;
 
@@ -96,7 +97,7 @@ export const getJob = async (req, res) => {
     }
 
     try {
-        const job = await jobsModel.findById(id).populate('postedBy', 'name email contactNumber members website foundedDate city country industry authId about');
+        const job = await jobsModel.findById(id).populate('postedBy', 'name email contactNumber members website foundedDate city country industry authId about profilePicture company');
 
         if (!job) {
             return res.json({ success: false, message: "Job Not Found, Expired" })
@@ -111,7 +112,7 @@ export const getJob = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
     try {
-        const jobs = await jobsModel.find().populate('postedBy', 'name email phone members website foundedAt about');
+        const jobs = await jobsModel.find().populate('postedBy', 'name email phone members website foundedAt about profilePicture company');
 
         if (!jobs || jobs.length < 0) {
             return res.json({ success: false, message: "No Jobs Found" })
@@ -150,7 +151,7 @@ export const getSavedJobs = async (req, res) => {
 
     try {
         const user = await userProfileModel.findOne({ authId: userId })
-        const savedJobs = await jobsModel.find({ _id: { $in: user.savedJobs }, isActive: true });
+        const savedJobs = await jobsModel.find({ _id: { $in: user.savedJobs }, isActive: true }).populate('postedBy');
 
         if (!savedJobs) {
             return res.json({ success: false, message: "No Saved Jobs" })
@@ -183,7 +184,7 @@ export const updateJobStatus = async (req, res) => {
 
 export const getApprovedJobs = async (req, res) => {
     try {
-        const jobs = await jobsModel.find({ approved: "approved", isActive: true });
+        const jobs = await jobsModel.find({ approved: "approved", isActive: true }).populate('postedBy');;
 
         const categorySet = new Set(jobs.map(job => job.category));
 
@@ -195,7 +196,7 @@ export const getApprovedJobs = async (req, res) => {
 
 export const getPendingJobs = async (req, res) => {
     try {
-        const jobs = await jobsModel.find({ approved: "pending" });
+        const jobs = await jobsModel.find({ approved: "pending" }).populate('postedBy');;
         return res.json({ success: true, jobs });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
@@ -229,7 +230,7 @@ export const searchJob = async (req, res) => {
                 approved: "approved",
                 isActive: true,
                 // sponsored: false
-            });
+            }).populate('postedBy');;
         } else {
             approvedJobs = await jobsModel.find({
                 approved: "approved",
@@ -242,7 +243,7 @@ export const searchJob = async (req, res) => {
                     { category: { $regex: search, $options: "i" } },
                     { subCategory: { $regex: search, $options: "i" } }
                 ]
-            });
+            }).populate('postedBy');;
         }
         return res.json({
             success: true,
@@ -261,7 +262,7 @@ export const getCategoryJobs = async (req, res) => {
             category: category,
             approved: "approved",
             isActive: true
-        });
+        }).populate('postedBy');;
 
         return res.json({
             success: true,
@@ -279,7 +280,7 @@ export const getSponsoredJobs = async (req, res) => {
             sponsored: true,
             approved: "approved",
             isActive: true
-        });
+        }).populate('postedBy');;
 
         return res.status(200).json({
             success: true,
@@ -293,6 +294,7 @@ export const getSponsoredJobs = async (req, res) => {
 // Remove Jobs
 export const removeJob = async (req, res) => {
     const { id } = req.params;
+    console.log('id', id)
 
     if (!id) {
         return res.status(400).json({ success: false, message: "Job ID is required" });
@@ -319,7 +321,7 @@ export const getCompanyJobsById = async (req, res) => {
     }
 
     try {
-        const companyJobs = await jobsModel.find({ postedBy: id });
+        const companyJobs = await jobsModel.find({ postedBy: id }).populate('postedBy');;
 
         console.log(companyJobs);
 
@@ -373,7 +375,7 @@ export const updateJob = async (req, res) => {
         await job.save({ validateBeforeSave: !saveAsDraft });
 
         const message = saveAsDraft ? "Draft updated successfully" : "Job updated successfully";
-        return res.status(200).json({ success: true, message });
+        return res.statEus(200).json({ success: true, message });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
     }

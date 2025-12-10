@@ -37,7 +37,7 @@ const AdminJobs = () => {
 
   const removeJob = async (jobId) => {
     try {
-      const { data } = await axios.post(`${backendUrl}/api/jobs/removejob`, { jobId });
+      const { data } = await axios.delete(`${backendUrl}/api/jobs/removejob/${jobId}`);
       if (data.success) {
         toast.success("Job removed successfully");
         fetchJobs();
@@ -174,23 +174,23 @@ const AdminJobs = () => {
         <table className="min-w-full bg-white border-collapse">
           <thead>
             <tr className="text-left bg-white text-gray-500">
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Job</th>
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Category</th>
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Posted</th>
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Deadline</th>
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide">Status</th>
-              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-center">Actions</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black">Job</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black">Category</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black">Posted</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black">Deadline</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black">Status</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-black text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
+              <tr className="border-t border-gray-200">
                 <td colSpan={6} className="py-10 text-center text-gray-500">
                   Loading jobs...
                 </td>
               </tr>
             ) : currentJobs.length === 0 ? (
-              <tr>
+              <tr className="border-t border-gray-200">
                 <td colSpan={6} className="py-10 text-center text-gray-500">
                   No jobs found.
                 </td>

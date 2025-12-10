@@ -63,6 +63,8 @@ const RecruiterProfile = () => {
 
     // ---------- Update Profile ----------
     const updateProfile = async (e) => {
+
+        console.log('formData', formData)
         if (!formData.name) {
             return toast.error("Name is required")
         }

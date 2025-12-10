@@ -30,12 +30,12 @@ const JobCard = ({ e, className }) => {
             <div className='flex flex-col gap-4'>
                 {/* 1. Header: Company Info and Save Button */}
                 <div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-0'>
-                    <div className='flex items-center gap-4'>
+                    <div className='flex items-center gap-4 bg-white'>
                         {e?.companyProfile ? (
-                            <Img
-                                style='w-14 h-14 rounded-full object-cover border border-gray-100 flex-shrink-0'
-                                src={e?.companyProfile}
-                            />
+                            <img
+                                className='w-14 h-14 rounded-full object-cover bg-white flex-shrink-0'
+                                src={e?.postedBy?.profilePicture}
+                            /> 
                         ) : (
                             <div
                                 className='w-14 h-14 rounded-full border border-gray-300 flex items-center justify-center bg-gray-100 text-[var(--primary-color)] font-bold text-xl flex-shrink-0'
@@ -112,7 +112,7 @@ const JobCard = ({ e, className }) => {
                 </div>
 
                 {/* 3. Footer */}
-                <div className='flex flex-col sm:flex-row sm:items-center justify-between mt-4 pt-3 gap-2 sm:gap-0'>
+                <div className='flex flex-col sm:flex-row sm:items-center justify-between mt-2 pt-3 gap-2 sm:gap-0'>
                     <span>
                         {(() => {
                             const d = new Date(e?.applicationDeadline)

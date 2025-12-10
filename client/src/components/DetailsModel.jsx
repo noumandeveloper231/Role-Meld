@@ -71,7 +71,6 @@ const DetailsModel = () => {
                             placeholder="Enter your company name"
                             required
                             disabled={loading}
-                            className="w-full text-sm px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:border-[var(--primary-color)] focus:ring-4 focus:ring-blue-50 transition-all duration-200 outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
                         />
                         <Building className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     </div>

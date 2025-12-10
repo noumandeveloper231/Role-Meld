@@ -224,7 +224,7 @@ const App = () => {
             }
           />
 
-          <Route path="/company-profile/:id" element={<CompanyProfile />} />
+          <Route path="/companies/:cat/:slug" element={<CompanyProfile />} />
           <Route path="/candidate-profile/:id" element={<CandidateProfile />} />
           <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/companies" element={<CompaniesPage />} />

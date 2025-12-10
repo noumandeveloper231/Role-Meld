@@ -202,6 +202,10 @@ const getCroppedImg = async (imageSrc, pixelCrop, rotation = 0) => {
     canvas.width = safeArea;
     canvas.height = safeArea;
 
+    // Add white background to prevent black areas
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.translate(safeArea / 2, safeArea / 2);
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.translate(-safeArea / 2, -safeArea / 2);
@@ -217,6 +221,10 @@ const getCroppedImg = async (imageSrc, pixelCrop, rotation = 0) => {
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
 
+    // Fill white again for the final crop
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.putImageData(
         data,
         Math.round(0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x),
@@ -229,6 +237,7 @@ const getCroppedImg = async (imageSrc, pixelCrop, rotation = 0) => {
         }, 'image/jpeg', 0.95);
     });
 };
+
 
 const createImage = (url) =>
     new Promise((resolve, reject) => {

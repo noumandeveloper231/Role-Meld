@@ -10,12 +10,10 @@ import Loading from '../components/Loading';
 import { toast } from 'react-toastify';
 
 const CompanyProfile = () => {
-  const { id } = useParams()
-  console.log('id', id)
+  const { slug } = useParams()
+  console.log('id', slug)
 
-  const { backendUrl, userData, followUnfollow } = useContext(AppContext);
-
-  const [show, setShow] = useState(false)
+  const { backendUrl, userData } = useContext(AppContext);
 
   const [companyData, setCompanyData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +21,7 @@ const CompanyProfile = () => {
 
   const getCompanyDetails = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/user/getcompanydetails/${id}`);
+      const { data } = await axios.get(`${backendUrl}/api/user/getcompanydetails/${slug}`);
       console.log('data', data)
       if (data.success) {
         setCompanyData(data.company);

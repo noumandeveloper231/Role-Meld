@@ -165,8 +165,6 @@ const JobForm = ({ setActiveTab }) => {
     try {
       const payload = {
         ...jobData,
-        companyProfile: userData.profilePicture,
-        company: userData.company,
       };
 
       const url = editJob
@@ -432,7 +430,7 @@ const JobForm = ({ setActiveTab }) => {
                   >
                     <option value="">Select Category</option>
                     {categories.map((cat) => (
-                      <option key={cat.name} value={cat.name}>{cat.name}</option>
+                      <option key={cat.name} value={cat.slug}>{cat.name}</option>
                     ))}
                   </CustomSelect>
                 </div>

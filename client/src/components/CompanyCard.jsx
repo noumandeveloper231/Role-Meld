@@ -6,11 +6,10 @@ import { useNavigate } from 'react-router-dom'
 import FollowButton from './FollowButton'
 
 const HorizontalCompanyCard = ({ company }) => {
-    const { userData, followUnfollow } = useContext(AppContext);
     const navigate = useNavigate()
     return (
         <div
-            onClick={() => navigate(`/company-profile/${company._id}`)}
+            onClick={() => navigate(`/companies/${company?.category}/${company.slug}`)}
             className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer w-full max-w-5xl mx-auto">
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">

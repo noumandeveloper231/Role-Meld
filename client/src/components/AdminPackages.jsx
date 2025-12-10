@@ -271,9 +271,9 @@ const AdminPackages = () => {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <div className="overflow-x-auto border border-gray-200">
                 <table className="w-full text-sm text-left text-gray-700">
-                    <thead className="border-b border-gray-300 bg-white text-gray-500 uppercase text-xs tracking-wide">
+                    <thead className="border-b border-gray-300 bg-white text-black uppercase tracking-wide">
                         <tr>
                             <th className="px-6 py-6">Package Name</th>
                             <th className="px-6 py-6">Price</th>
@@ -470,7 +470,6 @@ const AdminPackages = () => {
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                         required
                                     />
                                 </div>
@@ -484,7 +483,6 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.packageType === "Free" ? "0" : formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         min="0"
                                         step="0.01"
                                         disabled={formData.packageType === "Free"}
@@ -494,10 +492,9 @@ const AdminPackages = () => {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                                    <select
+                                    <CustomSelect
                                         value={formData.currency}
                                         onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     >
                                         <option value="USD">USD ($)</option>
                                         <option value="EUR">EUR (€)</option>
@@ -505,7 +502,7 @@ const AdminPackages = () => {
                                         <option value="PKR">PKR (₨)</option>
                                         <option value="INR">INR (₹)</option>
                                         <option value="AED">AED (د.إ)</option>
-                                    </select>
+                                    </CustomSelect>
                                 </div>
 
                                 <div>
@@ -516,22 +513,22 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.duration}
                                         onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                         min="1"
+                                        placeholder="Enter Duration"
                                         required
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Duration Unit</label>
-                                    <select
+                                    <CustomSelect
                                         value={formData.durationUnit}
                                         onChange={(e) => setFormData({ ...formData, durationUnit: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        
                                     >
                                         <option value="month">Per Month</option>
                                         <option value="year">Per Year</option>
-                                    </select>
+                                    </CustomSelect>
                                 </div>
 
                                 <div>
@@ -542,7 +539,7 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.jobPostings}
                                         onChange={(e) => setFormData({ ...formData, jobPostings: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        placeholder="Enter Job Postings"
                                         min="1"
                                         required
                                     />
@@ -554,7 +551,7 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.featuredJobs}
                                         onChange={(e) => setFormData({ ...formData, featuredJobs: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        placeholder="Enter Featured Jobs"
                                         min="0"
                                     />
                                 </div>
@@ -565,7 +562,6 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.candidatesFollow}
                                         onChange={(e) => setFormData({ ...formData, candidatesFollow: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                         min="0"
                                         placeholder="Number of candidates"
                                     />
@@ -577,33 +573,31 @@ const AdminPackages = () => {
                                         type="number"
                                         value={formData.displayOrder}
                                         onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        placeholder="Enter Display Order"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Support</label>
-                                    <select
+                                    <CustomSelect
                                         value={formData.support}
                                         onChange={(e) => setFormData({ ...formData, support: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     >
                                         <option value="Limited">Limited</option>
                                         <option value="Full">Full</option>
-                                    </select>
+                                    </CustomSelect>
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Package Type</label>
-                                    <select
+                                    <CustomSelect
                                         value={formData.packageType}
                                         onChange={(e) => setFormData({ ...formData, packageType: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     >
                                         <option value="Free">Free</option>
                                         <option value="Standard">Standard</option>
                                         <option value="Premium">Premium</option>
-                                    </select>
+                                    </CustomSelect>
                                 </div>
                             </div>
 
@@ -682,7 +676,7 @@ const AdminPackages = () => {
                                     onChange={(e) => setFormData({ ...formData, features: e.target.value })}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     rows={5}
-                                    placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+                                    placeholder="Feature 1\nFeature 2\nFeature 3"
                                 />
                             </div>
 

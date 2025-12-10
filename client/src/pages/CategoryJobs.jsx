@@ -20,9 +20,7 @@ const CategoryJobs = () => {
     window.scrollTo({ top: 0 });
   }, [])
   let { cat } = useParams();
-  cat = cat()
 
-  console.log('cat', cat)
   const { backendUrl } = useContext(AppContext);
 
   const [categoryJobs, setCategoryJobs] = useState([]);

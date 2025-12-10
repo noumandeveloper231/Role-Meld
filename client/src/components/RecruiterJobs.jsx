@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { Trash, Search, Pencil } from 'lucide-react';
 import CustomSelect from './CustomSelect';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const RecruiterJobs = () => {
     const { userData, backendUrl } = useContext(AppContext);
@@ -108,14 +108,14 @@ const RecruiterJobs = () => {
                     <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-800 mb-3">
                         Manage Jobs
                     </h1>
-                    <NavLink
-                        to={"/employer-landing"}
+                    <Link
+                        to={"/dashboard/jobs/post"}
                         onClick={() => setIsMenuOpen(false)}
                     >
                         <button className="primary-btn">
                             Post a job
                         </button>
-                    </NavLink>
+                    </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg border border-green-200">

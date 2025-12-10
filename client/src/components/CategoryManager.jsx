@@ -7,6 +7,8 @@ import * as XLSX from 'xlsx';
 import { categoryIconOptions, getCategoryIcon } from "../utils/categoryIcons";
 import slugify from "slugify";
 
+import { ChevronDown } from "lucide-react";
+
 const IconSelect = ({ value, onChange, className }) => {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -21,38 +23,60 @@ const IconSelect = ({ value, onChange, className }) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const selectedOption = categoryIconOptions.find((option) => option.value === value) || categoryIconOptions[0];
+    const selectedOption =
+        categoryIconOptions.find((option) => option.value === value) ||
+        categoryIconOptions[0];
 
     return (
-        <div ref={dropdownRef} className={`relative ${className || ""}`}>
-            <button
-                type="button"
-                onClick={() => setOpen((prev) => !prev)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer border border-gray-300 rounded-lg bg-white focus:outline-none"
+        <div
+            ref={dropdownRef}
+            className={`relative text-sm ${className || ""}`}
+        >
+            {/* SELECT BUTTON */}
+            <div
+                onClick={() => setOpen(!open)}
+                className="capitalize w-full flex items-center justify-between px-6 py-2.5 border border-gray-300 rounded-md cursor-pointer"
             >
-                <span className="flex items-center gap-2">
-                    {React.createElement(selectedOption.icon, { size: 18, className: "text-[var(--primary-color)]" })}
-                    <span className="text-sm font-medium text-gray-700">{selectedOption.label}</span>
+                <span className="flex items-center gap-2 truncate">
+                    {React.createElement(selectedOption.icon, {
+                        size: 18,
+                        className: "text-[var(--primary-color)]",
+                    })}
+                    <span className={value ? "text-gray-800" : "text-gray-700"}>
+                        {selectedOption.label}
+                    </span>
                 </span>
-                <span className="text-gray-400 text-sm">{open ? "▲" : "▼"}</span>
-            </button>
 
+                <ChevronDown
+                    size={18}
+                    className={`text-gray-500 transition-transform ${open ? "rotate-180" : ""
+                        }`}
+                />
+            </div>
+
+            {/* DROPDOWN */}
             {open && (
-                <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-sm max-h-64 overflow-y-auto">
+                <div className="absolute z-999 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
                     {categoryIconOptions.map((option) => (
-                        <button
-                            type="button"
+                        <div
                             key={option.value}
                             onClick={() => {
                                 onChange(option.value);
                                 setOpen(false);
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-2 text-left text-sm hover:bg-gray-50 ${option.value === value ? "bg-gray-100" : ""
-                                }`}
+                            className={`
+                flex items-center gap-3 px-4 py-2.5 cursor-pointer
+                ${option.value === value
+                                    ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
+                                    : "text-gray-700 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]"
+                                }
+              `}
                         >
-                            {React.createElement(option.icon, { size: 18, className: "text-[var(--primary-color)]" })}
-                            <span className="text-gray-700">{option.label}</span>
-                        </button>
+                            {React.createElement(option.icon, {
+                                size: 18,
+                            })}
+                            {option.label}
+                        </div>
                     ))}
                 </div>
             )}
@@ -153,10 +177,15 @@ const CategoryManager = () => {
     const handleAddCategory = async () => {
         if (!newCategory.trim()) return;
         try {
-            await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon, slug: slugify(newCategory, { lower: true }) });
-            setNewCategory("");
-            setNewCategoryIcon("Tag");
-            fetchCategories();
+            const { data } = await axios.post(backendUrl + "/api/admin/categories", { name: newCategory, icon: newCategoryIcon, slug: slugify(newCategory, { lower: true }) });
+            if (data.success) {
+                toast.success(data.message);
+                setNewCategory("");
+                setNewCategoryIcon("Tag");
+                fetchCategories();
+            } else {
+                toast.error(data.message)
+            }
         } catch (err) {
             console.error(err);
         }
@@ -167,9 +196,14 @@ const CategoryManager = () => {
         const subName = newSub[categoryId];
         if (!subName || !subName.trim()) return;
         try {
-            await axios.post(backendUrl + `/api/admin/categories/${categoryId}/subcategories`, { subcategory: subName });
-            setNewSub({ ...newSub, [categoryId]: "" });
-            fetchCategories();
+            const { data } = await axios.post(backendUrl + `/api/admin/categories/${categoryId}/subcategories`, { subcategory: subName });
+            if (data.success) {
+                toast.success(data.message)
+                setNewSub({ ...newSub, [categoryId]: "" });
+                fetchCategories();
+            } else {
+                toast.error(data.message)
+            }
         } catch (err) {
             console.error(err);
         }
@@ -178,11 +212,16 @@ const CategoryManager = () => {
     // Delete subcategory
     const handleDeleteSub = async (categoryId, subcategory) => {
         try {
-            await axios.post(
+            const { data } = await axios.post(
                 backendUrl + `/api/admin/categories/${categoryId}/subcategories/remove`,
                 { subcategory } // send subcategory in request body
             );
-            fetchCategories(); // refresh categories after deletion
+            if (data.success) {
+                toast.success(data.message)
+                fetchCategories(); // refresh categories after deletion
+            } else {
+                toast.error(data.message)
+            }
         } catch (err) {
             console.error(err);
         }
@@ -295,14 +334,11 @@ const CategoryManager = () => {
                 ? subcategoriesStr.split(',').map(s => s.trim()).filter(Boolean)
                 : [];
 
-            // Optional: generate slug
-            const slug = name.toLowerCase().replace(/\s+/g, '-');
-
             categories.push({
                 name,
                 icon,
                 subcategories,
-                slug
+                slug: slugify(name, { lower: true })
             });
         }
 
@@ -376,7 +412,7 @@ const CategoryManager = () => {
                     <div className="flex justify-end mt-4">
                         <button
                             onClick={handleAddCategory}
-                            className="primary-btn flex items-center gap-2"
+                            className="primary-btn"
                         >
                             <Plus className="w-4 h-4" />
                             Add Category
@@ -395,13 +431,13 @@ const CategoryManager = () => {
                     <div className="flex flex-wrap gap-3 my-4">
                         <button
                             onClick={downloadTemplate}
-                            className="primary-btn flex items-center gap-2"
+                            className="primary-btn"
                         >
                             <Download className="w-4 h-4" />
                             Download Template
                         </button>
 
-                        <label className="bg-white text-[var(--primary-color)] px-4 py-2 rounded-3xl hover:bg-[var(--primary-color)] hover:text-white transition-colors flex items-center gap-2 cursor-pointer">
+                        <label className="bg-white text-[var(--primary-color)] px-4 !py-2 rounded-3xl hover:bg-[var(--primary-color)] hover:!text-white transition-colors !flex items-center gap-2 cursor-pointer !mb-0 !border !border-[var(--primary-color)]">
                             <Upload className="w-4 h-4" />
                             {importing ? 'Importing...' : 'Import Excel File'}
                             <input
@@ -599,7 +635,7 @@ const CategoryManager = () => {
                                                                 />
                                                                 <button
                                                                     onClick={() => handleIconUpdate(cat._id)}
-                                                                    className="px-4 py-2 rounded-3xl border border-gray-300 text-sm hover:bg-gray-100"
+                                                                    className="secondary-btn"
                                                                 >
                                                                     Save Icon
                                                                 </button>
@@ -608,7 +644,7 @@ const CategoryManager = () => {
                                                                 type="text"
                                                                 value={newSub[cat._id] || ""}
                                                                 placeholder="Add new subcategory..."
-                                                                className="flex-1 border border-gray-300 rounded-3xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                                                className="flex-1 "
                                                                 onChange={(e) => setNewSub({ ...newSub, [cat._id]: e.target.value })}
                                                             />
                                                             <button

@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import { FaCamera, FaPlus, FaTrash, FaVideo, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaGithub, FaTiktok } from 'react-icons/fa';
-import { Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader, Upload, X } from 'lucide-react'
+import { Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader, Upload, X, VideoOff } from 'lucide-react'
 import LocationSelector from './LocationSelector';
 import Img from './Image';
 import CustomSelect from './CustomSelect';
@@ -392,7 +392,7 @@ const MyProfile = () => {
                                         <div className='flex flex-col relative'>
                                             <div className='flex mb-4 items-center gap-4'>
                                                 <div>
-                                                    <label htmlFor="profilePicture" className=''>Profile Picture</label>
+                                                    <label htmlFor="profilePicture" className=''>Profile Picture <span className='text-red-500'>*</span></label>
                                                     <div className='relative w-36 h-36 rounded-md overflow-hidden flex items-center justify-center'>
                                                         <div className='flex items-center justify-center border border-gray-300 w-36 h-36 rounded-md object-cover'>
                                                             {profilePictureLoading ? <div className='flex items-center justify-center'>
@@ -411,7 +411,7 @@ const MyProfile = () => {
                                                     </div>
                                                 </div>
                                                 <div className='w-full'>
-                                                    <label className=' '>Cover Image</label>
+                                                    <label className=' '>Cover Image <span className='text-red-500'>*</span></label>
                                                     <div className='relative w-full h-36 bg-gray-50 rounded-md overflow-hidden group border border-gray-300'>
                                                         {userData?.coverImage ? (
                                                             <>
@@ -440,7 +440,7 @@ const MyProfile = () => {
                                             <div className='md:col-span-2 space-y-4 mt-16 md:mt-0'>
                                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                                     <div className='space-y-1'>
-                                                        <label className=''>First Name</label>
+                                                        <label className=''>First Name <span className='text-red-500'>*</span></label>
                                                         <input
                                                             ref={el => fieldRefs.current['name'] = el}
                                                             type="text"
@@ -460,7 +460,7 @@ const MyProfile = () => {
                                                         />
                                                     </div>
                                                     <div className='space-y-1'>
-                                                        <label className=''>Email</label>
+                                                        <label className=''>Email <span className='text-red-500'>*</span></label>
                                                         <input
                                                             type="email"
                                                             name="email"
@@ -491,7 +491,7 @@ const MyProfile = () => {
                                                         />
                                                     </div>
                                                     <div className='space-y-1'>
-                                                        <label className=''>Category</label>
+                                                        <label className=''>Category <span className='text-red-500'>*</span></label>
                                                         <CustomSelect
                                                             ref={el => fieldRefs.current['category'] = el}
                                                             name="category"
@@ -517,7 +517,7 @@ const MyProfile = () => {
                                         {/* Details */}
                                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                                             <div className='space-y-1'>
-                                                <label className=''>Date of Birth</label>
+                                                <label className=''>Date of Birth <span className='text-red-500'>*</span></label>
                                                 <input
                                                     ref={el => fieldRefs.current['dob'] = el}
                                                     type="date"
@@ -588,7 +588,7 @@ const MyProfile = () => {
                                                 </CustomSelect>
                                             </div>
                                             <div className='space-y-1'>
-                                                <label className=''>Experience</label>
+                                                <label className=''>Experience <span className='text-red-500'>*</span></label>
                                                 <CustomSelect
                                                     className={"mt-1.5"}
                                                     name="experienceYears"
@@ -605,7 +605,7 @@ const MyProfile = () => {
 
                                             <div className='space-y-2'>
                                                 <label className="">
-                                                    Offered Salary
+                                                    Offered Salary <span className='text-red-500'>*</span>
                                                 </label>
                                                 <input
                                                     // type="te"
@@ -620,7 +620,7 @@ const MyProfile = () => {
                                             </div>
                                             <div className='space-y-2'>
                                                 <label className="">
-                                                    Salary Type
+                                                    Salary Type <span className='text-red-500'>*</span>
                                                 </label>
                                                 <CustomSelect
                                                     label="salaryType"
@@ -709,7 +709,7 @@ const MyProfile = () => {
 
                                         {/* Social Links */}
                                         <div>
-                                            <h3 className='text-lg font-semibold text-gray-800 mb-4'>Social Networks</h3>
+                                            <h3 className='text-lg font-semibold text-gray-800 mb-4'>Social Networks  <span className='text-red-500 text-xs'>At least 3 to boost profile</span></h3>
                                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                                 {/* Predefined Social Links */}
                                                 <div className='space-y-1'>
@@ -840,7 +840,7 @@ const MyProfile = () => {
 
                                             {/* Video URL */}
                                             <div className='mt-6 space-y-1'>
-                                                <label className=''>Video Introduction</label>
+                                                <label className='text-md'>Video Introduction <span className='text-red-500 text-xs'>Can Increase Profile Score by 20%</span></label>
                                                 <div className='relative mt-1'>
                                                     <FaVideo className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' />
                                                     <input

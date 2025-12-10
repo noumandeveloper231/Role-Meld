@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const recruiterProfileSchema = new mongoose.Schema({
   authId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth", required: true },
   isOnboardingCompleted: { type: Boolean, default: false },
-  slug: {type: String },
+  slug: { type: String },
   isActive: { type: Boolean, default: false },
   name: { type: String, default: '' },
   tagline: { type: String, default: '' },

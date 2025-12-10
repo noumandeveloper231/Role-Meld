@@ -628,6 +628,7 @@ export const addAssistant = async (req, res) => {
 
 export const getAssistants = async (req, res) => {
     const userId = req.user._id;
+    
     try {
         const admin = await recruiterProfileModel.findOne({ authId: userId, isAdmin: true });
 

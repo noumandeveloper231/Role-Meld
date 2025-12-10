@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -129,25 +129,29 @@ const Categories = () => {
                 const Icon = getCategoryIcon(cat?.icon || 'Tag');
 
                 return (
-                  <div
+                  <Link
+                    to={`/category-jobs/${cat.slug}`}
                     key={index}
-                    onClick={() => navigate('/category-jobs?category=' + encodeURIComponent(cat.name))}
-                    className="group bg-white hover:bg-gray-50 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100"
                   >
-                    <div className="flex flex-col items-start gap-4">
-                      <div className="w-12 h-12 bg-[var(--accent-color)] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <Icon size={24} className="text-[var(--primary-color)]" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">
-                          {cat.name}
-                        </h4>
-                        <p className="text-black mb-3">
-                          {jobs.filter(job => job.category === cat.name)?.length || 0} jobs
-                        </p>
+                    <div
+                      className="group bg-white hover:bg-gray-50 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg border border-gray-100"
+
+                    >
+                      <div className="flex flex-col items-start gap-4">
+                        <div className="w-12 h-12 bg-[var(--accent-color)] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                          <Icon size={24} className="text-[var(--primary-color)]" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">
+                            {cat.name}
+                          </h4>
+                          <p className="text-black mb-3">
+                            {jobs.filter(job => job.category === cat.name)?.length || 0} jobs
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

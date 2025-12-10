@@ -28,6 +28,8 @@ const SkillsSelector = ({ selectedSkills, onSkillsChange }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const dropdownRef = React.useRef(null);
 
+    console.log('availableSkills', availableSkills)
+
     // Fetch skills list
     useEffect(() => {
         const fetchSkills = async () => {

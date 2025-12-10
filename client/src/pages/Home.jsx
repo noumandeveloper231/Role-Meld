@@ -77,6 +77,8 @@ const Home = () => {
     return <Loading />
   }
 
+  const jobsCount = Math.min(jobs.length, 20);
+  const speed = jobsCount * 5;
   return (
     <>
       {/* Announcement Bar */}
@@ -111,9 +113,11 @@ const Home = () => {
               </div>
             </div>
             <div className="relative h-[700px] overflow-hidden hidden md:block group">
-              <div className="scroll-vertical group-hover:[animation-play-state:paused]">
+              <div style={{
+                animation: `vertical-scroll ${speed}s linear infinite`
+              }} className="scroll-vertical group-hover:animate-scroll-vertical-speed-10s group-hover:[animation-play-state:paused]">
                 <div className="flex flex-col gap-15">
-                  {jobs.slice(0, 20).length > 0 && Array(100).fill(jobs.slice(0, 20)).flat().map((job, index) => {
+                  {jobs.slice(0, 20).length > 0 && Array(5).fill(jobs.slice(0, 3)).flat().map((job, index) => {
                     const bgColors = ['bg-[#f9ab85]/90', 'bg-[#fff]/90', 'bg-[#ffd865]/90'];
                     const bgClass = bgColors[index % 3];
                     return (

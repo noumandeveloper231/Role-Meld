@@ -360,9 +360,9 @@ const ApplicantDashboard = () => {
                   <span className="font-semibold text-green-600 ml-1">+{totalPotentialScore} points</span>
                 </p>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-lg border border-green-200">
-                <TrendingUp size={20} className="text-green-600" />
-                <span className="text-sm font-medium text-green-700">Improve Score</span>
+              <div className="flex items-center gap-2 px-4 py-2 bg-[var(--accent-color)] rounded-lg border border-[var(--primary-color)]/50">
+                <TrendingUp size={20} className="text-[var(--primary-color)]" />
+                <span className="text-sm font-medium text-[var(--primary-color)]">Improve Score</span>
               </div>
             </div>
 
@@ -372,13 +372,13 @@ const ApplicantDashboard = () => {
                 return (
                   <div
                     key={rec.field}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer group hover:border-[var(--primary-color)]"
+                    className="border border-gray-200 rounded-2xl p-4 hover:shadow-xl shadow-gray-200 transition-all duration-200 cursor-pointer group hover:border-[var(--primary-color)]/70"
                     onClick={() => handleRecommendationClick(rec)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
                         <div className={`p-2.5 rounded-lg ${rec.bgColor} flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                          <IconComponent size={20} className="text-gray-700" />
+                          <IconComponent size={20} className="text-[var(--primary-color)]" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800 text-sm group-hover:text-[var(--primary-color)] transition-colors">
@@ -388,7 +388,7 @@ const ApplicantDashboard = () => {
                         </div>
                       </div>
                     </div>
-                    <button className="mt-3 w-full py-1.5 text-sm font-medium text-[var(--primary-color)] border border-[var(--primary-color)] rounded-md hover:bg-[var(--primary-color)] hover:text-white transition-colors">
+                    <button className="mt-3 w-full primary-btn !py-2">
                       Add
                     </button>
                   </div>
