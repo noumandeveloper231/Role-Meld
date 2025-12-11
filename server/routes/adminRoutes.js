@@ -3,6 +3,7 @@ import Category from '../models/categoryModel.js';
 import Package from '../models/packageModel.js';
 import Skill from '../models/skillModel.js';
 import CandidateCategory from '../models/candidateCategoryModel.js';
+import CompanyCategory from '../models/companyCategoryModel.js';
 import slugify from 'slugify'
 
 
@@ -30,7 +31,7 @@ adminRouter.post("/categories/:id/subcategories", async (req, res) => {
 
     category.subcategories.push(subcategory);
     await category.save();
-    res.json({success: true, message: "Subcategory added successfully", category});
+    res.json({ success: true, message: "Subcategory added successfully", category });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -51,7 +52,7 @@ adminRouter.post("/categories/:id/subcategories/remove", async (req, res) => {
 
     category.subcategories = category.subcategories.filter(sub => sub !== subcategory);
     await category.save();
-    res.json({success: true, message: "Subcategory removed successfully", category});
+    res.json({ success: true, message: "Subcategory removed successfully", category });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -323,6 +324,164 @@ adminRouter.delete("/candidate-categories/:id", async (req, res) => {
     res.json({ success: true, message: `Category \"${category.name}\" deleted successfully` });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// ============================
+// Company Category Management Routes
+// ============================
+
+// Create new company category
+adminRouter.post("/company-categories", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: "Category name is required" });
+    }
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const category = new CompanyCategory({ name: name.trim(), slug });
+    await category.save();
+    res.status(201).json({ success: true, category });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ success: false, message: "Category already exists" });
+    }
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// Get all company categories
+adminRouter.get("/company-categories", async (req, res) => {
+  try {
+    const categories = await CompanyCategory.find().sort({ name: 1 });
+    res.json({ success: true, categories });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Delete a company category
+adminRouter.delete("/company-categories/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const category = await CompanyCategory.findById(id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+    await CompanyCategory.findByIdAndDelete(id);
+    res.json({ success: true, message: `Category "${category.name}" deleted successfully` });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// Bulk import company categories
+adminRouter.post("/company-categories/bulk-import", async (req, res) => {
+  const { categories } = req.body;
+
+  try {
+    const results = {
+      created: 0,
+      skipped: 0,
+      errors: []
+    };
+
+    for (const catData of categories) {
+      try {
+        const { name, slug } = catData;
+
+        if (!name || !name.trim()) {
+          results.errors.push(`Category name is required for entry: ${JSON.stringify(catData)}`);
+          continue;
+        }
+
+        // Check if category already exists
+        const existingCategory = await CompanyCategory.findOne({ name: name.trim() });
+
+        if (existingCategory) {
+          results.skipped++;
+          continue;
+        }
+
+        const newCategory = new CompanyCategory({
+          name: name.trim(),
+          slug: slug || slugify(name, { lower: true })
+        });
+
+        await newCategory.save();
+        results.created++;
+      } catch (err) {
+        results.errors.push(`Error processing category "${catData.name}": ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Import completed. Created: ${results.created}, Skipped: ${results.skipped}, Errors: ${results.errors.length}`,
+      results
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: "Bulk import failed",
+      details: err.message
+    });
+  }
+});
+
+// Bulk import candidate categories
+adminRouter.post("/candidate-categories/bulk-import", async (req, res) => {
+  const { categories } = req.body;
+
+  try {
+    const results = {
+      created: 0,
+      skipped: 0,
+      errors: []
+    };
+
+    for (const catData of categories) {
+      try {
+        const { name, slug } = catData;
+
+        if (!name || !name.trim()) {
+          results.errors.push(`Category name is required for entry: ${JSON.stringify(catData)}`);
+          continue;
+        }
+
+        // Check if category already exists
+        const existingCategory = await CandidateCategory.findOne({ name: name.trim() });
+
+        if (existingCategory) {
+          results.skipped++;
+          continue;
+        }
+
+        const newCategory = new CandidateCategory({
+          name: name.trim(),
+          slug: slug || slugify(name, { lower: true })
+        });
+
+        await newCategory.save();
+        results.created++;
+      } catch (err) {
+        results.errors.push(`Error processing category "${catData.name}": ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Import completed. Created: ${results.created}, Skipped: ${results.skipped}, Errors: ${results.errors.length}`,
+      results
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: "Bulk import failed",
+      details: err.message
+    });
   }
 });
 

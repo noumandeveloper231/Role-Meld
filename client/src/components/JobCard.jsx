@@ -31,11 +31,11 @@ const JobCard = ({ e, className }) => {
                 {/* 1. Header: Company Info and Save Button */}
                 <div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-0'>
                     <div className='flex items-center gap-4 bg-white'>
-                        {e?.companyProfile ? (
+                        {e?.postedBy?.profilePicture ? (
                             <img
                                 className='w-14 h-14 rounded-full object-cover bg-white flex-shrink-0'
                                 src={e?.postedBy?.profilePicture}
-                            /> 
+                            />
                         ) : (
                             <div
                                 className='w-14 h-14 rounded-full border border-gray-300 flex items-center justify-center bg-gray-100 text-[var(--primary-color)] font-bold text-xl flex-shrink-0'
@@ -54,8 +54,12 @@ const JobCard = ({ e, className }) => {
                                 {e?.title || '...'}
                             </h4>
                             <span className='text-md text-gray-500 line-clamp-1'>
-                                by <span className='font-semibold'>{e?.company || '...'}</span> in{' '}
-                                <span className='font-semibold text-[var(--primary-color)]'>{e?.category || '...'}</span>
+                                by <span className='font-semibold'>{e?.postedBy?.company || '...'}</span> in{' '}
+                                <span onClick={(event) => {
+                                    event.stopPropagation()
+                                    navigate(`/category-jobs/${e?.category}`)
+                                }
+                                } className='capitalize font-semibold text-[var(--primary-color)]'>{e?.category || '...'}</span>
                             </span>
                         </div>
                     </div>

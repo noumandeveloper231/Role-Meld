@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const CompanyProfile = () => {
   const { slug } = useParams()
-  console.log('id', slug)
+  const { cat } = useParams()
 
   const { backendUrl, userData } = useContext(AppContext);
 
@@ -22,13 +22,11 @@ const CompanyProfile = () => {
   const getCompanyDetails = async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/user/getcompanydetails/${slug}`);
-      console.log('data', data)
       if (data.success) {
         setCompanyData(data.company);
       } else {
         setCompanyData(null)
       }
-      // console.log('data', data)
     } catch (error) {
       console.log(error)
     }

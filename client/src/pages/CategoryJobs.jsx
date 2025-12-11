@@ -167,7 +167,7 @@ const CategoryJobs = () => {
             </div>
           </div>
 
-          <div className='grid my-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          <div className='grid my-5 grid-cols-1 md:grid-cols-2 gap-4'>
             {filteredJobs.length !== 0
               ? filteredJobs.map((job, i) => <JobCard key={i} e={job} />)
               : <NotFound404 value={"No Jobs Found"} margin={"my-10"} />}

@@ -204,7 +204,7 @@ const Home = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
-                        <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.name).length} jobs</p>
+                        <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.slug).length} jobs</p>
                       </div>
                     </Link>
                   )

@@ -23,6 +23,7 @@ const LatestJobs = () => {
       if (data.success) {
         // Sort by creation date and get the latest 20 jobs (for 5 slides of 4 jobs each)
         const sortedJobs = data.jobs
+          .filter(job => job.approved === "approved")
           .filter(job => new Date(job.applicationDeadline) > new Date())
           .sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt))
           .slice(0, 20);

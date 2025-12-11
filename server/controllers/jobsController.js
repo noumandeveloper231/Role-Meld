@@ -256,13 +256,15 @@ export const searchJob = async (req, res) => {
 
 export const getCategoryJobs = async (req, res) => {
     try {
-        const { category } = req.body;
+        const { cat } = req.body;
 
         const approvedCategoryJobs = await jobsModel.find({
-            category: category,
+            category: cat,
             approved: "approved",
             isActive: true
-        }).populate('postedBy');;
+        }).populate('postedBy');
+
+        console.log('approvedCategoryJobs', approvedCategoryJobs)
 
         return res.json({
             success: true,

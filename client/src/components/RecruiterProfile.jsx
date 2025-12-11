@@ -30,7 +30,7 @@ const RecruiterProfile = () => {
         state: userData?.state || "",
         contactNumber: userData?.contactNumber || "",
         about: userData?.about || "",
-        category: userData?.industry || "",
+        category: userData?.category || "",
         address: userData?.address || "",
         companyType: userData?.companyType || "",
     });
@@ -42,6 +42,16 @@ const RecruiterProfile = () => {
     const [cropPortalOpen, setCropPortalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [pictureLoading, setPictureLoading] = useState(false);
+
+    // Ensure slug is populated from company name on mount or whenever company changes
+    useEffect(() => {
+        if (formData.company && !formData.slug) {
+            setFormData(prev => ({
+                ...prev,
+                slug: slugify(prev.company || "", { lower: true })
+            }));
+        }
+    }, [formData.company, formData.slug]);
 
 
     const handleChange = (e) => {
@@ -341,27 +351,22 @@ const RecruiterProfile = () => {
         }
     };
 
-    const categoryOptions = [
-        "Electronics / Electrical",
-        "Engineering (Civil / Mechanical / Electrical)",
-        "Food & Beverages / Hospitality",
-        "Government / Public Sector",
-        "Healthcare / Medical",
-        "Human Resources (HR)",
-        "Information Technology / Software",
-        "Legal / Law",
-        "Logistics / Supply Chain",
-        "Manufacturing",
-        "Media / Journalism",
-        "NGO / Social Services",
-        "Operations / Management",
-        "Real Estate",
-        "Retail / Sales",
-        "Security / Safety",
-        "Telecommunications",
-        "Tourism / Travel",
-        "Transportation / Drivers"
-    ];
+    const [companyCategories, setCompanyCategories] = useState([]);
+
+    const getCompanyCategories = async () => {
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/admin/company-categories`);
+            if (data.success) {
+                setCompanyCategories(data.categories);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to fetch company categories");
+        }
+    };
+
+    useEffect(() => {
+        getCompanyCategories();
+    }, []);
 
 
     return (
@@ -578,8 +583,8 @@ const RecruiterProfile = () => {
                                     onChange={handleChange}
                                 >
                                     {
-                                        categoryOptions.map(opt => (
-                                            <option value={opt}>{opt}</option>
+                                        companyCategories.map(category => (
+                                            <option value={category.slug}>{category.name}</option>
                                         ))
                                     }
                                 </CustomSelect>

@@ -203,7 +203,7 @@ const AdminJobs = () => {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-gray-900">{job.title || "Untitled"}</span>
-                        <span className="text-sm text-gray-500">{job.company || "Unknown Company"}</span>
+                        <span className="text-sm text-gray-500">{job?.postedBy?.company || "Unknown Company"}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{job.category || "—"}</td>
@@ -257,117 +257,118 @@ const AdminJobs = () => {
                 );
               })
             )}
+            {filteredJobs.length > 0 && (
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-6">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span>Rows per page:</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
+                  >
+                    {[10, 25, 50, 100].map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                  <span>
+                    {startItem} - {endItem} of {filteredJobs.length}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  {(() => {
+                    const pages = [];
+                    const maxVisiblePages = 5;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                    if (endPage - startPage + 1 < maxVisiblePages) {
+                      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                    }
+
+                    if (startPage > 1) {
+                      pages.push(
+                        <button
+                          key={1}
+                          onClick={() => setCurrentPage(1)}
+                          className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                          1
+                        </button>
+                      );
+                      if (startPage > 2) {
+                        pages.push(
+                          <span key="ellipsis-start" className="px-2 text-gray-400">
+                            ...
+                          </span>
+                        );
+                      }
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(i)}
+                          className={`px-3 py-1 border rounded-md ${currentPage === i
+                              ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                              : "border-gray-300 hover:bg-gray-50"
+                            }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                    }
+
+                    if (endPage < totalPages) {
+                      if (endPage < totalPages - 1) {
+                        pages.push(
+                          <span key="ellipsis-end" className="px-2 text-gray-400">
+                            ...
+                          </span>
+                        );
+                      }
+                      pages.push(
+                        <button
+                          key={totalPages}
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                          {totalPages}
+                        </button>
+                      );
+                    }
+
+                    return pages;
+                  })()}
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </tbody>
+
         </table>
       </div>
 
-      {filteredJobs.length > 0 && (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-6">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>Rows per page:</span>
-            <select
-              value={itemsPerPage}
-              onChange={(e) => {
-                setItemsPerPage(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
-            >
-              {[10, 25, 50, 100].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-            <span>
-              {startItem} - {endItem} of {filteredJobs.length}
-            </span>
-          </div>
 
-          <div className="flex items-center gap-2 text-sm">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            {(() => {
-              const pages = [];
-              const maxVisiblePages = 5;
-              let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-              let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-              if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-              }
-
-              if (startPage > 1) {
-                pages.push(
-                  <button
-                    key={1}
-                    onClick={() => setCurrentPage(1)}
-                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    1
-                  </button>
-                );
-                if (startPage > 2) {
-                  pages.push(
-                    <span key="ellipsis-start" className="px-2 text-gray-400">
-                      ...
-                    </span>
-                  );
-                }
-              }
-
-              for (let i = startPage; i <= endPage; i++) {
-                pages.push(
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i)}
-                    className={`px-3 py-1 border rounded-md ${
-                      currentPage === i
-                        ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-                        : "border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {i}
-                  </button>
-                );
-              }
-
-              if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                  pages.push(
-                    <span key="ellipsis-end" className="px-2 text-gray-400">
-                      ...
-                    </span>
-                  );
-                }
-                pages.push(
-                  <button
-                    key={totalPages}
-                    onClick={() => setCurrentPage(totalPages)}
-                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    {totalPages}
-                  </button>
-                );
-              }
-
-              return pages;
-            })()}
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

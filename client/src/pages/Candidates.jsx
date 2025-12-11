@@ -502,9 +502,7 @@ const Candidates = () => {
                                 }`}
                         >
                             {sortedCandidates.map((candidate) => (
-                                <div onClick={() => navigate(`/candidate-profile/${candidate._id}`)} className="w-full" key={candidate._id}>
-                                    <CandidateCards candidate={candidate} />
-                                </div>
+                                <CandidateCards candidate={candidate} />
                             ))}
                         </div>
                     </div>

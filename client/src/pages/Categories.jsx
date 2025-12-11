@@ -146,7 +146,7 @@ const Categories = () => {
                             {cat.name}
                           </h4>
                           <p className="text-black mb-3">
-                            {jobs.filter(job => job.category === cat.name)?.length || 0} jobs
+                            {jobs.filter(job => job.category === cat.slug)?.length || 0} jobs
                           </p>
                         </div>
                       </div>

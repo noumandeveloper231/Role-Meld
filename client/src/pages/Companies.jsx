@@ -12,25 +12,27 @@ import CustomSelect from "../components/CustomSelect";
 const Companies = () => {
     const { backendUrl } = useContext(AppContext);
 
+    const search = new URLSearchParams(window.location.search)
+    const cat = search.get("cat")
+
     const [loading, setLoading] = useState(false);
     const [companies, setCompanies] = useState([]);
     const [viewMode, setViewMode] = useState("block");
     const [sortOption, setSortOption] = useState("newest");
     const [searchQuery, setSearchQuery] = useState("");
-    const [heroCity, setHeroCity] = useState("");
-    const [heroIndustry, setHeroIndustry] = useState("");
+    const [heroCategory, setHeroCategory] = useState(cat || "");
 
     // Filters
     const [filters, setFilters] = useState({
         city: "",
         country: "",
         state: "",
-        industry: [],
+        category: [],
         members: [],
     });
 
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-    const [isIndustryDropdownOpen, setIsIndustryDropdownOpen] = useState(false);
+    const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
     const handleCheckbox = (category, value) => {
         setFilters((prev) => {
@@ -49,7 +51,7 @@ const Companies = () => {
             _id: "sample-1",
             company: "Jordan Banks",
             about: "Multidisciplinary designer with 10+ years building intuitive enterprise experiences.",
-            industry: "UI/UX Design",
+            category: "UI/UX Design",
             members: "3",
             sentJobs: ["5", "10", "15"],
             createdAt: new Date().toISOString(),
@@ -64,7 +66,7 @@ const Companies = () => {
             city: "New York",
             country: "USA",
             state: "NY",
-            industry: "Content Strategy",
+            category: "Content Strategy",
             members: "10",
             sentJobs: ["5", "10", "15"],
             createdAt: new Date().toISOString(),
@@ -76,7 +78,7 @@ const Companies = () => {
             city: "Austin",
             state: "Texas",
             country: "USA",
-            industry: "Full-Stack Development",
+            category: "Full-Stack Development",
             members: "10",
             sentJobs: ["5", "10", "15"],
             createdAt: new Date().toISOString(),
@@ -94,7 +96,7 @@ const Companies = () => {
     const uniqueCountries = uniqueExtractor("country");
     const uniqueCities = uniqueExtractor("city");
     const uniqueStates = uniqueExtractor("state");
-    const uniqueIndustry = uniqueExtractor("industry");
+    const uniqueCategories = uniqueExtractor("category");
     const uniqueMembers = uniqueExtractor("members");
 
     // Filtering Logic
@@ -105,26 +107,24 @@ const Companies = () => {
 
             if (normalizedQuery && !fullText.includes(normalizedQuery)) return false;
 
-            if (heroCity && c.city !== heroCity) return false;
-
-            if (heroIndustry) {
-                const industryValue = c.industry || "";
-                const matchesIndustry = Array.isArray(industryValue)
-                    ? industryValue.includes(heroIndustry)
-                    : industryValue === heroIndustry;
-                if (!matchesIndustry) return false;
+            if (heroCategory) {
+                const categoryValue = c.category || "";
+                const matchesCategory = Array.isArray(categoryValue)
+                    ? categoryValue.includes(heroCategory)
+                    : categoryValue === heroCategory;
+                if (!matchesCategory) return false;
             }
 
             if (filters.city && c.city !== filters.city) return false;
             if (filters.country && c.country !== filters.country) return false;
             if (filters.state && c.state !== filters.state) return false;
 
-            if (filters.industry.length > 0) {
-                const industryValue = c.industry || "";
-                const matchesIndustry = Array.isArray(industryValue)
-                    ? industryValue.some((value) => filters.industry.includes(value))
-                    : filters.industry.includes(industryValue);
-                if (!matchesIndustry) return false;
+            if (filters.category.length > 0) {
+                const categoryValue = c.category || "";
+                const matchesCategory = Array.isArray(categoryValue)
+                    ? categoryValue.some((value) => filters.category.includes(value))
+                    : filters.category.includes(categoryValue);
+                if (!matchesCategory) return false;
             }
 
             if (filters.members.length > 0) {
@@ -137,7 +137,7 @@ const Companies = () => {
 
             return true;
         });
-    }, [baseCompanies, filters, searchQuery, heroCity, heroIndustry]);
+    }, [baseCompanies, filters, searchQuery, heroCategory]);
 
     const sortedCompanies = useMemo(() => {
         return [...filteredCompanies].sort((a, b) =>
@@ -153,18 +153,17 @@ const Companies = () => {
 
     const handleClearSearch = () => {
         setSearchQuery("");
-        setHeroCity("");
-        setHeroIndustry("");
+        setHeroCategory("");
     };
 
     const handleLocationSelect = (city) => {
-        setHeroCity(city);
+        setFilters({ ...filters, city });
         setIsLocationDropdownOpen(false);
     };
 
-    const handleIndustrySelect = (industry) => {
-        setHeroIndustry(industry);
-        setIsIndustryDropdownOpen(false);
+    const handleCategorySelect = (category) => {
+        setHeroCategory(category);
+        setIsCategoryDropdownOpen(false);
     };
 
     const getCompanies = async () => {
@@ -172,7 +171,8 @@ const Companies = () => {
             setLoading(true);
             const { data } = await axios.get(`${backendUrl}/api/user/allrecruiters`);
             if (data.success) {
-                setCompanies(data.recruiters || []);
+                const mapped = (data.recruiters || []).map(r => ({ ...r, category: r.category || r.industry || "" }));
+                setCompanies(mapped);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || error.message);
@@ -222,7 +222,7 @@ const Companies = () => {
                                 >
                                     <Building size={20} className="text-gray-400" />
                                     <span className="flex-1 text-sm text-gray-700">
-                                        {heroCity || "All Cities"}
+                                        {filters.city || "All Cities"}
                                     </span>
                                     <ChevronDown
                                         size={16}
@@ -265,44 +265,44 @@ const Companies = () => {
                             <div className="flex flex-1 relative">
                                 <button
                                     type="button"
-                                    onClick={() => setIsIndustryDropdownOpen((prev) => !prev)}
+                                    onClick={() => setIsCategoryDropdownOpen((prev) => !prev)}
                                     className="flex items-center gap-2 px-4 py-3 w-full text-left"
                                 >
                                     <Building size={20} className="text-gray-400" />
                                     <span className="flex-1 text-sm text-gray-700">
-                                        {heroIndustry || "All Industries"}
+                                        {heroCategory || "All Categories"}
                                     </span>
                                     <ChevronDown
                                         size={16}
-                                        className={`text-gray-400 transition-transform ${isIndustryDropdownOpen ? 'rotate-180' : ''}`}
+                                        className={`text-gray-400 transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`}
                                     />
                                 </button>
 
                                 {/* Dropdown Menu */}
-                                {isIndustryDropdownOpen && (
+                                {isCategoryDropdownOpen && (
                                     <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-full">
                                         <div className="max-h-48 overflow-y-auto py-1">
-                                            {uniqueIndustry.length > 0 ? (
+                                            {uniqueCategories.length > 0 ? (
                                                 <div>
                                                     <div
                                                         className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
-                                                        onClick={() => handleIndustrySelect("")}
+                                                        onClick={() => handleCategorySelect("")}
                                                     >
-                                                        All Industries
+                                                        All Categories
                                                     </div>
-                                                    {uniqueIndustry.map((industry) => (
+                                                    {uniqueCategories.map((category) => (
                                                         <div
-                                                            key={industry}
+                                                            key={category}
                                                             className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
-                                                            onClick={() => handleIndustrySelect(industry)}
+                                                            onClick={() => handleCategorySelect(category)}
                                                         >
-                                                            {industry}
+                                                            {category}
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
                                                 <div className="px-4 py-2 text-sm text-gray-500">
-                                                    No industries found
+                                                    No categories found
                                                 </div>
                                             )}
                                         </div>
@@ -380,19 +380,19 @@ const Companies = () => {
                             </CustomSelect>
                         </div>
 
-                        {/* Industries */}
+                        {/* Categories */}
                         <div className="border-t border-gray-200 py-4 space-y-4">
-                            <h5 className="text-gray-400 uppercase font-semibold">Industries</h5>
+                            <h5 className="text-gray-400 uppercase font-semibold">Categories</h5>
 
                             <div className="max-h-[200px] overflow-y-auto space-y-2">
-                                {uniqueIndustry.map((industry) => (
-                                    <label key={industry} className="flex items-center gap-2">
+                                {uniqueCategories.map((category) => (
+                                    <label key={category} className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
-                                            checked={filters.industry.includes(industry)}
-                                            onChange={() => handleCheckbox("industry", industry)}
+                                            checked={filters.category.includes(category)}
+                                            onChange={() => handleCheckbox("category", category)}
                                         />
-                                        {industry}
+                                        {category}
                                     </label>
                                 ))}
                             </div>
