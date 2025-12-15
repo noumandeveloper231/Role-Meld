@@ -27,6 +27,10 @@ const Onboarding = () => {
         fieldName: ''
     });
 
+    // Candidate & company categories
+    const [candidateCategories, setCandidateCategories] = useState([]);
+    const [companyCategories, setCompanyCategories] = useState([]);
+
     // Form State
     const [formData, setFormData] = useState({
         name: '',
@@ -44,7 +48,6 @@ const Onboarding = () => {
         coverImagePreview: null,
         // Recruiter specific
         company: '',
-        industry: '',
         companyType: '',
         members: '',
         website: '',
@@ -65,7 +68,6 @@ const Onboarding = () => {
                 experienceYears: userData.experienceYears || '',
                 skills: userData.skills ? userData.skills.join(', ') : '',
                 company: userData.company || '',
-                industry: userData.industry || '',
                 companyType: userData.companyType || '',
                 members: userData.members || '',
                 website: userData.website || '',
@@ -73,6 +75,34 @@ const Onboarding = () => {
             }));
         }
     }, [userData]);
+
+    // Fetch categories depending on role
+    useEffect(() => {
+        const fetchCategories = async () => {
+            if (userData?.role === 'recruiter') {
+                try {
+                    const { data } = await axios.get(`${backendUrl}/api/admin/company-categories`);
+                    if (data.success) setCompanyCategories(data.categories);
+                } catch (err) { console.error(err); }
+                return;
+            }
+            if (userData?.role === 'user') {
+                try {
+                    const { data } = await axios.get(`${backendUrl}/api/admin/candidate-categories`);
+                    if (data.success) setCandidateCategories(data.categories);
+                } catch (err) { console.error(err); }
+            }
+            try {
+                const { data } = await axios.get(`${backendUrl}/api/admin/company-categories`);
+                if (data.success) {
+                    setCompanyCategories(data.categories);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchCategories();
+    }, [backendUrl, userData?.role]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -179,7 +209,7 @@ const Onboarding = () => {
                 updateData.skills = formData.skills
             } else {
                 updateData.company = formData.company;
-                updateData.industry = formData.industry;
+                updateData.category = formData.category;
                 updateData.companyType = formData.companyType;
                 updateData.members = formData.members;
                 updateData.website = formData.website;
@@ -230,27 +260,6 @@ const Onboarding = () => {
         }
     };
 
-    const industryOptions = [
-        { name: "1", code: "Electronics / Electrical" },
-        { name: "2", code: "Engineering (Civil / Mechanical / Electrical)" },
-        { name: "3", code: "Food & Beverages / Hospitality" },
-        { name: "4", code: "Government / Public Sector" },
-        { name: "5", code: "Healthcare / Medical" },
-        { name: "6", code: "Human Resources (HR)" },
-        { name: "7", code: "Information Technology / Software" },
-        { name: "8", code: "Legal / Law" },
-        { name: "9", code: "Logistics / Supply Chain" },
-        { name: "10", code: "Manufacturing" },
-        { name: "11", code: "Media / Journalism" },
-        { name: "12", code: "NGO / Social Services" },
-        { name: "13", code: "Operations / Management" },
-        { name: "14", code: "Real Estate" },
-        { name: "15", code: "Retail / Sales" },
-        { name: "16", code: "Security / Safety" },
-        { name: "17", code: "Telecommunications" },
-        { name: "18", code: "Tourism / Travel" },
-        { name: "19", code: "Transportation / Drivers" }
-    ];
 
     if (!userData) return null;
 
@@ -287,7 +296,7 @@ const Onboarding = () => {
                 </div>
 
                 {/* Form Area */}
-                <div className="p-8 md:w-2/3 overflow-y-auto max-h-[90vh] bg-white">
+                <div className="flex flex-col justify-between p-8 md:w-2/3 overflow-y-auto max-h-[90vh] bg-white">
                     {step === 1 && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                             <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">Basic Information</h2>
@@ -339,22 +348,6 @@ const Onboarding = () => {
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                             <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">Professional Details</h2>
 
-                            {/* Cover Image Upload */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
-                                <div className="relative h-40 bg-gray-50 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-[var(--primary-color)] transition-colors group">
-                                    {formData.coverImagePreview || userData.coverImage ? (
-                                        <img src={formData.coverImagePreview || userData.coverImage} alt="Cover" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                                            <Upload size={32} className="mb-2 group-hover:text-[var(--primary-color)] transition-colors" />
-                                            <span className="text-sm font-medium">Click to upload cover image</span>
-                                        </div>
-                                    )}
-                                    <input type="file" onChange={(e) => handleFileChange(e, 'coverImage')} accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
-                                </div>
-                            </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Current Position</label>
@@ -395,10 +388,9 @@ const Onboarding = () => {
                                     onChange={handleInputChange}
                                 >
                                     <option value="">Select Category</option>
-                                    <option value="Programming">Programming</option>
-                                    <option value="Design">Design</option>
-                                    <option value="Marketing">Marketing</option>
-                                    <option value="Finance">Finance</option>
+                                    {candidateCategories.map(cat => (
+                                        <option key={cat.slug} value={cat.slug}>{cat.name}</option>
+                                    ))}
                                 </CustomSelect>
                             </div>
 
@@ -408,17 +400,6 @@ const Onboarding = () => {
                                     selectedSkills={formData.skills || []}
                                     onSkillsChange={(skills) => setFormData(prev => ({ ...prev, skills }))}
                                 />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Resume (PDF)</label>
-                                <div className="flex items-center gap-4">
-                                    <label className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors border border-gray-200 w-full justify-center">
-                                        <Upload size={18} />
-                                        <span className="font-medium truncate max-w-[200px]">{formData.resume ? formData.resume.name : "Upload Resume"}</span>
-                                        <input type="file" onChange={(e) => handleFileChange(e, 'resume')} accept=".pdf" className="hidden" />
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     )}
@@ -460,12 +441,12 @@ const Onboarding = () => {
                                 </div>
                                 <div>
                                     <SearchSelect
-                                        label="Industry"
+                                        label="Category"
                                         labelStyle="text-sm font-medium text-gray-700 mb-1 block"
-                                        options={industryOptions}
-                                        value={formData.industry}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
-                                        placeholder="Select Industry"
+                                        options={companyCategories.map(cat => ({ code: cat.slug, name: cat.name }))}
+                                        value={formData.category}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                                        placeholder="Select Category"
                                     />
                                 </div>
                             </div>
@@ -534,7 +515,7 @@ const Onboarding = () => {
                         </div>
                     )}
 
-                    <div className="mt-8 flex justify-end gap-4 pt-4 border-t border-gray-100">
+                    <div className=" flex justify-end gap-4 pt-4 border-t border-gray-100">
                         {step > 1 && (
                             <button
                                 onClick={() => setStep(step - 1)}

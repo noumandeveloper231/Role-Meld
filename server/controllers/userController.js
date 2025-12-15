@@ -7,6 +7,7 @@ import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 import companyReviewModel from "../models/companyReviewModel.js";
 import ProfileView from "../models/profileViewModel.js";
+import slugify from 'slugify';
 
 
 export const getAllUsers = async (req, res) => {
@@ -254,32 +255,46 @@ export const updateProfile = async (req, res) => {
         }
 
         const authUser = await authModel.findById(userId);
-
         let updatedProfile;
 
         if (authUser.role === "user") {
             const oldProfile = await userProfileModel.findOne({ authId: userId });
+
             if (!oldProfile) {
                 return res.json({ success: false, message: "User Not Found!" });
             }
 
-            const newSlug = slugify(updateUser.name?.trim().toLowerCase().replace(/\s/g, '-'), { lower: true });
-            const existingSlug = await userProfileModel.findOne({ slug: newSlug });
-            let newSlugWithRandom;
+            // ---------------- SLUG LOGIC ----------------
+
+            const baseNameForSlug =
+                updateUser.name && updateUser.name.trim() !== ""
+                    ? updateUser.name.trim().toLowerCase()
+                    : oldProfile.name.trim().toLowerCase();
+
+            const baseSlug = slugify(baseNameForSlug, { lower: true });
+
+            // check slug existence excluding current user
+            const existingSlug = await userProfileModel.findOne({
+                slug: baseSlug,
+                authId: { $ne: userId },
+            });
+
+            let finalSlug = baseSlug;
+
             if (existingSlug) {
-                const randomString = Math.floor(1000 + Math.random() * 9000).toString();
-                newSlugWithRandom = `${newSlug}-${randomString.substring(0, 3)}`;
-            } else {
-                newSlugWithRandom = newSlug;
+                const authIdSuffix = userId.toString().slice(-3);
+                finalSlug = `${baseSlug}-${authIdSuffix}`;
             }
+
+            // ---------------- UPDATE PROFILE ----------------
 
             updatedProfile = await userProfileModel.findOneAndUpdate(
                 { authId: userId },
                 {
                     $set: {
                         ...updateUser,
-                        slug: newSlugWithRandom
-                    }
+                        slug: finalSlug,
+                    },
                 },
                 { new: true }
             );
@@ -288,15 +303,15 @@ export const updateProfile = async (req, res) => {
                 return res.json({ success: false, message: "User Not Found!" });
             }
 
-            console.log(updatedProfile);
-
             updatedProfile.profileScore = calculateProfileScore(updatedProfile);
             await updatedProfile.save();
-            console.log(updatedProfile);
-        } else {
+        }
+        else {
+            // ---------------- RECRUITER UPDATE ----------------
+
             updatedProfile = await recruiterProfileModel.findOneAndUpdate(
                 { authId: userId },
-                { $set: updateUser },   // 👈 directly update
+                { $set: updateUser },
                 { new: true }
             );
 
@@ -304,7 +319,8 @@ export const updateProfile = async (req, res) => {
                 return res.json({ success: false, message: "User Not Found!" });
             }
 
-            updatedProfile.profileScore = calculateRecruiterProfileScore(updatedProfile);
+            updatedProfile.profileScore =
+                calculateRecruiterProfileScore(updatedProfile);
             await updatedProfile.save();
         }
 
@@ -315,13 +331,14 @@ export const updateProfile = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Server Error",
             error: error.message,
         });
     }
 };
+
 
 export const checkProfileScore = async (req, res) => {
     const userId = req.user._id;
