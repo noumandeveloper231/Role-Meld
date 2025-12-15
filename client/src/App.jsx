@@ -213,7 +213,7 @@ const App = () => {
             <Route path="add-assistant" element={<AdminAddAssistant />} />
             <Route path="all-assistant" element={<AdminAllAssistants />} />
             <Route path="blog-management" element={<AdminBlogManagement />} />
-            <Route path="add-blog" element={<AdminAddBlog />} />
+            <Route path="blog/add" element={<AdminAddBlog />} />
           </Route>
           <Route
             path="/editblog"
@@ -231,8 +231,8 @@ const App = () => {
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/find-jobs" element={<FindJobs />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/category-jobs/:cat" element={<CategoryJobs />} />
-          <Route path="/blogdetails/:slug" element={<BlogsDetails />} />
+          <Route path="/categories/:cat" element={<CategoryJobs />} />
+          <Route path="/blogs/:slug" element={<BlogsDetails />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/employer-landing" element={<EmployerLanding />} />
           <Route path="/about-us" element={<AboutUs />} />

@@ -8,10 +8,16 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading';
 import { toast } from 'react-toastify';
+import slugToName from '../utils/categoryNames';
+import Breadcrumbs from '../components/Breakcumbs';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const CompanyProfile = () => {
   const { slug } = useParams()
-  const { cat } = useParams()
 
   const { backendUrl, userData } = useContext(AppContext);
 
@@ -68,20 +74,17 @@ const CompanyProfile = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-[#f9f9f9] min-h-screen py-5 font-sans">
+      <div className="bg-[var(--bg)] min-h-screen py-5 font-sans">
         {/* Breadcrumb */}
-
-        <div className="max-w-6xl mx-auto relative">
-          <div className="text-sm text-gray-500">
-            Home &gt; Companies &gt; {companyData.company}
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <Breadcrumbs />
           {/* Company Header Card */}
           <div className="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-8 ">
             <div className='lg:col-span-2'>
               {/* Main Content */}
               <div className="bg-white overflow-hidden rounded-2xl border border-gray-100">
                 <div className="w-full h-50  md:h-64 overflow-hidden relative">
-                  <Img src={companyData.cover || companyData.banner} style="w-full h-full object-cover" />
+                  <Img src={companyData.cover || companyData.banner} style="border-b border-gray-200 w-full h-full object-cover" />
                 </div>
                 {/* Overview */}
                 <div className="p-6 relative z-10 mb-8">
@@ -135,15 +138,74 @@ const CompanyProfile = () => {
                 </div>
                 <section className='bg-white p-6 border-t border-gray-100 h-60 overflow-clip'>
                   <h4 className="text-xl font-semibold text-gray-900 mb-4">Overview</h4>
-                  <div className='job-description' dangerouslySetInnerHTML={{ __html: companyData?.about }} />
+                  <div className='job-description'  dangerouslySetInnerHTML={{ __html: companyData?.about }} />
                 </section>
-                <section className='bg-white p-6 border-t border-gray-100'>
-                  <h4 className="text-xl font-semibold text-gray-900 mb-4">Gallery</h4>
-                  <div className="grid grid-cols-4 gap-4">
-                    {companyData?.companyImages?.map(img => (
-                      <Img willOpen style={"border border-gray-300 w-38 h-38 object-cover rounded-md"} src={img} />
+                <section className="bg-white py-20 p-8 h-100 border-t border-gray-200 overflow-clip">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-6">Gallery</h4>
+                  <Swiper
+                    modules={[Navigation, Pagination]}
+                    spaceBetween={24}
+                    slidesPerView={3}
+                    navigation
+                    pagination={{ clickable: true }}
+                    className="gallery-swiper"
+                  >
+                    {companyData?.companyImages?.map((img, idx) => (
+                      <SwiperSlide key={idx}>
+                        <div className="overflow-hidden rounded-2xl">
+                          <Img
+                            src={img}
+                            alt="Company gallery"
+                            style="w-full h-50 object-cover"
+                            willOpen
+                          />
+                        </div>
+                      </SwiperSlide>
                     ))}
-                  </div>
+                  </Swiper>
+
+
+                  {/* Custom styling */}
+                  <style>{`
+.gallery-swiper{ 
+                    height: 100%;
+}
+
+.gallery-swiper .swiper-button-prev,
+.gallery-swiper .swiper-button-next {
+color: #374151;
+width: 40px;
+height: 40px;
+padding: 10px;
+background: rgba(255,255,255,0.9);
+border-radius: 9999px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+
+.gallery-swiper .swiper-button-prev::after,
+.gallery-swiper .swiper-button-next::after {
+font-size: 16px;
+font-weight: bold;
+color: #374151;
+}
+
+
+.gallery-swiper .swiper-pagination {
+bottom: -6px;
+}
+
+
+.gallery-swiper .swiper-pagination-bullet {
+background: #d1d5db;
+opacity: 1;
+}
+
+
+.gallery-swiper .swiper-pagination-bullet-active {
+background: #111827;
+}
+`}</style>
                 </section>
               </div>
               {/* Job Listings */}
@@ -203,11 +265,11 @@ const CompanyProfile = () => {
                 <div className="space-y-4">
                   <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                     <span className="text-black">Categories</span>
-                    <span className="text-[var(--primary-color)] font-medium">{companyData.categories || companyData.industry}</span>
+                    <span className="text-[var(--primary-color)] font-medium">{slugToName(companyData.category) || companyData.industry}</span>
                   </div>
                   <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                     <span className="text-black">Founded in</span>
-                    <span className="text-gray-900 font-medium">{(companyData.foundedDate ? new Date(companyData.foundedDate).getFullYear() : "N/A")}</span>
+                    <span className="text-gray-900 font-medium">{(companyData.foundedDate ? new Date(companyData.foundedIn).getFullYear() : "N/A")}</span>
                   </div>
                   <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                     <span className="text-black">Location</span>

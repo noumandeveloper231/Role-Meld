@@ -1,7 +1,8 @@
 import { createPortal } from 'react-dom';
-import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { useContext, useEffect, useState } from 'react';
+import { Download, X } from 'lucide-react';
 import Img from '../components/Image';
+import { AppContext } from '../context/AppContext';
 
 let showImageFn;
 
@@ -11,12 +12,12 @@ export const openImage = (src) => {
 
 const ImagePortalManager = () => {
     const [imageSrc, setImageSrc] = useState(null);
+    const { backendUrl } = useContext(AppContext);
 
     useEffect(() => {
-        // Assign the global function
         showImageFn = setImageSrc;
         return () => {
-            showImageFn = null; // cleanup
+            showImageFn = null;
         };
     }, []);
 
@@ -24,19 +25,28 @@ const ImagePortalManager = () => {
 
     return createPortal(
         <div
-            className="fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm z-50"
+            className="fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm bg-black/70 z-50"
             onClick={() => setImageSrc(null)}
         >
-            <div
-                className="relative"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <Img style={"bg-[var(--accent-color)]  w-100 rounded object-contain border-2 border-[var(--primary-color)]"} src={imageSrc} />
+            <div className='z-51 absolute flex justify-end items-center px-6 top-0 left-0 w-full py-4 bg-black/30 gap-4'>
+                <a href={`${backendUrl}/download?url=${encodeURIComponent(imageSrc)}`}>
+                    <Download
+                        className="cursor-pointer text-gray-300"
+                        size={24}
+                    />
+                </a>
                 <X
-                    className="absolute top-4 rounded border border-gray-300 right-4 cursor-pointer bg-white  text-black"
+                    className="cursor-pointer text-gray-300"
                     size={24}
                     onClick={() => setImageSrc(null)}
                 />
+            </div>
+            <div
+                className="relative h-full w-[80%]"
+                onClick={(e) => e.stopPropagation()}
+
+            >
+                <Img style={"h-full w-full rounded object-contain"} src={imageSrc} />
             </div>
         </div>,
         document.body

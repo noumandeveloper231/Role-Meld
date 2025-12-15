@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
-import { MdWork } from "react-icons/md";
 import CompanyCard from "./CompanyCard";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import { FaExclamation } from "react-icons/fa";
 
 const CompanySection = () => {
     const [loading, setLoading] = useState(false);
-    const {backendUrl} = useContext(AppContext)
-    
+    const { backendUrl } = useContext(AppContext)
+
     const [companies, setCompanies] = useState([])
     const getCompanies = async () => {
         setLoading(true)
@@ -28,7 +28,7 @@ const CompanySection = () => {
             }
         } catch (error) {
             toast.error(error.message);
-        }finally{
+        } finally {
             setLoading(false)
         }
     };
@@ -60,22 +60,12 @@ const CompanySection = () => {
         );
     }
 
-    console.log('companies', companies)
-
-    if (companies.length < 0) {
+    if(companies.length === 0) {
         return (
             <>
-                <div className="flex flex-col justify-center w-full items-center mb-8">
-                    <h2 className="font-semibold text-black flex items-center gap-2">
-                        New Companies
-                    </h2>
-                </div>
-                <div className="text-center py-16">
-                    <div className="text-gray-400 mb-4">
-                        <MdWork size={64} className="mx-auto" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
-                    <p className="text-gray-600">Check back later for new opportunities.</p>
+                <div className="text-center py-5 flex flex-col items-center gap-4">
+                    <FaExclamation size={40} />
+                    <p className="text-gray-600">No Companies Uploaded Today.</p>
                 </div>
             </>
         );

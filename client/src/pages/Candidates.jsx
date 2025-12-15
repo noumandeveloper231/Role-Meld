@@ -13,7 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Candidates = () => {
     const searchParam = useLocation().search;
     const search = new URLSearchParams(searchParam);
-    const category = search.get("category");
+    const category = search.get("cat");
     console.log(category);
     const { backendUrl } = useContext(AppContext);
     const navigate = useNavigate();
@@ -31,6 +31,7 @@ const Candidates = () => {
         city: "",
         country: "",
         state: "",
+        category: [],
         experience: [],
         gender: [],
         qualification: [],
@@ -78,6 +79,7 @@ const Candidates = () => {
     const uniqueCities = uniqueExtractor("city");
     const uniqueStates = uniqueExtractor("state");
     const uniqueExperience = uniqueExtractor("experienceYears");
+    const uniqueCategories = uniqueExtractor("category");
     const uniqueGender = uniqueExtractor("gender");
     const uniqueQualification = uniqueExtractor("qualification");
     const uniqueSkills = [
@@ -167,7 +169,7 @@ const Candidates = () => {
         <div>
             <Navbar />
 
-            <main className="bg-gray-50">
+            <main className="bg-[var(--bg)]">
                 <div className="h-80 p-10 relative flex gap-3 flex-col items-center justify-center">
                     <h1 className="relative z-1 text-4xl text-white">
                         Hire people for your business
@@ -409,6 +411,25 @@ const Candidates = () => {
                                             onChange={() => handleCheckbox("experience", exp)}
                                         />
                                         {exp}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="border-t border-gray-200 py-4 space-y-2">
+                            <h5 className="text-gray-400 uppercase font-semibold">
+                                Categories
+                            </h5>
+
+                            <div className="max-h-[200px] overflow-y-auto space-y-2">
+                                {uniqueCategories.map((cat) => (
+                                    <label key={cat} className="flex items-center gap-2 capitalize">
+                                        <input
+                                            type="checkbox"
+                                            checked={filters.category.includes(cat)}
+                                            onChange={() => handleCheckbox("category", cat)}
+                                        />
+                                        {cat}
                                     </label>
                                 ))}
                             </div>

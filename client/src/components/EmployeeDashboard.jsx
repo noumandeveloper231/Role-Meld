@@ -10,6 +10,7 @@ import { ClipboardList, ClipboardPenLine, Loader, User } from 'lucide-react';
 import ImageCropPortal from '../portals/ImageCropPortal';
 import CustomSelect from './CustomSelect'
 import { Editor } from '@tinymce/tinymce-react';
+import { Link } from 'react-router-dom';
 
 const EmployeeDashboard = () => {
   const { userData, backendUrl, setUserData } = useContext(AppContext);
@@ -217,7 +218,7 @@ const EmployeeDashboard = () => {
 
       {/* Stats */}
       <div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 w-full'>
-        <div className='flex justify-between p-6 border border-gray-300 rounded-md items-center'>
+        <Link to={'/dashboard/jobs'} className='hover:shadow-lg shadow-gray-200 transition-all duration-300 ease-in-out  flex justify-between p-6 border border-gray-300 rounded-md items-center'>
           <div className='flex flex-col gap-3'>
             <span className='text-gray-500 font-semibold'>
               POSTED JOBS
@@ -229,8 +230,8 @@ const EmployeeDashboard = () => {
           <div className='p-3 rounded-full h-15 w-15 bg-[#b3e5fb] flex items-center justify-center'>
             <ClipboardPenLine />
           </div>
-        </div>
-        <div className='flex justify-between p-6 border border-gray-300 rounded-md items-center'>
+        </Link>
+        <Link to={'/dashboard/applicants'} className='hover:shadow-lg shadow-gray-200 transition-all duration-300 ease-in-out flex justify-between p-6 border border-gray-300 rounded-md items-center'>
           <div className='flex flex-col gap-3'>
             <span className='text-gray-500 font-semibold'>
               APPLICATIONS
@@ -242,8 +243,8 @@ const EmployeeDashboard = () => {
           <div className='p-3 rounded-full h-15 w-15 bg-[#cabffd] flex items-center justify-center'>
             <ClipboardList />
           </div>
-        </div>
-        <div className='flex justify-between p-6 border border-gray-300 rounded-md items-center'>
+        </Link>
+        <Link to={'/dashboard/candidates'} className='hover:shadow-lg shadow-gray-200 transition-all duration-300 ease-in-out flex justify-between p-6 border border-gray-300 rounded-md items-center'>
           <div className='flex flex-col gap-3'>
             <span className='text-gray-500 font-semibold'>
               MY FOLLOW
@@ -255,7 +256,7 @@ const EmployeeDashboard = () => {
           <div className='p-3 rounded-full h-15 w-15 bg-[#b7e4cb] flex items-center justify-center'>
             <User />
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Page Views Chart */}

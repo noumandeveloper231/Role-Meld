@@ -519,7 +519,7 @@ const Navbar = ({ className }) => {
   return (
     <div className={location.pathname !== "/" ? "border-b border-gray-200" : undefined}>
 
-      <nav className={`px-4 max-w-7xl mx-auto w-full ${location.pathname.includes("dashboard") ? "bg-white" : ""} py-3 relative z-999 ${className}`}>
+      <nav className={`px-4 max-w-7xl mx-auto w-full ${location.pathname.includes("dashboard") || location.pathname.includes("admin") ? "bg-white" : ""} py-3 relative z-999 ${className}`}>
         <div className="flex items-center justify-between">
           {/* Left Section - Logo and Desktop Links */}
           <div className="flex items-center gap-3">
@@ -536,7 +536,7 @@ const Navbar = ({ className }) => {
             <div className={`flex items-center gap-10`}>
               <NavLink to={"/"}>
                 {/* The image styling should be outside the component if possible, or ensure it's responsive */}
-                <Img src="/logo.webp" style={`${location.pathname.includes("dashboard") ? "hidden" : ""} w-28 sm:w-32`} alt="Company Logo" />
+                <Img src="/logo.webp" style={`${location.pathname.includes("dashboard") || location.pathname.includes("admin") ? "hidden" : ""} w-28 sm:w-32`} alt="Company Logo" />
               </NavLink>
               <DesktopNavLinks />
             </div>

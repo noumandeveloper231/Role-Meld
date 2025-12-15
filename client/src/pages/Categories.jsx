@@ -127,10 +127,9 @@ const Categories = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredCategories.map((cat, index) => {
                 const Icon = getCategoryIcon(cat?.icon || 'Tag');
-
                 return (
                   <Link
-                    to={`/category-jobs/${cat.slug}`}
+                    to={`/categories/${cat.slug}`}
                     key={index}
                   >
                     <div

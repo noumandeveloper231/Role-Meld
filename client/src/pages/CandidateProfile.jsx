@@ -1,17 +1,20 @@
 import Navbar from '../components/Navbar'
 import Img from '../components/Image'
-import { DollarSign, Facebook,Twitter, Instagram, Globe, File, MapPin, Plus } from 'lucide-react'
+import { DollarSign, Facebook, Twitter, Instagram, Globe, File, MapPin, Plus } from 'lucide-react'
 import { FaPaperPlane } from 'react-icons/fa'
 import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import FollowButton from '../components/FollowButton'
+import Breadcrumbs from '../components/Breakcumbs'
+import slugToName from '../utils/categoryNames'
 
 const CandidateProfile = () => {
-    const { id } = useParams()
-    const { backendUrl, followUnfollow, userData } = useContext(AppContext);
+    const { slug } = useParams()
+    const { backendUrl } = useContext(AppContext);
 
     const [candidate, setCandidate] = useState({});
 
@@ -19,7 +22,7 @@ const CandidateProfile = () => {
     useEffect(() => {
         const fetchCandidate = async () => {
             try {
-                const { data } = await axios.get(`${backendUrl}/api/user/getcandidate/${id}`)
+                const { data } = await axios.get(`${backendUrl}/api/user/getcandidate/${slug}`)
                 if (data.success) {
                     setCandidate(data.candidate)
                 } else {
@@ -49,28 +52,26 @@ const CandidateProfile = () => {
     return (
         <div className='flex flex-col min-h-screen'>
             <Navbar />
-            <main className='p-8 bg-gray-50 flex-1'>
-                <div className='max-w-7xl mx-auto'>
-                    {/* Navigation Link */}
-                    <div className='mb-4 text-gray-400'>
-                        Home {" > "} Candidates {" > "} Designer {" > "} Candidate
-                    </div>
-                    <section className='flex gap-8'>
-                        <div className='w-[60%]'>
-                            <div className=' bg-white rounded-2xl p-8'>
-                                {/* Top Section: Profile Info */}
-                                <div className="flex items-start space-x-4">
-                                    <div className="w-16 h-16 rounded-full overflow-hidden bg-orange-500 flex items-center justify-center">
+            <main className='p-8 bg-[var(--bg)] flex-1'>
+                <div className='max-w-6xl mx-auto'>
+                    {/* BreakCrumbs */}
+                    <Breadcrumbs />
+                    <section className='flex flex-col md:flex-row gap-8'>
+                        <div className='w-full bg-white rounded-2xl md:w-[60%]'>
+                            <div className='p-8'>
+                                <div className="flex flex-col md:flex-row items-center 
+                                 md:items-start space-x-4 gap-4 md:gap-0">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden bg-[var(--accent-color)] border border-[var(--primary-color)]/30 flex items-center justify-center">
                                         {/* Replace with an actual image component or use an SVG/icon */}
                                         <Img src={candidate.profilePicture || "https://picsum"} />
                                     </div>
-                                    <div className="flex-grow">
+                                    <div className="flex-grow self-center md:self-start">
                                         <h2 className="text-2xl font-semibold text-gray-800">{candidate?.name}</h2>
 
                                         {/* Details Row */}
-                                        <div className="flex items-center space-x-3 text-sm text-gray-500 mt-1">
+                                        <div className="flex flex-wrap items-center space-x-3 text-sm text-gray-500 mt-1">
                                             {/* Role */}
-                                            <span className="text-[var(--primary-color)] font-medium">{candidate?.category}</span>
+                                            <Link to={`/candidates?cat=/${candidate?.category}`} className="text-[var(--primary-color)] font-medium">{slugToName(candidate?.category)}</Link>
 
                                             {/* Separator Dot/Circle (using text-xs for a small dot) */}
                                             <span className="text-xs">•</span>
@@ -94,21 +95,10 @@ const CandidateProfile = () => {
                                 </div>
 
                                 {/* Bottom Section: Actions */}
-                                <div className="flex space-x-3 mt-8">
+                                <div className="flex flex-wrap space-x-3 gap-4 md:gap-0 items-center justify-center md:justify-start mt-8">
 
                                     {/* Follow Button */}
-                                    <button
-                                        onClick={() => {
-                                            if (userData?.role === "user") {
-                                                toast.error("Candidate can't follow other Candidates")
-                                            } else {
-                                                followUnfollow(candidate._id)
-                                            }
-                                        }}
-                                        className="secondary-btn flex items-center gap-2">
-                                        <Plus />
-                                        <span>Follow</span>
-                                    </button>
+                                    <FollowButton company={candidate} />
 
                                     {/* Save to PDF Button */}
                                     <button
@@ -136,18 +126,17 @@ const CandidateProfile = () => {
                                     </button>
 
                                 </div>
-                                <hr className='border-gray-200 my-8' />
-
-                                <div>
-                                    <h2 className='mb-3 font-semibold'>
-                                        About Me
-                                    </h2>
-                                    <p>
-                                        {candidate?.about}
-                                    </p>
-                                </div>
                             </div>
-                            <div className="p-8 bg-white rounded-2xl mt-10">
+                            <div className='p-8 border-t border-gray-200'>
+                                <h2 className='mb-3 font-semibold'>
+                                    About Me
+                                </h2>
+                                <div
+                                    className='job-description overflow-auto h-60'
+                                    dangerouslySetInnerHTML={{ __html: candidate?.description }}
+                                />
+                            </div>
+                            <div className="p-8 border-t border-gray-200">
 
                                 {/* Title */}
                                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -178,7 +167,7 @@ const CandidateProfile = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-[30%] space-y-8">
+                        <div className="w-full md:w-[30%] space-y-8">
                             {/* Information Widget */}
                             <div className="bg-white rounded-xl border border-gray-100 p-6">
                                 <h3 className="text-lg font-bold text-gray-900 mb-6">Information</h3>
@@ -189,11 +178,11 @@ const CandidateProfile = () => {
                                     </div>
                                     <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                                         <span className="text-black">Experience</span>
-                                        <span className="text-gray-900 font-medium">{candidate?.experience} Years</span>
+                                        <span className="text-gray-900 font-medium">{candidate?.experienceYears}</span>
                                     </div>
                                     <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                                         <span className="text-black">Gender</span>
-                                        <span className="text-gray-900 font-medium">{candidate?.gender}</span>
+                                        <span className="text-gray-900 capitalize font-medium">{candidate?.gender}</span>
                                     </div>
                                     <div className="flex flex-col pb-3 border-b border-gray-50 last:border-0">
                                         <span className="text-black">Qualification</span>
@@ -214,10 +203,10 @@ const CandidateProfile = () => {
                                 </div>
 
                                 <div className="flex items-center gap-4 mt-6 pt-6 border-t border-gray-100">
-                                    <a href={candidate?.socials?.facebook || "#"} className="text-gray-400 hover:text-blue-600 transition-colors"><Facebook size={20} /></a>
-                                    <a href={candidate?.socials?.twitter || "#"} className="text-gray-400 hover:text-blue-400 transition-colors"><Twitter size={20} /></a>
-                                    <a href={candidate?.socials?.instagram || "#"} className="text-gray-400 hover:text-pink-600 transition-colors"><Instagram size={20} /></a>
-                                    <a href={candidate?.socials?.linkedin || "#"} className="text-gray-400 hover:text-blue-700 transition-colors"><Globe size={20} /></a>
+                                    <a href={candidate?.facebook || "#"} target='_blank' className="text-gray-400 hover:text-blue-600 transition-colors"><Facebook size={20} /></a>
+                                    <a href={candidate?.twitter || "#"} target='_blank' className="text-gray-400 hover:text-blue-400 transition-colors"><Twitter size={20} /></a>
+                                    <a href={candidate?.instagram || "#"} target='_blank' className="text-gray-400 hover:text-pink-600 transition-colors"><Instagram size={20} /></a>
+                                    <a href={candidate?.linkedin || "#"} target='_blank' className="text-gray-400 hover:text-blue-700 transition-colors"><Globe size={20} /></a>
                                 </div>
                             </div>
                         </div>

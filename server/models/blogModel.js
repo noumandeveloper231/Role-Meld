@@ -9,7 +9,7 @@ const blogSchema = new mongoose.Schema({
   coverImage: String,
   category: String,
   tags: Array,
-  status: { type: String, enum: ["draft", "published"], default: "draft" },
+  status: { type: String, enum: ["draft", "published"], default: "published" },
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
 }, { timestamps: true });

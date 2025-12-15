@@ -21,6 +21,7 @@ import CompanySection from "../components/CompanySection";
 import AnimatedText from "../components/AnimatedText";
 import Loading from "../components/Loading";
 import { getCategoryIcon } from "../utils/categoryIcons";
+import { FaExclamation } from "react-icons/fa";
 
 const Home = () => {
   // Auto Scroll to Top
@@ -191,24 +192,32 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {
-                categories.slice(0, 6).map((category, index) => {
-                  const Icon = getCategoryIcon(category?.icon);
-                  return (
-                    <Link
-                      key={category._id}
-                      to={'/category-jobs/' + category?.slug}
-                      className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow-lg  rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
-                    >
-                      <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
-                        <Icon size={24} className="text-white" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
-                        <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.slug).length} jobs</p>
-                      </div>
-                    </Link>
-                  )
-                })
+                categories.length === 0 ?
+                  <>
+                    <div className="text-center py-5 flex flex-col items-center gap-4">
+                      <FaExclamation size={40} />
+                      <p className="text-gray-600">No Categories Uploaded</p>
+                    </div>
+                  </>
+                  :
+                  categories.slice(0, 6).map((category) => {
+                    const Icon = getCategoryIcon(category?.icon);
+                    return (
+                      <Link
+                        key={category._id}
+                        to={'/categories/' + category?.slug}
+                        className="group bg-[var(--accent-color)] shadow-gray-100 hover:shadow-lg  rounded-2xl p-8 cursor-pointer transition-all duration-300 border-gray-200 border flex gap-3"
+                      >
+                        <div className="w-14 h-14 bg-[var(--primary-color)] rounded-full flex items-center justify-center flex-shrink-0">
+                          <Icon size={24} className="text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
+                          <p className="text-gray-500 text-sm">{jobs?.filter(job => job.category === category?.slug).length} jobs</p>
+                        </div>
+                      </Link>
+                    )
+                  })
               }
             </div>
 

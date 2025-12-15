@@ -13,6 +13,9 @@ import NotFound404 from '../components/NotFound404';
 import "swiper/css";
 import Navbar from '../components/Navbar';
 import CustomSelect from '../components/CustomSelect';
+import { getCategoryIcon } from '../utils/categoryIcons';
+import slugToName from '../utils/categoryNames';
+import Breadcrumbs from '../components/Breakcumbs';
 
 const CategoryJobs = () => {
   // Auto Scroll to Top
@@ -20,6 +23,7 @@ const CategoryJobs = () => {
     window.scrollTo({ top: 0 });
   }, [])
   let { cat } = useParams();
+  console.log('cat', cat)
 
   const { backendUrl } = useContext(AppContext);
 
@@ -41,7 +45,6 @@ const CategoryJobs = () => {
     "from-emerald-900 to-emerald-600",
     "from-rose-900 to-rose-600",
   ];
-  const [randomGradient, setRandomGradient] = useState("");
 
   const getCategoryJobs = async () => {
     setLoading(true);
@@ -71,8 +74,6 @@ const CategoryJobs = () => {
   useEffect(() => {
     getCategoryJobs();
     getCategories();
-    const newGradient = gradients[Math.floor(Math.random() * gradients.length)];
-    setRandomGradient(newGradient);
   }, [cat]);
 
   const filteredJobs = categoryJobs.filter((job) =>
@@ -83,96 +84,65 @@ const CategoryJobs = () => {
 
   if (loading || categoriesLoading) return <Loading />;
 
-  const currentCategory = categories.find(cat => cat.name === cat);
 
-  console.log('', currentCategory);
-
+  const currentCategory = categories.find(cat1 => cat1.slug === cat);
 
   return (
     <div>
       <Navbar className={"max-w-6xl mx-auto"} />
-      <main className='p-6 max-w-6xl mx-auto'>
-        <section className={`py-12 rounded-2xl shadow-2xl bg-gradient-to-br ${randomGradient}`}>
-          <h1 className="text-3xl font-bold text-center text-white flex flex-col items-center justify-center gap-2">
-            <MdComputer size={60} /> {cat}
-          </h1>
-        </section>
+      <main className='bg-[var(--bg)]  py-10'>
 
-        {/* Subcategories */}
-        <section className="p-2 mt-4">
-          <Swiper
-            spaceBetween={20}
-            slidesPerView={5}
-            breakpoints={{
-              320: { slidesPerView: 1 },
-              480: { slidesPerView: 2 },
-              768: { slidesPerView: 3 },
-              1024: { slidesPerView: 5 },
-            }}
-          >
-            {currentCategory?.subcategories?.map((sub, i) => (
-              <SwiperSlide
-                key={i}
-                className="py-4 my-4 px-6 text-xl font-semibold bg-white rounded-2xl border whitespace-nowrap cursor-pointer shadow hover:shadow-lg transition"
-                onClick={() => setSubCategory(sub)}
-              >
-                {sub}
-              </SwiperSlide>
-            ))}
-          </Swiper>
-          {subCategory && (
-            <span
-              onClick={() => setSubCategory('')}
-              className='w-full flex items-center gap-2 cursor-pointer justify-end mt-2'
-            >
-              <MdLoop size={20} /> Reset
-            </span>
-          )}
-        </section>
+        <div className='max-w-6xl mx-auto'>
+          {/* Breadcrumb */}
+          <Breadcrumbs />
+          <section className={`py-12 border border-[var(--primary-color)]/50 rounded-2xl bg-[var(--accent-color)]`}>
+            <h1 className="text-3xl font-bold text-center text-[var(--primary-color)] flex flex-col items-center justify-center gap-2">
+              {(() => {
+                const Icon = getCategoryIcon(currentCategory?.icon || cat.toLowerCase())
+                return Icon ? <Icon size={30} /> : null
+              })()}
+              {slugToName(cat)}
+            </h1>
+          </section>
 
-        {/* Breadcrumb */}
-        <section className='p-2'>
-          <h3 className='flex items-center gap-4 font-semibold'>
-            <IoHomeOutline size={30} className='text-[var(--primary-color)]' /> / {cat} {subCategory && `/ ${subCategory}`}
-          </h3>
-        </section>
-
-        {/* Filters */}
-        <section className='mt-5 p-2'>
-          <div className='flex items-center gap-8'>
-            <h2 className='flex items-center gap-4 font-semibold'>
-              <FaFilter className='text-[var(--primary-color)]' /> Filter:
-            </h2>
-            <div className='flex items-center gap-4'>
-              <CustomSelect
-                value={filteredJobType}
-                name={"jobType"}
-                onChange={(e) => setFilteredJobType(e.target.value)}
-              >
-                <option value="jobType">Job Type</option>
-                <option value="Full Time">Full Time</option>
-                <option value="Part Time">Part Time</option>
-                <option value="Contract">Contract</option>
-              </CustomSelect>
-              <CustomSelect
-                value={filteredLocationType}
-                name={"locationType"}
-                onChange={(e) => setFilteredLocationType(e.target.value)}
-              >
-                <option value="locationType">Location Type</option>
-                <option value="Remote">Remote</option>
-                <option value="On Site">On Site</option>
-                <option value="Hybrid">Hybrid</option>
-              </CustomSelect>
+          {/* Filters */}
+          <section className='p-2'>
+            <div className='flex items-center gap-8'>
+              <h2 className='flex items-center gap-4 font-semibold'>
+                <FaFilter className='text-[var(--primary-color)]' /> Filter:
+              </h2>
+              <div className='flex items-center gap-4'>
+                <CustomSelect
+                  value={filteredJobType}
+                  name={"jobType"}
+                  onChange={(e) => setFilteredJobType(e.target.value)}
+                >
+                  <option value="jobType">Job Type</option>
+                  <option value="Full Time">Full Time</option>
+                  <option value="Part Time">Part Time</option>
+                  <option value="Contract">Contract</option>
+                </CustomSelect>
+                <CustomSelect
+                  value={filteredLocationType}
+                  name={"locationType"}
+                  onChange={(e) => setFilteredLocationType(e.target.value)}
+                >
+                  <option value="locationType">Location Type</option>
+                  <option value="Remote">Remote</option>
+                  <option value="On Site">On Site</option>
+                  <option value="Hybrid">Hybrid</option>
+                </CustomSelect>
+              </div>
             </div>
-          </div>
 
-          <div className='grid my-5 grid-cols-1 md:grid-cols-2 gap-4'>
-            {filteredJobs.length !== 0
-              ? filteredJobs.map((job, i) => <JobCard key={i} e={job} />)
-              : <NotFound404 value={"No Jobs Found"} margin={"my-10"} />}
-          </div>
-        </section>
+            <div className='grid my-5 grid-cols-1 md:grid-cols-2 gap-4'>
+              {filteredJobs.length !== 0
+                ? filteredJobs.map((job, i) => <JobCard key={i} e={job} />)
+                : <NotFound404 value={"No Jobs Found"} margin={"my-10"} />}
+            </div>
+          </section>
+        </div>
+
       </main>
     </div>
   );

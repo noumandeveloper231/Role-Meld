@@ -10,6 +10,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { MdWork } from "react-icons/md";
 import JobCard from "./JobCard";
+import { FaExclamation } from "react-icons/fa";
 
 const LatestJobs = () => {
   const { backendUrl } = useContext(AppContext);
@@ -85,12 +86,9 @@ const LatestJobs = () => {
           </h2>
           <span className='text-gray-600 text-lg'>2025 jobs live - {latestJobs.filter(job => new Date(job.createdAt).toDateString() === new Date().toDateString()).length} uploaded today </span>
         </div>
-        <div className="text-center py-16">
-          <div className="text-gray-400 mb-4">
-            <MdWork size={64} className="mx-auto" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
-          <p className="text-gray-600">Check back later for new opportunities.</p>
+        <div className="text-center py-5 flex flex-col items-center gap-4">  
+          <FaExclamation size={40} />
+          <p className="text-gray-600">No Jobs Uploaded Today.</p>
         </div>
       </>
     );
@@ -104,6 +102,7 @@ const LatestJobs = () => {
         </span>
         <span className='text-gray-600 text-lg'>2025 jobs live - {latestJobs.filter(job => new Date(job.createdAt).toDateString() === new Date().toDateString()).length} uploaded today </span>
       </div>
+
       <div className="relative">
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}

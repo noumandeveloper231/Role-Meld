@@ -113,9 +113,9 @@ function calculateProfileScore(user) {
     }
 
     // Resume (4 points)
-    // if (user.resume && user.resume.trim() !== "") {
-    //     score += 4;
-    // }
+    if (user.resume && user.resume.trim() !== "") {
+        score += 4;
+    }
 
     // Video URL (2 points)
     if (user.videoUrl && user.videoUrl.trim() !== "") {
@@ -187,7 +187,7 @@ function calculateProfileScore(user) {
         score += Math.min(socialCount, 5);
     }
 
-    const maxScore = 89;
+    const maxScore = 93;
     // const percentage = Math.min(100, Math.round((score / maxScore) * 100));
     const percentage = score / maxScore * 100;
 
@@ -258,9 +258,29 @@ export const updateProfile = async (req, res) => {
         let updatedProfile;
 
         if (authUser.role === "user") {
+            const oldProfile = await userProfileModel.findOne({ authId: userId });
+            if (!oldProfile) {
+                return res.json({ success: false, message: "User Not Found!" });
+            }
+
+            const newSlug = slugify(updateUser.name?.trim().toLowerCase().replace(/\s/g, '-'), { lower: true });
+            const existingSlug = await userProfileModel.findOne({ slug: newSlug });
+            let newSlugWithRandom;
+            if (existingSlug) {
+                const randomString = Math.floor(1000 + Math.random() * 9000).toString();
+                newSlugWithRandom = `${newSlug}-${randomString.substring(0, 3)}`;
+            } else {
+                newSlugWithRandom = newSlug;
+            }
+
             updatedProfile = await userProfileModel.findOneAndUpdate(
                 { authId: userId },
-                { $set: updateUser },
+                {
+                    $set: {
+                        ...updateUser,
+                        slug: newSlugWithRandom
+                    }
+                },
                 { new: true }
             );
 
@@ -278,7 +298,7 @@ export const updateProfile = async (req, res) => {
                 { authId: userId },
                 { $set: updateUser },   // 👈 directly update
                 { new: true }
-            );  
+            );
 
             if (!updatedProfile) {
                 return res.json({ success: false, message: "User Not Found!" });
@@ -441,24 +461,31 @@ export const updateResume = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ success: false, message: "No file uploaded" });
         }
+
         const userId = req.user._id;
-        const baseName = req.file.originalname.split(".")[0];
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: "users",
-            resource_type: "raw",
-            public_id: `${baseName}_${Date.now()}`,
-            format: "pdf"
-        });
-
-        try { fs.unlinkSync(req.file.path); } catch (e) { }
+        console.log('req.file.path', req.file.path)
 
         const user = await userProfileModel.findOne({ authId: userId });
+
         if (!user) {
             return res.status(404).json({ success: false, message: "User Not Found!" });
         }
-        user.resume = result.secure_url;
+
+        const path = req.file.path;
+
+        const pdf = await cloudinary.uploader.upload(path, {
+            folder: "users",
+            use_filename: true,
+            unique_filename: false,
+            resource_type: "raw",
+            type: "upload"
+        });
+
+        console.log('pdf', pdf.secure_url)
+
         user.profileScore = calculateProfileScore(user);
+        user.resume = pdf.secure_url
         await user.save();
 
         res.json({
@@ -466,14 +493,14 @@ export const updateResume = async (req, res) => {
             message: "Resume uploaded successfully",
             profile: user,
         });
+
     } catch (error) {
-        if (req.file && req.file.path) {
-            try { fs.unlinkSync(req.file.path); } catch (e) { }
-        }
         console.error(error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+
 
 export const applyJob = async (req, res) => {
     const userId = req.user._id;
@@ -646,7 +673,7 @@ export const getCompanyDetails = async (req, res) => {
     }
 
     try {
-        let company = await recruiterProfileModel.findByOne({slug: slug})
+        let company = await recruiterProfileModel.findOne({ slug: slug })
             .populate("sentJobs");
 
         if (!company) {
@@ -1003,14 +1030,14 @@ export const searchCandidate = async (req, res) => {
 };
 
 export const getCandidate = async (req, res) => {
-    const { id } = req.params;
-    console.log(id);
-    if (!id) {
+    const { slug } = req.params;
+    console.log(slug);
+    if (!slug) {
         return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
     try {
-        const candidate = await userProfileModel.findById(id);
+        const candidate = await userProfileModel.findOne({ slug });
 
         console.log(candidate);
 

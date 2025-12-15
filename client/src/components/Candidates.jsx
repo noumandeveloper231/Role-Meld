@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { Eye, Mail, Search, Trash } from 'lucide-react'
+import { Eye, Mail, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import CustomSelect from './CustomSelect';
 import Img from './Image';
 import axios from 'axios';
@@ -146,11 +146,11 @@ const Candidates = () => {
                     <tbody>
                         {
                             !loading && candidates.length === 0 && (
-                                <tr>
-                                    <td colSpan={2} className='px-6 py-6 text-center text-gray-500'>
-                                        No candidates found.
-                                    </td>
-                                </tr>
+                                <div className='mt-3'>
+                                    <div className="min-h-100 w-full text-center px-6 py-3">
+                                        No jobs found.
+                                    </div>
+                                </div>
                             )}
                         {paginatedCandidates.map(candidate => (
                             <tr key={candidate.id} className='border-t border-gray-100 hover:bg-gray-50'>
@@ -188,43 +188,41 @@ const Candidates = () => {
                 </table>
             </div>
 
-            {/* Pagination */}
-            {filteredCandidates.length > 0 && (
-                <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6'>
-                    <div className='flex items-center gap-4'>
-                        <div className='text-sm text-gray-600'>
-                            Showing {filteredCandidates.length === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, filteredCandidates.length)} of {filteredCandidates.length}
-                        </div>
-                        <div>
-                            <CustomSelect
-                                value={itemsPerPage}
-                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                            >
-                                {[5, 10, 25].map(size => (
-                                    <option key={size} value={size}>{size} / page</option>
-                                ))}
-                            </CustomSelect>
-                        </div>
+            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6'>
+                <div className='flex items-center gap-4'>
+                    <div>
+                        <CustomSelect
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            {[5, 10, 25].map(size => (
+                                <option key={size} value={size}>{size}</option>
+                            ))}
+                        </CustomSelect>
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50'
-                        >
-                            Previous
-                        </button>
-                        <span className='text-sm text-gray-600'>Page {currentPage} of {totalPages}</span>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                            className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50'
-                        >
-                            Next
-                        </button>
+                    <div className='text-sm text-gray-600'>
+                        Showing {filteredCandidates.length === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, filteredCandidates.length)} of {filteredCandidates.length}
                     </div>
                 </div>
-            )}
+                <div className='flex items-center gap-2'>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50'
+                    >
+                        <ChevronLeft />
+                    </button>
+                    <span className='text-sm text-gray-600'>Page {currentPage} of {totalPages}</span>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50'
+                    >
+                        <ChevronRight />
+                    </button>
+                </div>
+            </div>
+            {/* Pagination */}
         </div>
     )
 }

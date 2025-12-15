@@ -20,7 +20,8 @@ import {
   getFollowing,
   getFollowers,
   getCandidate,
-  updateCoverImage,  getApplicantDashboardStats,} from "../controllers/userController.js";
+  updateCoverImage, getApplicantDashboardStats,
+} from "../controllers/userController.js";
 import express from "express";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -37,23 +38,19 @@ const storage = new CloudinaryStorage({
     const baseName = file.originalname.split('.')[0];
 
     // Add extension ONLY for PDF files
-    const finalPublicId = isResume
-      ? `${baseName}_${Date.now()}.pdf`
-      : `${baseName}_${Date.now()}`;
+    const finalPublicId = `${baseName}_${Date.now()}`;
 
     return {
       folder: "users",
-      resource_type: isResume ? "raw" : "image",
+      resource_type: "image",
 
       // No format conversion for raw files
-      format: !isResume ? fileExt : "pdf",
+      format: fileExt,
 
       public_id: finalPublicId,
 
       // Only image transformations
-      transformation: !isResume
-        ? [{ width: 800, height: 600, crop: "limit" }]
-        : undefined,
+      transformation: [{ width: 800, height: 600, crop: "limit" }],
     };
   },
 });
@@ -63,6 +60,16 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+const resumeStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const uploadResume = multer({ storage: resumeStorage });
+
 /* ------------------ 🔐 Routes ------------------ */
 
 // User data & profile
@@ -70,13 +77,6 @@ userRouter.get("/data", userAuth, getUserData);
 userRouter.post("/updateprofile", userAuth, updateProfile);
 userRouter.get("/checkprofilescore", userAuth, checkProfileScore);
 userRouter.get("/dashboard-stats", userAuth, getApplicantDashboardStats);
-
-// Separate upload for resume (using disk storage for manual upload)
-const storageResume = multer.diskStorage({});
-const uploadResume = multer({
-  storage: storageResume,
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
 
 // File uploads
 userRouter.post('/updateresume', userAuth, uploadResume.single('resume'), updateResume);
@@ -88,7 +88,7 @@ userRouter.post("/updatecoverimage", userAuth, upload.single("coverImage"), upda
 userRouter.post("/savejob", userAuth, saveJob);
 userRouter.post("/applyjob", userAuth, applyJob);
 userRouter.get("/fetchapplicants", userAuth, fetchApplicants);
-userRouter.get("/getcandidate/:id", getCandidate);
+userRouter.get("/getcandidate/:slug", getCandidate);
 
 // Users & recruiters
 userRouter.get("/allusers", getAllUsers);

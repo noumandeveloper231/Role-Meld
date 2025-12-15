@@ -227,7 +227,7 @@ const AdminPackages = () => {
                 </h1>
                 <button
                     onClick={openCreateModal}
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:opacity-90 transition"
+                    className="primary-btn"
                 >
                     <Plus size={20} />
                     Create Package

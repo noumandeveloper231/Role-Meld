@@ -158,7 +158,7 @@ const AdminJobRequests = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-lg border border-gray-300">
+        <div className="rounded-lg border border-gray-300">
           <table className="min-w-full bg-white border-collapse">
             <thead>
               <tr className="text-left text-gray-500 bg-white border-b border-gray-200">
@@ -171,7 +171,7 @@ const AdminJobRequests = () => {
                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='overflow-x-auto'>
               {currentJobs?.length > 0 ? (
                 currentJobs.map((job) => (
                   <tr
@@ -244,84 +244,82 @@ const AdminJobRequests = () => {
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={7} className="text-center pt-6 pb-6">
-                    No job requests found.
-                  </td>
-                </tr>
+                <div className='mt-3'>
+                  <div className="min-h-100 w-full  text-center px-6 py-3">
+                    No jobs found.
+                  </div>
+                </div>
               )}
 
               {/* Pagination Row */}
-              <tr>
-                <td className='px-6 py-3' colSpan={7}>
-                  {filteredJobs.length > 0 && (
-                    <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-                      {/* Items per page selector */}
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={itemsPerPage}
-                          onChange={(e) => {
-                            setItemsPerPage(Number(e.target.value));
-                            setCurrentPage(1);
-                          }}
-                          className="border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value={10}>10</option>
-                          <option value={25}>25</option>
-                          <option value={50}>50</option>
-                          <option value={100}>100</option>
-                        </select>
-                        <span className="text-sm text-gray-600">
-                          {startItem} - {endItem} of {filteredJobs.length} items
-                        </span>
-                      </div>
-
-                      {/* Page navigation */}
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                          disabled={currentPage === 1}
-                          className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Previous
-                        </button>
-
-                        {/* Pagination Numbers Logic */}
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 5) pageNum = i + 1;
-                          else if (currentPage <= 3) pageNum = i + 1;
-                          else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                          else pageNum = currentPage - 2 + i;
-
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 cursor-pointer py-1 text-sm border rounded-md ${currentPage === pageNum
-                                ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-                                : "border-gray-300 hover:bg-gray-50"
-                                }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        })}
-
-                        <button
-                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                          disabled={currentPage === totalPages}
-                          className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </td>
-              </tr>
             </tbody>
           </table>
+        </div>
+        <div>
+          <div className='px-6 py-6'>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              {/* Items per page selector */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span className="text-sm text-gray-600">
+                  {startItem} - {endItem} of {filteredJobs.length} items
+                </span>
+              </div>
+
+              {/* Page navigation */}
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+
+                {/* Pagination Numbers Logic */}
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) pageNum = i + 1;
+                  else if (currentPage <= 3) pageNum = i + 1;
+                  else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                  else pageNum = currentPage - 2 + i;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 cursor-pointer py-1 text-sm border rounded-md ${currentPage === pageNum
+                        ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

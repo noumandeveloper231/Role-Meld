@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
-import { Trash, Search, Pencil } from 'lucide-react';
+import { Trash, Search, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -261,133 +261,131 @@ const RecruiterJobs = () => {
                                         </tr>
                                     ))
                                     :
-                                    <tr>
-                                        <td colSpan={6} className="text-center  pt-6">
+                                    <div className='mt-3'>
+                                        <div className="min-h-100 w-full  text-center px-6 py-3">
                                             No jobs found.
-                                        </td>
-                                    </tr>
-                            }
-                            <tr>
-                                <td className='px-6 py-3' colSpan={7}>
-                                    {/* Pagination */}
-                                    {filteredJobs.length > 0 && (
-                                        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-                                            {/* Items per page selector */}
-                                            <div className="flex items-center gap-2">
-                                                <select
-                                                    value={itemsPerPage}
-                                                    onChange={(e) => {
-                                                        setItemsPerPage(Number(e.target.value));
-                                                        setCurrentPage(1);
-                                                    }}
-                                                    className="border border-gray-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                >
-                                                    <option value={10}>10</option>
-                                                    <option value={25}>25</option>
-                                                    <option value={50}>50</option>
-                                                    <option value={100}>100</option>
-                                                </select>
-                                                <span className="text-sm text-gray-600">
-                                                    {startItem} - {endItem} of {filteredJobs.length} items
-                                                </span>
-                                            </div>
-
-                                            {/* Page navigation */}
-                                            <div className="flex items-center gap-1">
-                                                {/* Previous button */}
-                                                <button
-                                                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                                                    disabled={currentPage === 1}
-                                                    className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                    Previous
-                                                </button>
-
-                                                {/* Page numbers */}
-                                                {(() => {
-                                                    const pages = [];
-                                                    const maxVisiblePages = 5;
-                                                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-                                                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-                                                    if (endPage - startPage + 1 < maxVisiblePages) {
-                                                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-                                                    }
-
-                                                    // First page
-                                                    if (startPage > 1) {
-                                                        pages.push(
-                                                            <button
-                                                                key={1}
-                                                                onClick={() => setCurrentPage(1)}
-                                                                className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                                            >
-                                                                1
-                                                            </button>
-                                                        );
-                                                        if (startPage > 2) {
-                                                            pages.push(
-                                                                <span key="ellipsis1" className="px-2 text-gray-500">
-                                                                    ...
-                                                                </span>
-                                                            );
-                                                        }
-                                                    }
-
-                                                    // Visible pages
-                                                    for (let i = startPage; i <= endPage; i++) {
-                                                        pages.push(
-                                                            <span
-                                                                key={i}
-                                                                onClick={() => setCurrentPage(i)}
-                                                                className={`px-3 cursor-pointer py-1 text-sm border rounded-md ${currentPage === i
-                                                                    ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
-                                                                    : "border-gray-300 hover:bg-gray-50"
-                                                                    }`}
-                                                            >
-                                                                {i}
-                                                            </span>
-                                                        );
-                                                    }
-
-                                                    // Last page
-                                                    if (endPage < totalPages) {
-                                                        if (endPage < totalPages - 1) {
-                                                            pages.push(
-                                                                <span key="ellipsis2" className="px-2 text-gray-500">
-                                                                    ...
-                                                                </span>
-                                                            );
-                                                        }
-                                                        pages.push(
-                                                            <button
-                                                                key={totalPages}
-                                                                onClick={() => setCurrentPage(totalPages)}
-                                                                className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                                                            >
-                                                                {totalPages}
-                                                            </button>
-                                                        );
-                                                    }
-
-                                                    return pages;
-                                                })()}
-
-                                                {/* Next button */}
-                                                <button
-                                                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                                                    disabled={currentPage === totalPages}
-                                                    className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                    Next
-                                                </button>
-                                            </div>
                                         </div>
-                                    )}
-                                </td>
-                            </tr>
+                                    </div>
+                            }
                         </tbody>
                     </table>
+                    <div className='border-t border-gray-200' >
+                        <div className='px-6 py-6'>
+                            {/* Pagination */}
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                                {/* Items per page selector */}
+                                <div className="flex items-center gap-2">
+                                    <select
+                                        value={itemsPerPage}
+                                        onChange={(e) => {
+                                            setItemsPerPage(Number(e.target.value));
+                                            setCurrentPage(1);
+                                        }}
+                                        className='px-3 py-2 border focus:border-[var(--primary-color)] border-gray-300 rounded-md'
+                                    >
+                                        <option value={10}>10</option>
+                                        <option value={25}>25</option>
+                                        <option value={50}>50</option>
+                                        <option value={100}>100</option>
+                                    </select>
+                                    <span className="text-sm text-gray-600">
+                                        {startItem} - {endItem} of {filteredJobs.length} items
+                                    </span>
+                                </div>
+
+                                {/* Page navigation */}
+                                <div className="flex items-center gap-1">
+                                    {/* Previous button */}
+                                    <button
+                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                        disabled={currentPage === 1}
+                                        className="p-1 cursor-pointer text-sm border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronLeft className='text-[var(--primary-color)]' />
+                                    </button>
+
+                                    {/* Page numbers */}
+                                    {(() => {
+                                        const pages = [];
+                                        const maxVisiblePages = 5;
+                                        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                                        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                                        if (endPage - startPage + 1 < maxVisiblePages) {
+                                            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                                        }
+
+                                        // First page
+                                        if (startPage > 1) {
+                                            pages.push(
+                                                <button
+                                                    key={1}
+                                                    onClick={() => setCurrentPage(1)}
+                                                    className="px-3 cursor-pointer py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                                                >
+                                                    1
+                                                </button>
+                                            );
+                                            if (startPage > 2) {
+                                                pages.push(
+                                                    <span key="ellipsis1" className="px-2 text-gray-500">
+                                                        ...
+                                                    </span>
+                                                );
+                                            }
+                                        }
+
+                                        // Visible pages
+                                        for (let i = startPage; i <= endPage; i++) {
+                                            pages.push(
+                                                <span
+                                                    key={i}
+                                                    onClick={() => setCurrentPage(i)}
+                                                    className={`px-3 cursor-pointer py-1 text-sm border rounded-md ${currentPage === i
+                                                        ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                                                        : "border-gray-300 hover:bg-gray-50"
+                                                        }`}
+                                                >
+                                                    {i}
+                                                </span>
+                                            );
+                                        }
+
+                                        // Last page
+                                        if (endPage < totalPages) {
+                                            if (endPage < totalPages - 1) {
+                                                pages.push(
+                                                    <span key="ellipsis2" className="px-2 text-gray-500">
+                                                        ...
+                                                    </span>
+                                                );
+                                            }
+                                            pages.push(
+                                                <button
+                                                    key={totalPages}
+                                                    onClick={() => setCurrentPage(totalPages)}
+                                                    className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                                                >
+                                                    {totalPages}
+                                                </button>
+                                            );
+                                        }
+
+                                        return pages;
+                                    })()}
+
+                                    {/* Next button */}
+                                    <button
+                                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="p-1 cursor-pointer text-sm border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronRight className='text-[var(--primary-color)]' />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>

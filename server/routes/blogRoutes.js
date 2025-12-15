@@ -23,8 +23,8 @@ const upload = multer({ storage });
 // ✅ Routes
 blogRouter.post("/createblog", userAuth, upload.single("coverImage"), createBlog);
 blogRouter.get("/getallblogs", getAllBlogs);
-blogRouter.post("/getblog", getBlog);
-blogRouter.post("/removeblog", removeBlog);
-blogRouter.post("/editblog", editBlog);
+blogRouter.get("/getblog/:slug", getBlog);
+blogRouter.delete("/removeblog/:slug", removeBlog);
+blogRouter.patch("/editblog/:slug", upload.single("coverImage"), editBlog);
 
 export default blogRouter;

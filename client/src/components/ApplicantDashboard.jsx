@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -100,9 +100,10 @@ const ApplicantDashboard = () => {
     if (!user.coverImage || user.coverImage.trim() === "") {
       recommendations.push({ field: 'coverImage', label: 'Add Cover Image', icon: ImageIcon, score: 3, tab: 'basic', focusField: 'coverImage', bgColor: 'bg-[#9bf6ff]' });
     }
-    // if (!user.resume || user.resume.trim() === "") {
-    //   recommendations.push({ field: 'resume', label: 'Add Resume', icon: FileText, score: 4, tab: 'basic', focusField: 'resume', bgColor: 'bg-[#bdb2ff]' });
-    // }
+    if (!user.resume || user.resume.trim() === "") {
+      recommendations.push({ field: 'resume', label: 'Add Resume', icon: FileText, score: 4, focusField: 'resume', bgColor: 'bg-[#bdb2ff]' });
+    }
+
     if (!user.videoUrl || user.videoUrl.trim() === "") {
       recommendations.push({ field: 'videoUrl', label: 'Add Video Introduction', icon: Video, score: 2, tab: 'basic', focusField: 'videoUrl', bgColor: 'bg-[#fdffb6]' });
     }
@@ -147,7 +148,11 @@ const ApplicantDashboard = () => {
   const totalPotentialScore = recommendations.reduce((sum, rec) => sum + rec.score, 0);
 
   const handleRecommendationClick = (recommendation) => {
-    navigate('/dashboard/profile?tab=' + recommendation.tab + (recommendation.focusField ? ('&focusField=' + recommendation.focusField) : ''));
+    if (recommendation?.focusField === "resume") {
+      navigate('/dashboard/resume?focusField=resume')
+    } else {
+      navigate('/dashboard/profile?tab=' + recommendation.tab + (recommendation.focusField ? ('&focusField=' + recommendation.focusField) : ''));
+    }
   };
 
   const fetchViewsData = async (period) => {
@@ -212,7 +217,7 @@ const ApplicantDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 w-full">
         {/* My Following */}
-        <div className="flex justify-between p-6 border border-gray-300 rounded-md items-center">
+        <Link to={'/dashboard/jobs'} className="hover:shadow-lg shadow-gray-200 transition-all flex justify-between p-6 border border-gray-300 rounded-md items-center">
           <div className="flex flex-col gap-3">
             <span className="text-gray-500 font-semibold">MY FOLLOWING</span>
             <div className="text-5xl text-black font-semibold">{stats?.following || 0}</div>
@@ -220,10 +225,10 @@ const ApplicantDashboard = () => {
           <div className="p-3 rounded-full h-15 w-15 bg-[#b7e4cb] flex items-center justify-center">
             <Users size={28} />
           </div>
-        </div>
+        </Link>
 
         {/* My Reviews */}
-        <div className="flex justify-between p-6 border border-gray-300 rounded-md items-center">
+        <Link to={"/"} className="hover:shadow-lg shadow-gray-200 transition-all pointer-events-none flex justify-between p-6 border border-gray-300 rounded-md items-center">
           <div className="flex flex-col gap-3">
             <span className="text-gray-500 font-semibold">MY REVIEWS</span>
             <div className="text-5xl text-black font-semibold">{stats?.reviews || 0}</div>
@@ -231,10 +236,10 @@ const ApplicantDashboard = () => {
           <div className="p-3 rounded-full h-15 w-15 bg-[#cabffd] flex items-center justify-center">
             <Star size={28} />
           </div>
-        </div>
+        </Link>
 
         {/* Meetings */}
-        <div className="flex justify-between p-6 border border-gray-300 rounded-md items-center">
+        <Link to={"/"} className="hover:shadow-lg shadow-gray-200 transition-all pointer-events-none flex justify-between p-6 border border-gray-300 rounded-md items-center">
           <div className="flex flex-col gap-3">
             <span className="text-gray-500 font-semibold">MEETINGS</span>
             <div className="text-5xl text-black font-semibold">{stats?.meetings || 0}</div>
@@ -242,7 +247,7 @@ const ApplicantDashboard = () => {
           <div className="p-3 rounded-full h-15 w-15 bg-[#b3e5fb] flex items-center justify-center">
             <Calendar size={28} />
           </div>
-        </div>
+        </Link>
       </div>
 
 

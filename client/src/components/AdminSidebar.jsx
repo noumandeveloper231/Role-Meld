@@ -323,7 +323,7 @@ const AdminSidebar = ({ activeTab }) => {
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between p-4">
-          <Img src={"/logo.webp"} />
+          <Img src={"/logo.webp"} style={!isSidebarOpen ? "w-45" : "hidden"} />
 
           <span
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

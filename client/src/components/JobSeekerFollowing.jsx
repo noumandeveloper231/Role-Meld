@@ -6,9 +6,10 @@ import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import Loading from './Loading';
 import { Link } from 'react-router-dom';
+import slugToName from '../utils/categoryNames';
 
 const JobSeekerFollowing = () => {
-    const { backendUrl, followUnfollow } = useContext(AppContext)
+    const { backendUrl, followUnfollow, userData } = useContext(AppContext)
     const [companies, setCompanies] = useState([])
     const [searchTerm, setSearchTerm] = useState("")
     const [industryFilter, setIndustryFilter] = useState("all")
@@ -30,7 +31,7 @@ const JobSeekerFollowing = () => {
 
     useEffect(() => {
         loadData();
-    }, [])
+    }, [userData, backendUrl])
 
     useEffect(() => {
         setCurrentPage(1)
@@ -123,7 +124,7 @@ const JobSeekerFollowing = () => {
                                                 <div className='flex flex-col'>
                                                     <span className='font-semibold text-gray-800'>{company.companyName || company.name}</span>
                                                     <span className='text-sm text-gray-500'>
-                                                        {company?.industry || company?.category || "Not Specified"} / {company?.city || "Not Specified"}
+                                                        {slugToName(company?.category) || "Not Specified"} / {company?.city || "Not Specified"}
                                                     </span>
                                                 </div>
                                             </div>
@@ -135,7 +136,7 @@ const JobSeekerFollowing = () => {
                                             <div className='flex items-center justify-center gap-3'>
                                                 <Link
                                                     title='View Profile'
-                                                    to={`/company-profile/${company._id}`}
+                                                    to={`/companies/${company?.category}/${company?.slug}`}
                                                     className='p-2 rounded-md hover:bg-gray-100'
                                                 >
                                                     <Eye size={18} className="text-gray-600" />

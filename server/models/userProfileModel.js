@@ -6,6 +6,7 @@ const userProfileSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: false },
   name: { type: String, default: '' },
   lastName: { type: String, default: '' },
+  slug: { type: String, default: '' },
   email: { type: String, default: '' },
   profilePicture: { type: String, default: "" },
   savedJobs: { type: Array, default: [] },
@@ -27,6 +28,7 @@ const userProfileSchema = new mongoose.Schema({
 
   // 🆕 Resume & extra fields
   resume: { type: String, default: "" },   // file URL (PDF/Doc)
+  resumeExt: { type: String, default: "" },
   portfolio: { type: String, default: "" },
   github: { type: String, default: "" },
   gender: { type: String, enum: ["male", "female", "other"], default: "male" },

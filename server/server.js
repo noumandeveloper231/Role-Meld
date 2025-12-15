@@ -78,6 +78,17 @@ cron.schedule('*/5 * * * *', async () => {
     }
 });
 
+// Express
+app.get('/download', async (req, res) => {
+  const imageUrl = req.query.url
+  const response = await fetch(imageUrl)
+  const buffer = await response.arrayBuffer()
+
+  res.setHeader('Content-Disposition', 'attachment; filename=image.jpg')
+  res.send(Buffer.from(buffer))
+})
+
+
 app.use('/api/jobs', jobsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);

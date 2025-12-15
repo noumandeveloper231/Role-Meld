@@ -17,6 +17,12 @@ const BlogCard = ({ blog, layout = "vertical" }) => {
         });
     };
 
+    function getExcerpt(html = "", limit = 200) {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const firstP = doc.querySelector("p")?.textContent || "";
+        return firstP.slice(0, limit).trim();
+    }
+
     return (
         <div className={`bg-white border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer mx-auto ${layout === "horizontal" ? "flex" : ""}`}>
             {/* Image Section */}
@@ -54,7 +60,7 @@ const BlogCard = ({ blog, layout = "vertical" }) => {
                 <div className="flex items-center gap-2 mb-1 text-sm text-gray-500">
                     <span>BY</span>
                     <span className="text-blue-500 font-medium">
-                        {blog?.author || "ADMIN"}
+                        Admin
                     </span>
                     <span>|</span>
                     <span>
@@ -63,16 +69,16 @@ const BlogCard = ({ blog, layout = "vertical" }) => {
                 </div>
 
                 {/* Excerpt */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">
-                    {blog?.description || "In today's fast-paced business environment, finding and hiring top talent efficiently is crucial for maintaining a competitive edge. Companies that..."}
-                </p>
+                <div className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">
+                    {getExcerpt(blog?.content) || "In today's fast-paced business environment, finding and hiring top talent efficiently is crucial for maintaining a competitive edge. Companies that..."}
+                </div>
 
                 {/* Read More Button */}
-                <button 
+                <button
                     onClick={(e) => {
                         e.stopPropagation();
                         if (location.pathname !== "/admin") {
-                            navigate(`/blogdetails/${blog?.slug}?id=${blog._id}`);
+                            navigate(`/blogs/${blog?.slug}`);
                         }
                     }}
                     className="primary-btn w-full"

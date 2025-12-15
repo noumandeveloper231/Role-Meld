@@ -10,6 +10,7 @@
   --secondary-color: #004a38;
   --accent-color: #f2f8f7;
   --text-color: #4d4d4d;
+  --bg: #f9f9f9;
 }
 
 /* Scroll Bar */
@@ -51,8 +52,10 @@ body {
 }
 
 ::selection {
-  background-color: #9bf0e0; /* soft teal highlight */
-  color: #004a38; /* dark text for contrast */
+  background-color: #9bf0e0;
+  /* soft teal highlight */
+  color: #004a38;
+  /* dark text for contrast */
 }
 
 
@@ -112,14 +115,17 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="tel"],
-input[type="number"] ,
-input[type="date"] 
-{
+input[type="number"],
+input[type="date"] {
   @apply w-full p-2 px-4 border border-gray-300 rounded focus:border-[var(--primary-color)] outline-none transition-all;
 }
 
 label {
   @apply text-sm block mb-2 font-medium text-gray-700
+}
+
+input[type="checkbox"] {
+  @apply mr-2 cursor-pointer
 }
 
 .follow-btn {
@@ -246,6 +252,38 @@ label {
   @apply mb-2;
 }
 
+.job-description hr {
+  @apply border-gray-200 my-4
+}
+
 .job-description li {
-  @apply mb-2 list-disc list-inside;
+  @apply mb-2 list-disc ;
+}
+
+table {
+  @apply !rounded-none !border-gray-200
+}
+
+th {
+  @apply !text-[#555555] !text-sm !font-bold !py-6
+}
+
+tbody {
+  @apply !min-h-[500px]
+}
+
+tbody tr {
+  @apply border-t border-gray-200 !py-4 !pt-0 !mt-0
+}
+
+tbody tr:hover {
+  @apply bg-gray-100
+}
+
+div:has(table) {
+  @apply rounded-none border-gray-200
+}
+
+.table-not-found {
+  @apply min-h-100
 }

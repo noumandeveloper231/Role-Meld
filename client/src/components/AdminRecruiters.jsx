@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Trash, Ban, Unlock, Mail, Filter, MapPin, Briefcase } from "lucide-react";
+import { Trash, Ban, Unlock, Mail, MapPin, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 
 const AdminRecruiters = () => {
@@ -16,6 +16,8 @@ const AdminRecruiters = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [timeFilter, setTimeFilter] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const getRecruiters = async () => {
     try {
@@ -103,6 +105,11 @@ const AdminRecruiters = () => {
 
     setFilteredRecruiters(filtered);
   }, [selectedCity, selectedRole, selectedStatus, timeFilter, sortOrder, recruiters]);
+
+  const totalPages = Math.ceil(recruiters.length / itemsPerPage) || 1
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedRecruiters = recruiters.slice(startIndex, endIndex)
 
   // Count stats
   const approvedCount = recruiters.filter((r) => r.reviewStatus === "approved").length;
@@ -204,8 +211,8 @@ const AdminRecruiters = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredRecruiters.length > 0 ? (
-              filteredRecruiters.map((r, i) => (
+            {paginatedRecruiters.length > 0 ? (
+              paginatedRecruiters.map((r, i) => (
                 <tr
                   key={r._id}
                   className="hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out"
@@ -287,6 +294,40 @@ const AdminRecruiters = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6'>
+        <div className='flex items-center gap-4'>
+          <div>
+            <CustomSelect
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            >
+              {[5, 10, 25].map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </CustomSelect>
+          </div>
+          <div className='text-sm text-gray-600'>
+            Showing {paginatedRecruiters.length === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, paginatedRecruiters.length)} of {paginatedRecruiters.length}
+          </div>
+        </div>
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className='p-1 text-sm border border-gray-300 rounded-full disabled:opacity-50'
+          >
+            <ChevronLeft />
+          </button>
+          <span className='text-sm text-gray-600'>Page {currentPage} of {totalPages}</span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className='p-1 text-sm border border-gray-300 rounded-full disabled:opacity-50'
+          >
+            <ChevronRight />
+          </button>
+        </div>
       </div>
     </div>
   );

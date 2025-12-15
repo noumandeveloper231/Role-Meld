@@ -5,11 +5,13 @@ import { AppContext } from '../context/AppContext'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import NotFound404 from './NotFound404';
+import Loading from './Loading';
 
 const BlogsSection = ({ className, limit = 4, layout = "vertical" }) => {
   const { backendUrl } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [blogs, setBlogs] = useState([])
+
   const getAllBlogs = async () => {
     setLoading(true);
     try {
@@ -24,51 +26,48 @@ const BlogsSection = ({ className, limit = 4, layout = "vertical" }) => {
     }
   }
 
-
   useEffect(() => {
     getAllBlogs();
   }, []);
 
   if (loading) {
-    return <div className="flex fixed top-1/2 left-1/2 tanslate-1/2 justify-center items-center py-10">
-      <div className="w-8 h-8 border-4 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin"></div>
-    </div>
+    return <Loading />
   }
 
-  const staticBlogs = [
-    {
-      id: 1,
-      title: "The Best Practices for Software Development",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
-      coverImage: `https://picsum.photos/512/512/?random=1`,
-      createdAt: "2022-01-01",
-      slug: "the-best-practices-for-software-development",
-      category: "RECRUITMENT & HIRING"
-    },
-    {
-      id: 2,
-      title: "Why Software Development is so Important",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
-      coverImage: `https://picsum.photos/512/512/?random=2`,
-      createdAt: "2022-01-15",
-      slug: "why-software-development-is-so-important",
-      category: " & HIRING"
-    },
-    {
-      id: 3,
-      title: "The Future of Software Development",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
-      coverImage: "https://picsum.photos/512/512/?random=3",
-      createdAt: "2022-02-01",
-      slug: "the-future-of-software-development",
-      category: "RECRUITMENT & HIRING"
-    }
-  ]
+  // const staticBlogs = [
+  //   {
+  //     id: 1,
+  //     title: "The Best Practices for Software Development",
+  //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
+  //     coverImage: `https://picsum.photos/512/512/?random=1`,
+  //     createdAt: "2022-01-01",
+  //     slug: "the-best-practices-for-software-development",
+  //     category: "RECRUITMENT & HIRING"
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Why Software Development is so Important",
+  //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
+  //     coverImage: `https://picsum.photos/512/512/?random=2`,
+  //     createdAt: "2022-01-15",
+  //     slug: "why-software-development-is-so-important",
+  //     category: " & HIRING"
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "The Future of Software Development",
+  //     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nibh et semper aliquet, nulla velit eleifend nibh, non luctus nulla risus sed felis.",
+  //     coverImage: "https://picsum.photos/512/512/?random=3",
+  //     createdAt: "2022-02-01",
+  //     slug: "the-future-of-software-development",
+  //     category: "RECRUITMENT & HIRING"
+  //   }
+  // ]
 
   return (
     <div className='flex flex-col items-center'>
       <section className={`w-full max-w-6xl mx-auto grid ${className} items-center gap-4`}>
-        {staticBlogs.length > 0 ? staticBlogs?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // newest first
+        {blogs.length > 0 ? blogs?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // newest first
           .slice(0, limit)
           .map((blog, index) => (
             <BlogCard layout={layout} key={index} blog={blog} />

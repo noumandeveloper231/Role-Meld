@@ -1,13 +1,14 @@
 import React, { useContext } from 'react'
-import { MapPin, Plus, Star } from 'lucide-react'
+import { MapPin, Plus } from 'lucide-react'
 import { AppContext } from '../context/AppContext'
-import { toast } from 'react-toastify'
 import Img from './Image'
+import { Link } from 'react-router-dom'
+import FollowButton from './FollowButton'
 
 const CandidateCards = ({ candidate }) => {
     const { userData, followUnfollow } = useContext(AppContext)
     return (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer max-w-5xl w-full">
+        <Link to={`/candidates/${candidate.category}/${candidate.slug}`} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg shadow-gray-200 transition-all cursor-pointer max-w-5xl w-full">
             <header className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
                     <Img
@@ -27,13 +28,7 @@ const CandidateCards = ({ candidate }) => {
                         </div>
                     </div>
                 </div>
-                {userData?.role === "user" &&
-                    <button
-                        onClick={() => followUnfollow({ followedAccountId: candidate._id })}
-                        className="secondary-btn flex items-center gap-2">
-                        <Plus size={20} />Follow
-                    </button>
-                }
+                <FollowButton company={candidate} />
             </header>
 
             <p className="mt-4 text-gray-600 text-lg leading-relaxed">{candidate.about}</p>
@@ -53,7 +48,7 @@ const CandidateCards = ({ candidate }) => {
                     <span className="text-2xl text-[var(--primary-color)] font-semibold">{candidate.offeredSalary}$/{candidate.salaryType || '  '}</span>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

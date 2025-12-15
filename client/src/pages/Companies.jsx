@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import CompanyCard from "../components/CompanyCard";
 import { Building, ChevronDown, LayoutGrid, List, SearchIcon } from "lucide-react";
 import CustomSelect from "../components/CustomSelect";
+import slugToName from "../utils/categoryNames";
 
 const Companies = () => {
     const { backendUrl } = useContext(AppContext);
@@ -189,7 +190,7 @@ const Companies = () => {
         <div>
             <Navbar />
 
-            <main className="bg-gray-50">
+            <main className="bg-[var(--bg)]">
                 <div className="h-80 relative flex gap-3 flex-col items-center justify-center">
                     <h1 className="relative z-1 text-4xl text-white">
                         Companies Hiring Internationally
@@ -269,8 +270,8 @@ const Companies = () => {
                                     className="flex items-center gap-2 px-4 py-3 w-full text-left"
                                 >
                                     <Building size={20} className="text-gray-400" />
-                                    <span className="flex-1 text-sm text-gray-700">
-                                        {heroCategory || "All Categories"}
+                                    <span className="whitespace-nowrap overflow-clip flex-1 text-sm text-gray-700">
+                                        {slugToName(heroCategory) || "All Categories"}
                                     </span>
                                     <ChevronDown
                                         size={16}
@@ -293,10 +294,10 @@ const Companies = () => {
                                                     {uniqueCategories.map((category) => (
                                                         <div
                                                             key={category}
-                                                            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                                                            className="whitespace-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                                                             onClick={() => handleCategorySelect(category)}
-                                                        >
-                                                            {category}
+                                                        >   
+                                                            {slugToName(category)}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -329,9 +330,9 @@ const Companies = () => {
                     </section>
                 </div>
 
-                <section className="flex gap-20 max-w-7xl py-20 mx-auto">
+                <section className="flex gap-20 max-w-6xl py-20 mx-auto">
                     {/* Sidebar Filters */}
-                    <div className="border border-gray-300 w-[25%] p-6 space-y-6 rounded-2xl bg-white">
+                    <div className="w-[25%] p-6 space-y-6 rounded-2xl bg-white">
                         <h4 className="text-lg font-semibold">Filter</h4>
 
                         {/* Location */}
@@ -389,10 +390,10 @@ const Companies = () => {
                                     <label key={category} className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
-                                            checked={filters.category.includes(category)}
+                                            checked={filters.category.includes(category) || cat === category}
                                             onChange={() => handleCheckbox("category", category)}
                                         />
-                                        {category}
+                                        {slugToName(category)}
                                     </label>
                                 ))}
                             </div>
@@ -420,30 +421,34 @@ const Companies = () => {
                     <div className="w-[70%]">
                         <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-500 mb-4">
                             <h4 className="text-lg font-medium text-gray-800">
-                                {sortedCompanies.length} companies
+                                {sortedCompanies.length} {sortedCompanies.length === 1 ? "company" : "companies"}
                             </h4>
 
                             <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2 border border-gray-200 rounded-full px-2 py-1 bg-white">
+                                <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => setViewMode("grid")}
                                         className={`p-2 rounded-full ${viewMode === "grid"
-                                            ? "text-[var(--primary-color)] bg-emerald-50"
+                                            ? "text-[var(--primary-color)]"
                                             : "text-gray-500"
                                             }`}
                                     >
-                                        <LayoutGrid size={16} />
+                                        <LayoutGrid size={24} />
                                     </button>
 
                                     <button
                                         onClick={() => setViewMode("block")}
                                         className={`p-2 rounded-full ${viewMode === "block"
-                                            ? "text-[var(--primary-color)] bg-emerald-50"
+                                            ? ""
                                             : "text-gray-500"
                                             }`}
                                     >
-                                        <List size={16} />
+                                        <List size={24} />
                                     </button>
+                                </div>
+
+                                <div>
+                                    Sort By
                                 </div>
 
                                 <CustomSelect

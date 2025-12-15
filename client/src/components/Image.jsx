@@ -1,6 +1,6 @@
 import { openImage } from "../portals/ImagePortalManager";
 
-const Img = ({ src, w, h, style, onClick, willOpen }) => (
+const Img = ({ src, w, h, style, onClick, willOpen = false }) => (
     <img
         src={src}
         alt={src}

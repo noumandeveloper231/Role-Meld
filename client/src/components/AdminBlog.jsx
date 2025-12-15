@@ -1,344 +1,412 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import slugify from 'slugify';
 import { FaBloggerB } from "react-icons/fa";
-import { MdNavigateNext } from "react-icons/md";
-import { IoChevronBack } from "react-icons/io5";
 import { toast } from 'react-toastify';
-import { motion, AnimatePresence } from "framer-motion";
-import JoditEditor from "jodit-react";
+import { Editor } from "@tinymce/tinymce-react";
 import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import BlogCard from './BlogCard';
 import { MdOutlinePreview } from "react-icons/md";
 import Img from './Image';
+import CustomSelect from './CustomSelect';
+import SkillsSelector from './SkillsSelector';
 
-const AdminBlog = ({ setActiveTab }) => {
-  const { backendUrl } = useContext(AppContext);
-  const [blogSteps, setBlogSteps] = useState(0);
-  const [formData, setFormData] = useState({});
-  const [Tags, setTags] = useState([]);
-  const [tag, setTag] = useState('');
-  const editor = useRef(null);
+const AdminBlog = () => {
+  const { backendUrl, userData } = useContext(AppContext);
+  const search = new URLSearchParams(window.location.search);
+  const editBlog = search.get("edit");
+
+  console.log('editBlog', editBlog)
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    category: "",
+    content: "",
+    tags: [],
+    coverImage: null,
+    author: userData?.name || "Admin",
+  });
+
+  const getBlog = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/blog/getblog/${editBlog}`)
+      if (data.success) {
+        setFormData({
+          title: data.blog.title || "",
+          slug: data.blog.slug || "",
+          category: data.blog.category || "",
+          content: data.blog.content || "",
+          tags: data.blog.tags || [],
+          coverImage: data.blog.coverImage || null,
+          author: data.blog.author || userData?.name || "Admin",
+        });
+      } else {
+        setFormData([])
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    if (editBlog) {
+      getBlog();
+    }
+  }, [editBlog]);
+
+  const [blogPostLoading, setBlogPostLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "title") {
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         title: value,
-        slug: slugify(value, { replacement: "_", lower: true }),
-        tags: Tags,
-      });
+        slug: slugify(value, { replacement: "-", lower: true }),
+      }));
     } else {
-      setFormData({ ...formData, [name]: value, tags: Tags });
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleTagKeyDown = (e) => {
-    if (e.key === "Enter" && tag.trim() !== "") {
-      e.preventDefault();
-      const newTags = [...Tags, tag.trim()];
-      setTags(newTags);
-      setFormData({ ...formData, tags: newTags });
-      setTag("");
+  const handleContentChange = (content) => {
+    setFormData(prev => ({ ...prev, content }));
+  };
+
+  const handleSkillsChange = (newTags) => {
+    setFormData(prev => ({ ...prev, tags: newTags }));
+  };
+
+  const [categories, setCategories] = useState([])
+  const [categoryLoading, setCategoryLoading] = useState(false)
+
+  const getCategories = async () => {
+    setCategoryLoading(true);
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/admin/categories`);
+      if (data.success) {
+        setCategories(data.categories);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setCategoryLoading(false);
     }
   };
 
-  const removeTag = (index) => {
-    const newTags = Tags.filter((_, i) => i !== index);
-    setTags(newTags);
-    setFormData({ ...formData, tags: newTags });
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(false)
+  const fetchBlogs = async () => {
+    setLoading(true)
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/blog/getallblogs`);
+      if (data.success) {
+        setBlogs(data.blogs);
+      } else {
+        setLoading(false)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBlogs()
+  }, []);
+
+  const [isSlugAvailable, setIsSlugAvailable] = useState(true);
+  const [slugSuggestions, setSlugSuggestions] = useState([]);
+
+  // Generate alternative slugs when current slug is already taken
+  const generateSlugSuggestions = (base) => {
+    const timestamp = Date.now().toString().slice(-4);
+    return [
+      `${base}-post`,
+      `${base}-blog`,
+      `${base}-article`,
+      `${base}-${timestamp}`,
+      `${base}-${Number(timestamp) + 1}`,
+      `${base}-${Number(timestamp) + 8}`,
+      `${base}-${Number(timestamp) + 9}`,
+    ];
   };
 
-  const [blogPostLoading, setBlogPostLoading] = useState(false)
-  const createBlog = async (e) => {
-    e.preventDefault();
-    setBlogPostLoading(true)
+  useEffect(() => {
+    if (!formData?.title || !formData?.slug) return;
+
+    const exists = blogs.some((blog) => blog.slug === formData.slug);
+
+    setIsSlugAvailable(!exists);
+
+    if (exists) {
+      setSlugSuggestions(generateSlugSuggestions(formData.slug));
+    } else {
+      setSlugSuggestions([]);
+    }
+  }, [blogs, formData.slug, formData.title]);
+
+
+  const createBlog = async (status) => {
+    setBlogPostLoading(true);
+
     try {
       const fd = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "tags") fd.append("tags", JSON.stringify(value));
-        else fd.append(key, value);
+
+      // Append simple fields
+      fd.append("title", formData.title);
+      fd.append("slug", formData.slug);
+      fd.append("category", formData.category);
+      fd.append("content", formData.content);
+      fd.append("author", formData.author);
+      fd.append("status", status);
+
+      // Append tags properly
+      formData.tags.forEach(tag => {
+        fd.append("tags[]", tag);
       });
 
-      const { data } = await axios.post(`${backendUrl}/api/blog/createblog`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Append image ONLY if user selected a new one
+      if (formData.coverImage instanceof File) {
+        fd.append("coverImage", formData.coverImage);
+      }
+
+      let response;
+
+      if (editBlog) {
+        response = await axios.patch(
+          `${backendUrl}/api/blog/editblog/${editBlog}`,
+          fd
+        );
+      } else {
+        response = await axios.post(
+          `${backendUrl}/api/blog/createblog`,
+          fd
+        );
+      }
+
+      const { data } = response;
 
       if (data.success) {
         toast.success(data.message);
-        setFormData({});
-        setTags([]);
-        setActiveTab("listed-blogs")
-        setBlogSteps(0);
+
+        setFormData({
+          title: "",
+          slug: "",
+          category: "",
+          content: "",
+          tags: [],
+          coverImage: null,
+          author: userData?.name || "Admin",
+        });
+
+        navigate("/admin/blog-management");
+      } else {
+        toast.error(data.message);
       }
+
     } catch (error) {
-      toast.error(error.message || "Something went wrong");
-    }finally{
-      setBlogPostLoading(false)
+      toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
+    } finally {
+      setBlogPostLoading(false);
     }
   };
 
-  const stepVariants = {
-    initial: { opacity: 0, x: 50 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -50 }
-  };
 
   return (
-    <main className="w-full rounded-xl flex-col border border-gray-200 bg-white grid grid-cols-3 gap-4 p-6 overflow-x-hidden overflow-y-auto min-h-screen">
-      <div className='col-span-2 p-4'>
-        <h1 className="font-bold flex items-center gap-4">
-          <FaBloggerB className='text-[var(--primary-color)]' /> Add New Blog
+    <main className="w-full p-6 bg-white rounded-lg shadow-sm overflow-y-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          {editBlog ? 'Edit Blog' : 'Add New Blog'}
         </h1>
-        <section className="mt-10 rounded-md">
-          <form onSubmit={createBlog} className="flex flex-col gap-4 py-8 px-12 min-h-[50vh]">
-            <button
-              disabled={blogSteps === 0}
-              className="w-9 h-9 bg-[var(--primary-color)] text-white p-2 rounded-md"
-              type="button"
-              onClick={() => setBlogSteps(blogSteps - 1)}
-            >
-              <IoChevronBack />
-            </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/admin/blog-management")}
+            className="secondary-btn !rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={(e) => { e.preventDefault(); createBlog('draft') }}
+            disabled={blogPostLoading}
+            className="primary-btn !rounded-md"
+          >
+            Save as Draft
+          </button>
+          <button
+            onClick={(e) => { e.preventDefault(); createBlog('published') }}
+            disabled={blogPostLoading}
+            className="primary-btn"
+          >
+            {blogPostLoading ? "Posting..." : "Post Blog"}
+          </button>
+        </div>
+      </div>
 
-            <AnimatePresence mode="wait">
-              {blogSteps === 0 && (
-                <motion.div
-                  key="step0"
-                  variants={stepVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col gap-4"
-                >
-                  <h2 className="font-semibold">Add Title of the Blog</h2>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="title">Title</label>
-                    <input
-                      type="text"
-                      name="title"
-                      id="title"
-                      value={formData?.title || ""}
-                      onChange={handleChange}
-                      placeholder="Title"
-                      className="px-4 py-2 focus:outline-3 outline-[var(--primary-color)] hover:shadow-md transition-all outline-offset-2 border-2 focus:border-[var(--primary-color)] rounded-xl"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="slug">Slug</label>
-                    <input
-                      type="text"
-                      name="slug"
-                      id="slug"
-                      value={formData?.slug || ""}
-                      onChange={handleChange}
-                      placeholder="Slug"
-                      className="px-4 py-2 focus:outline-3 outline-[var(--primary-color)] hover:shadow-md transition-all outline-offset-2 border-2 focus:border-[var(--primary-color)] rounded-xl"
-                    />
-                  </div>
-                  <div className="flex justify-end mt-5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!formData?.title || !formData?.slug) {
-                          toast.error("Please fill all the fields");
-                          return;
-                        }
-                        setBlogSteps(blogSteps + 1);
-                      }}
-                    >
-                      Next <MdNavigateNext />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left: Form */}
+        <form className="flex flex-col gap-8 flex-1" onSubmit={createBlog}>
 
-              {blogSteps === 1 && (
-                <motion.div
-                  key="step1"
-                  variants={stepVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col gap-4"
-                >
-                  <h2 className="font-semibold">Choose Category</h2>
-                  <select
-                    name="category"
-                    value={formData.category || ""}
+          {/* Basic Info */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Basic Info</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Blog Title *</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title || ""}
+                  onChange={handleChange}
+                  placeholder="Enter blog title"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-[var(--primary-color)]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Slug *</label>
+                <div className="flex items-center w-full bg-[#f9f9f9] border border-gray-300 rounded-md overflow-hidden">
+                  <span className="text-gray-600 bg-[#f9f9f9] px-4 py-2 whitespace-nowrap text-sm border-r border-gray-300 tracking-wider">
+                    https://alfacareers.com/blog/<b>{formData.category ? slugify(formData.category, { lower: true }) : "category"}</b>/
+                  </span>
+                  <input
+                    type="text"
+                    name="slug"
+                    disabled={editBlog}
+                    value={formData.slug || ""}
                     onChange={handleChange}
-                    className="py-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                    className={`w-full bg-white px-4 py-2 text-gray-800 outline-none ${editBlog && "cursor-not-allowed"} `}
+                    placeholder="post-url-slug"
+                    title={editBlog ? "Slug cannot be edited after creation" : ""}
+                    required
+                  />
+                </div>
+
+                {
+                  !editBlog &&
+                    !isSlugAvailable && slugSuggestions.length > 0 ? (
+                    <div className="mt-2">
+                      <p className="text-red-600 text-sm mb-1">Slug not available. Try one:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {slugSuggestions.map((s, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleChange({ target: { name: "slug", value: s } })}
+                            className="bg-[var(--accent-color)] text-[var(--primary-color)] px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2 border border-[var(--primary-color)]/20"
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : isSlugAvailable && formData.slug ? (
+                    <p className="text-green-600 text-sm mt-1">Slug is available</p>
+                  ) : null}
+              </div>
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                  <CustomSelect
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
                   >
                     <option value="">-- Select Category --</option>
-                    <option value="IT & Software">IT & Software</option>
-                    <option value="Digital Marketing">Digital Marketing</option>
-                    <option value="Design & Creative">Design & Creative</option>
-                    <option value="Finance & Accounting">Finance & Accounting</option>
-                    <option value="Human Resources">Human Resources</option>
-                    <option value="Sales & Business Development">Sales & Business Development</option>
-                    <option value="Engineering & Architecture">Engineering & Architecture</option>
-                  </select>
-                  <div className="flex justify-end mt-5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!formData?.category) {
-                          toast.error("Please fill all the fields");
-                          return;
-                        }
-                        setBlogSteps(blogSteps + 1);
-                      }}
-                    >
-                      Next <MdNavigateNext />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {blogSteps === 2 && (
-                <motion.div
-                  key="step2"
-                  variants={stepVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col gap-4"
-                >
-                  <h2 className="font-semibold">Enter Main Content Here</h2>
-                  <JoditEditor
-                    ref={editor}
-                    defaultValue={formData?.content || ""}
-                    config={{
-                      readonly: false,
-                      height: 400,
-                      uploader: { insertImageAsBase64URI: true },
-                      buttons: ["bold", "italic", "|", "paragraph", "|", "link", "image", "blockquote"],
-                      toolbarAdaptive: false,
-                    }}
-                    onBlur={(newContent) =>
-                      setFormData((prev) => ({ ...prev, content: newContent }))
-                    }
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </CustomSelect>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tags (Skills) *</label>
+                  <SkillsSelector
+                    selectedSkills={formData.tags}
+                    onSkillsChange={handleSkillsChange}
                   />
-                  <div className="flex justify-end mt-5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!formData?.content) {
-                          toast.error("Please fill all the fields");
-                          return;
-                        }
-                        setBlogSteps(blogSteps + 1);
-                      }}
-                    >
-                      Next <MdNavigateNext />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                </div>
+              </div>
+            </div>
+          </section>
 
-              {blogSteps === 3 && (
-                <motion.div
-                  key="step3"
-                  variants={stepVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col gap-4"
-                >
-                  <h2 className="font-semibold">Enter Related Tags</h2>
-                  <div className="flex flex-col gap-2">
-                    <input
-                      type="text"
-                      value={tag}
-                      onChange={(e) => setTag(e.target.value)}
-                      onKeyDown={handleTagKeyDown}
-                      placeholder="Type a tag and press Enter"
-                      className="w-full p-2 border-2 border-[var(--primary-color)] rounded-md"
-                    />
-                    <div className="flex flex-wrap gap-2  border border-gray-300 rounded-md p-2 min-h-[20vh]">
-                      {Tags.map((t, i) => (
-                        <span
-                          key={i}
-                          className="bg-gray-300 h-8 px-2 py-1 rounded cursor-pointer"
-                          onClick={() => removeTag(i)}
-                        >
-                          {t} &times;
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-end mt-5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (formData?.tags?.length < 3) {
-                          toast.error("Add at least 3 tags");
-                          return;
-                        }
-                        setBlogSteps(blogSteps + 1);
-                      }}
-                    >
-                      Next <MdNavigateNext />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+          <hr className="border-gray-200" />
 
-              {blogSteps === 4 && (
-                <motion.div
-                  key="step4"
-                  variants={stepVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col gap-4"
-                >
-                  <h2 className="font-semibold">Add Cover / Featured Image</h2>
-                  <div className="relative w-full h-[300px] border-2 border-[var(--primary-color)] rounded-2xl overflow-hidden bg-gray-50 flex justify-center items-center">
-                    {formData?.coverImage ? (
-                      <Img
-                        src={URL.createObjectURL(formData.coverImage)}
-                        style="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <p className="text-gray-400">No image selected</p>
-                    )}
-                    <input
-                      type="file"
-                      name="coverImage"
-                      onChange={(e) =>
-                        setFormData({ ...formData, coverImage: e.target.files[0] })
-                      }
-                      className="absolute bottom-2 left-0 w-full px-4 py-2 focus:outline-3 outline-[var(--primary-color)] hover:shadow-md transition-all outline-offset-2 border-2 focus:border-[var(--primary-color)] rounded-xl"
-                    />
-                  </div>
-                  <div className="flex justify-end mt-5">
-                    <button
-                      type="submit"
-                      disabled={blogPostLoading}
-                    >
-                      {blogPostLoading? "Posting...": "Post"}
-                    </button>
-                  </div>
-                </motion.div>
+          {/* Content */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Content</h2>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Main Content *</label>
+              <Editor
+                apiKey="dznz0nlhha6epdf1cqah52owptipjne3a23b9e67vgtdgv22"
+                value={formData.content}
+                onEditorChange={handleContentChange}
+                init={{
+                  height: 400,
+                  menubar: false,
+                  plugins: "lists link fullscreen image code",
+                  toolbar: `styles | bold italic | bullist numlist | blockquote | alignleft aligncenter alignright | link image | code fullscreen`,
+                  content_style: "body { font-family: Inter, sans-serif; font-size: 14px; }",
+                }}
+              />
+            </div>
+          </section>
+
+          <hr className="border-gray-200" />
+
+          {/* Media */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Featured Image</h2>
+            <div className="relative w-full h-[300px] border-2 border-[var(--primary-color)]/20 border-dashed rounded-2xl overflow-hidden bg-gray-50 flex justify-center items-center hover:bg-gray-100 transition-colors">
+              {formData.coverImage ? (
+                <Img
+                  src={formData.coverImage instanceof File ? URL.createObjectURL(formData.coverImage) : formData.coverImage}
+                  style="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center text-gray-400">
+                  <p>Click to upload cover image</p>
+                </div>
               )}
-            </AnimatePresence>
-          </form>
-        </section>
-      </div>
-      <div className='p-2 hidden md:block'>
-        <h2 className='font-semibold my-2 flex gap-3 items-center'>
-          <MdOutlinePreview className='text-[var(--primary-color)]' /> Preview
-        </h2>
-        <div className='sticky top-0 pointer-events-none'>
-          <BlogCard blog={formData} />
+              <input
+                type="file"
+                name="coverImage"
+                onChange={(e) => setFormData({ ...formData, coverImage: e.target.files[0] })}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                accept="image/*"
+              />
+            </div>
+          </section>
+
+        </form>
+
+        {/* Right: Preview */}
+        <div className="w-full lg:w-[400px] shrink-0">
+          <h2 className="font-semibold mb-4 flex gap-2 items-center text-gray-800">
+            <MdOutlinePreview className="text-[var(--primary-color)]" /> Live Preview
+          </h2>
+          <div className="sticky top-6 pointer-events-none">
+            <BlogCard blog={formData} />
+          </div>
         </div>
+
       </div>
     </main>
   );

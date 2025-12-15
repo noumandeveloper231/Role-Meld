@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Loading from "../components/Loading";
 import ImagePortal from '../portals/ImagePortalManager';
 import { openLoginPortal } from "../portals/LoginPortal";
+import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
 
@@ -20,7 +21,6 @@ export const AppContextProvider = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showImage, setShowImage] = useState(false)
-
 
   // follow company 
   async function followUnfollow(followedAccountId) {
