@@ -7,6 +7,7 @@ import Loading from './Loading';
 import CustomSelect from './CustomSelect';
 import { Search, Eye, Check, X, CreditCard, Briefcase } from 'lucide-react';
 import { MdOutlinePayment, MdCancel } from "react-icons/md";
+import slugToName from '../utils/categoryNames';
 
 const AdminJobRequests = () => {
   const { backendUrl } = useContext(AppContext);
@@ -145,7 +146,8 @@ const AdminJobRequests = () => {
               {/* Sort Order */}
               <CustomSelect
                 value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
+                onChange={(e) => 
+                  setSortOrder(e.target.value)}
                 className={"w-40"}
               >
                 <option value="newest">Newest</option>
@@ -167,7 +169,7 @@ const AdminJobRequests = () => {
                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Category</th>
                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Date</th>
                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Sponsored</th>
+                <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider">Featured</th>
                 <th className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-center">Action</th>
               </tr>
             </thead>
@@ -179,11 +181,10 @@ const AdminJobRequests = () => {
                     className="hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out"
                   >
                     <td className="px-6 py-3 font-semibold text-gray-800">{job.title}</td>
-                    <td className="px-6 py-3 text-sm text-gray-600 flex items-center gap-2">
-                      <Briefcase size={14} className="text-[var(--primary-color)]" />
-                      {job.company}
+                    <td className="px-6 py-3 text-sm text-gray-600 gap-2">
+                      {job?.postedBy?.company}
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-600">{job.category}</td>
+                    <td className="px-6 py-3 text-sm text-gray-600">{slugToName(job.category)}</td>
                     <td className="px-6 py-3 text-sm text-gray-600">
                       {new Date(job.createdAt || job.date).toLocaleDateString()}
                     </td>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Building2, Filter, Search, Trash, Eye, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 import CustomSelect from "./CustomSelect";
 import { toast } from "react-toastify";
+import slugToName from "../utils/categoryNames";
 
 const AdminJobs = () => {
   const { backendUrl } = useContext(AppContext);
@@ -206,11 +207,11 @@ const AdminJobs = () => {
                         <span className="text-sm text-gray-500">{job?.postedBy?.company || "Unknown Company"}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{job.category || "—"}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{formatDate(job.createdAt || job.postedAt)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{slugToName(job?.category) || "—"}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(job.createdAt).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${deadlineState.className}`}>
-                        {deadlineState.label}
+                        {new Date(job?.applicationDeadline).toLocaleDateString()}
                       </span>
                     </td>
                     <td className="px-6 py-4">

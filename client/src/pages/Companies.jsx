@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Img from "../components/Image";
 import assets from "../assets/assets";
@@ -28,7 +28,7 @@ const Companies = () => {
         city: "",
         country: "",
         state: "",
-        category: [],
+        category: cat ? [cat] : [], // <-- initialize with cat
         members: [],
     });
 
@@ -296,7 +296,7 @@ const Companies = () => {
                                                             key={category}
                                                             className="whitespace-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                                                             onClick={() => handleCategorySelect(category)}
-                                                        >   
+                                                        >
                                                             {slugToName(category)}
                                                         </div>
                                                     ))}
@@ -390,7 +390,7 @@ const Companies = () => {
                                     <label key={category} className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
-                                            checked={filters.category.includes(category) || cat === category}
+                                            checked={filters.category.includes(category)}
                                             onChange={() => handleCheckbox("category", category)}
                                         />
                                         {slugToName(category)}
@@ -439,7 +439,7 @@ const Companies = () => {
                                     <button
                                         onClick={() => setViewMode("block")}
                                         className={`p-2 rounded-full ${viewMode === "block"
-                                            ? ""
+                                            ? "text-[var(--primary-color)]"
                                             : "text-gray-500"
                                             }`}
                                     >

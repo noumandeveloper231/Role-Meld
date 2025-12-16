@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react'
-import { Eye, Trash, Search } from 'lucide-react'
+import { Eye, Trash, Search, ChevronLastIcon, ChevronRight, ChevronLeft } from 'lucide-react'
 import CustomSelect from './CustomSelect';
 import Img from './Image';
 import axios from 'axios';
@@ -95,7 +95,7 @@ const JobSeekerFollowing = () => {
             </div>
 
             {/* Table */}
-            <div className='overflow-x-auto rounded-lg border border-gray-300'>
+            <div className='rounded-lg border border-gray-300'>
                 <table className='min-w-full bg-white border-collapse'>
                     <thead>
                         <tr className='text-left text-gray-500 bg-white border-b border-gray-200'>
@@ -107,11 +107,11 @@ const JobSeekerFollowing = () => {
                     <tbody>
                         {
                             paginatedCompanies.length === 0 ? (
-                                <tr>
-                                    <td colSpan={3} className='px-6 py-6 text-center text-gray-500'>
+                                <div className='min-h-100'>
+                                    <div colSpan={3} className='py-6 text-center text-gray-500'>
                                         {searchTerm || industryFilter !== 'all' ? 'No matching companies found.' : 'No companies found.'}
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
                             ) : (
                                 paginatedCompanies.map((company, idx) => (
                                     <tr key={company._id || idx} className='hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out'>
@@ -159,42 +159,40 @@ const JobSeekerFollowing = () => {
             </div>
 
             {/* Pagination */}
-            {filteredCompanies.length > 0 && (
-                <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6'>
-                    <div className='flex items-center gap-4'>
-                        <div className='text-sm text-gray-600'>
-                            Showing {filteredCompanies.length === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, filteredCompanies.length)} of {filteredCompanies.length}
-                        </div>
-                        <div>
-                            <CustomSelect
-                                value={itemsPerPage}
-                                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                            >
-                                {[5, 10, 25].map(size => (
-                                    <option key={size} value={size}>{size} / page</option>
-                                ))}
-                            </CustomSelect>
-                        </div>
+            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6'>
+                <div className='flex items-center gap-4'>
+                    <div>
+                        <CustomSelect
+                            value={itemsPerPage}
+                            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        >
+                            {[5, 10, 25].map(size => (
+                                <option key={size} value={size}>{size}</option>
+                            ))}
+                        </CustomSelect>
                     </div>
-                    <div className='flex items-center gap-2'>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50'
-                        >
-                            Previous
-                        </button>
-                        <span className='text-sm text-gray-600'>Page {currentPage} of {totalPages}</span>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                            className='px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50'
-                        >
-                            Next
-                        </button>
+                    <div className='text-sm text-gray-600'>
+                        Showing {filteredCompanies.length === 0 ? 0 : startIndex + 1} - {Math.min(endIndex, filteredCompanies.length)} of {filteredCompanies.length}
                     </div>
                 </div>
-            )}
+                <div className='flex items-center gap-2'>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className='p-1 cursor-pointer text-sm border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                        <ChevronLeft />
+                    </button>
+                    <span className='text-sm text-gray-600'>Page {currentPage} of {totalPages}</span>
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className='p-1 cursor-pointer text-sm border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                        <ChevronRight />
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

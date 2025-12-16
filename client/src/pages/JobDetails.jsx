@@ -1,28 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../context/AppContext'
 import axios from 'axios';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 // React Icons
-import { IoHome, IoWarning } from "react-icons/io5";
 import { toast } from 'react-toastify';
 import JobCard from '../components/JobCard';
 import Loading from '../components/Loading';
 import Img from '../components/Image';
-import { ExternalLink, Calendar, Star, DollarSignIcon, Mail, MapPin, X, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Pencil, User, Briefcase } from "lucide-react";
 import {
-    Phone,
-    Globe,
-    GraduationCap,
-    Link as LinkIcon,
-    FileBadge,
-} from "lucide-react";
+    Briefcase,
+    GraduationCap, ExternalLink, Calendar, Star, DollarSignIcon, Mail, MapPin, Users
+} from 'lucide-react';
 import Currency from '../components/CurrencyCovertor';
 import Navbar from '../components/Navbar';
 import LoginPortal, { openLoginPortal } from '../portals/LoginPortal';
 import ApplyJobPortal, { openApplyJobPortal } from '../portals/ApplyJobPortal';
 import { FaLevelUpAlt } from 'react-icons/fa';
+import BreadCrumbs from '../components/Breakcumbs'
+import slugToName from '../utils/categoryNames';
 
 
 const JobDetails = () => {
@@ -65,7 +60,7 @@ const JobDetails = () => {
     const getCompanyJobs = async () => {
         setCompanyJobsLoading(true)
         try {
-            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobs/${jobData?.postedBy}`);
+            const { data } = await axios.get(`${backendUrl}/api/jobs/getcompanyjobs/${jobData?.postedBy?.slug}`);
             if (data.success) {
                 setCompanyJobs(data.companyJobs);
             }
@@ -87,31 +82,12 @@ const JobDetails = () => {
 
     return (
         <div className='bg-[#f9f9f9]'>
-            <div className="w-full border-b border-gray-200 shadow-sm">
-                <Navbar className={"max-w-6x bg-white mx-auto"} />
+            <div className='w-full bg-white'>
+                <Navbar />
             </div>
-            <main className=' max-w-6xl mx-auto p-4 min-h-screen'>
+            <main className=' max-w-6xl mx-auto py-5 min-h-screen'>
                 {/* Breadcrumb */}
-                <nav className='mb-6'>
-                    <div className='flex items-center text-sm text-gray-600'>
-                        <NavLink to={'/'} className='cursor-pointer flex items-center gap-1'>
-                            Home
-                        </NavLink>
-                        <span className='mx-2'>/</span>
-                        <NavLink to={'/find-jobs'} className='cursor-pointer flex items-center gap-1'>
-                            Jobs
-                        </NavLink>
-                        <span className='mx-2'>/</span>
-                        <NavLink to={'/find-jobs?category=' + jobData?.category} className='cursor-pointer flex items-center gap-1'>
-                            {jobData?.category}
-                        </NavLink>
-                        <span className='mx-2'>/</span>
-                        <NavLink to={'/jobs'} className='cursor-pointer flex items-center gap-1'>
-                            {jobData?.title}
-                        </NavLink>
-                    </div>
-                </nav>
-
+                <BreadCrumbs />
                 {/* Main Content */}
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
                     {/* Left Content */}
@@ -122,7 +98,7 @@ const JobDetails = () => {
                                 <div className='flex flex-col items-start gap-4'>
                                     <div className='flex items-center gap-4'>
                                         <div className='w-16 h-16 rounded-full'>
-                                            {jobData?.companyProfile ? (
+                                            {jobData?.postedBy?.profilePicture ? (
                                                 <Img
                                                     style="w-16 h-16 rounded-full object-cover border border-gray-100 flex-shrink-0"
                                                     src={jobData?.postedBy?.profilePicture}
@@ -130,18 +106,18 @@ const JobDetails = () => {
                                             ) : (
                                                 <div className="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center bg-gray-100 text-[var(--primary-color)] font-bold text-xl flex-shrink-0"
                                                 >
-                                                    {jobData?.company?.[0]?.toUpperCase() || '?'}
+                                                    {jobData?.postedBy?.company?.[0]?.toUpperCase() || '?'}
                                                 </div>
                                             )}
                                         </div>
                                         <div className='flex-1'>
                                             <h4 className='text-2xl text-gray-900 mb-1'>{jobData?.title}</h4>
                                             <div className='flex flex-wrap items-center gap-2 text-sm text-gray-600 mb-2'>
-                                                <span className='font-medium'>by <b>{jobData?.company}</b></span>
+                                                <Link to={`/companies/${jobData?.postedBy?.category}/${jobData?.postedBy?.slug}`} className='font-medium'>by <b>{jobData?.postedBy?.company}</b></Link>
                                                 {jobData?.category && (
                                                     <>
                                                         <span>in</span>
-                                                        <span className='text-green-700 font-medium'>{jobData?.category}</span>
+                                                        <Link target='_blank' to={`/categories/` + jobData?.category} className='text-green-700 font-medium'>{slugToName(jobData?.category)}</Link>
                                                     </>
                                                 )}
                                             </div>
@@ -150,9 +126,9 @@ const JobDetails = () => {
                                     <div className='flex items-center justify-between w-full'>
                                         <div className='flex flex-wrap items-center gap-3 text-xs text-gray-600'>
                                             {jobData?.location && (
-                                                <span className='px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 font-medium'>
+                                                <Link target='_blank' to={`/jobs?location=${jobData?.location}`} className='px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 font-medium'>
                                                     {jobData?.location}
-                                                </span>
+                                                </Link>
                                             )}
                                             {jobData?.locationType && (
                                                 <span className='px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-medium'>
@@ -303,32 +279,35 @@ const JobDetails = () => {
                             )}
                         </div>
 
-                        <div className='bg-[#ecf2f0] p-6 rounded-2xl border border-gray-300 mb-6 justify-between flex items-center mt-10'>
-                            <div>
-                                <h4 className='text-2xl font-medium text-gray-900 mb-4'>
-                                    Interested in this job?
-                                </h4>
-                                <div className='text-sm text-gray-600 mb-2'>
-                                    {Math.ceil((new Date(jobData?.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24)) > 0
-                                        ? `${Math.ceil((new Date(jobData.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24))} day(s) left`
-                                        : 'Deadline passed'}
+                        {
+                            userData?.role !== "recruiter" &&
+                            <div className='bg-[#ecf2f0] p-6 rounded-2xl border border-gray-300 mb-6 justify-between flex items-center mt-10'>
+                                <div>
+                                    <h4 className='text-2xl font-medium text-gray-900 mb-4'>
+                                        Interested in this job?
+                                    </h4>
+                                    <div className='text-sm text-gray-600 mb-2'>
+                                        {Math.ceil((new Date(jobData?.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24)) > 0
+                                            ? `${Math.ceil((new Date(jobData.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24))} day(s) left`
+                                            : 'Deadline passed'}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button
-                                disabled={userData?.appliedJobs?.includes(jobData?._id)}
-                                onClick={() => {
-                                    if (!isLoggedIn) {
-                                        openLoginPortal();
-                                    } else {
-                                        openApplyJobPortal(jobData, jobData?._id);
-                                    }
-                                }}
-                                className={`primary-btn ${userData?.appliedJobs?.includes(jobData?._id) && "bg-gray-400 cursor-not-allowed"}`}
-                            >
-                                {userData?.appliedJobs?.includes(jobData?._id) ? "Already Applied" : "Apply now"}
-                            </button>
-                        </div>
+                                <button
+                                    disabled={userData?.appliedJobs?.includes(jobData?._id)}
+                                    onClick={() => {
+                                        if (!isLoggedIn) {
+                                            openLoginPortal();
+                                        } else {
+                                            openApplyJobPortal(jobData, jobData?._id);
+                                        }
+                                    }}
+                                    className={`primary-btn ${userData?.appliedJobs?.includes(jobData?._id) && "bg-gray-400 cursor-not-allowed"}`}
+                                >
+                                    {userData?.appliedJobs?.includes(jobData?._id) ? "Already Applied" : "Apply now"}
+                                </button>
+                            </div>
+                        }
 
                         <div className=' rounded-2xl p-6'>
                             <div className='flex items-center justify-between mb-6'>
@@ -358,30 +337,32 @@ const JobDetails = () => {
                     {/* Right Sidebar */}
                     <div className='lg:col-span-1 w-full'>
                         <div className='w-full sticky top-4'>
-                            {/* Apply Section */}
-                            <div className='bg-[#ecf2f0] p-6 rounded-2xl border border-gray-300 mb-6 flex flex-col items-center'>
-                                <h4 className='text-2xl font-medium text-gray-900 mb-4'>
-                                    Interested in this job?
-                                </h4>
-                                <div className='text-sm text-gray-600 mb-2'>
-                                    {Math.ceil((new Date(jobData?.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24)) > 0
-                                        ? `${Math.ceil((new Date(jobData.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24))} day(s) left`
-                                        : 'Deadline passed'}
+                            {
+                                userData?.role !== "recruiter" &&
+                                <div className='bg-[#ecf2f0] p-6 rounded-2xl border border-gray-300 mb-6 flex flex-col items-center'>
+                                    <h4 className='text-2xl font-medium text-gray-900 mb-4'>
+                                        Interested in this job?
+                                    </h4>
+                                    <div className='text-sm text-gray-600 mb-2'>
+                                        {Math.ceil((new Date(jobData?.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24)) > 0
+                                            ? `${Math.ceil((new Date(jobData.applicationDeadline) - new Date()) / (1000 * 60 * 60 * 24))} day(s) left`
+                                            : 'Deadline passed'}
+                                    </div>
+                                    <button
+                                        disabled={userData?.appliedJobs?.includes(jobData?.id)}
+                                        onClick={() => {
+                                            if (!isLoggedIn) {
+                                                openLoginPortal();
+                                            } else {
+                                                openApplyJobPortal(jobData, jobData?.id);
+                                            }
+                                        }}
+                                        className={`primary-btn w-full ${userData?.appliedJobs?.includes(jobData?.id) && "bg-gray-400 cursor-not-allowed"}`}
+                                    >
+                                        {userData?.appliedJobs?.includes(jobData?.id) ? "Already Applied" : "Apply now"}
+                                    </button>
                                 </div>
-                                <button
-                                    disabled={userData?.appliedJobs?.includes(jobData?.id)}
-                                    onClick={() => {
-                                        if (!isLoggedIn) {
-                                            openLoginPortal();
-                                        } else {
-                                            openApplyJobPortal(jobData, jobData?.id);
-                                        }
-                                    }}
-                                    className={`primary-btn w-full ${userData?.appliedJobs?.includes(jobData?.id) && "bg-gray-400 cursor-not-allowed"}`}
-                                >
-                                    {userData?.appliedJobs?.includes(jobData?.id) ? "Already Applied" : "Apply now"}
-                                </button>
-                            </div>
+                            }
 
                             {/* Company Info */}
                             <div className='p-6 bg-white  border border-gray-300 rounded-2xl'>
@@ -389,7 +370,7 @@ const JobDetails = () => {
                                     <Img src={jobData?.postedBy?.profilePicture} style='w-12 h-12 rounded-full object-cover' />
                                     <div>
                                         <h4 className='font-medium text-gray-900'>{jobData?.company}</h4>
-                                        <Link to={`/company-profile/${jobData?.postedBy?.authId}`} className='text-[var(--primary-color)] font-medium text-md'>
+                                        <Link to={`/companies/${jobData?.postedBy?.category}/${jobData?.postedBy?.slug}`} className='text-[var(--primary-color)] font-medium text-md'>
                                             View Company Profile
                                         </Link>
                                     </div>
@@ -483,7 +464,7 @@ const JobDetails = () => {
                                                 </div>
                                             ))}
                                             <button className='secondary-btn flex items-center gap-2 w-full mt-4'
-                                                onClick={() => navigate('/find-jobs')}
+                                                onClick={() => navigate('/jobs')}
                                             >
                                                 View All Jobs
                                             </button>

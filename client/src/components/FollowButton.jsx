@@ -8,6 +8,7 @@ const FollowButton = ({ company }) => {
         <div aria-label='hidden' className={`${userData?.role === company.role && "hidden"}`}>
             <button
                 onClick={(e) => {
+                    e.preventDefault()
                     e.stopPropagation();
                     followUnfollow(company.authId)
                 }}

@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { Trash, Search, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import CustomSelect from './CustomSelect';
 import { Link, useNavigate } from 'react-router-dom';
+import slugToName from '../utils/categoryNames';
 
 const RecruiterJobs = () => {
     const { userData, backendUrl } = useContext(AppContext);
@@ -203,7 +204,7 @@ const RecruiterJobs = () => {
                                             className={`hover:bg-indigo-50/50 border-t border-gray-300 transition duration-150 ease-in-out`}
                                         >
                                             <td className="px-6 py-3 font-semibold text-gray-800">{job.title}</td>
-                                            <td className="px-6 py-3 text-sm text-gray-600">{job.category}</td>
+                                            <td className="px-6 py-3 text-sm text-gray-600">{slugToName(job.category)}</td>
                                             <td className="px-6 py-3 text-sm text-gray-600">
                                                 {new Date(job.applicationDeadline).toLocaleDateString()}
                                             </td>
@@ -275,19 +276,18 @@ const RecruiterJobs = () => {
                             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                                 {/* Items per page selector */}
                                 <div className="flex items-center gap-2">
-                                    <select
+                                    <CustomSelect
                                         value={itemsPerPage}
                                         onChange={(e) => {
                                             setItemsPerPage(Number(e.target.value));
                                             setCurrentPage(1);
                                         }}
-                                        className='px-3 py-2 border focus:border-[var(--primary-color)] border-gray-300 rounded-md'
                                     >
                                         <option value={10}>10</option>
                                         <option value={25}>25</option>
                                         <option value={50}>50</option>
                                         <option value={100}>100</option>
-                                    </select>
+                                    </CustomSelect>
                                     <span className="text-sm text-gray-600">
                                         {startItem} - {endItem} of {filteredJobs.length} items
                                     </span>

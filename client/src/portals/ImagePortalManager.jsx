@@ -25,7 +25,7 @@ const ImagePortalManager = () => {
 
     return createPortal(
         <div
-            className="fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm bg-black/70 z-50"
+            className="fixed top-0 left-0 w-full h-screen flex items-center justify-center backdrop-blur-sm bg-black/70 z-9999"
             onClick={() => setImageSrc(null)}
         >
             <div className='z-51 absolute flex justify-end items-center px-6 top-0 left-0 w-full py-4 bg-black/30 gap-4'>

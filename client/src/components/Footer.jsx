@@ -108,7 +108,7 @@ const Footer = () => {
               </span>
               <h4 className="hidden md:block text-lg font-semibold mb-4">Services</h4>
               <ul className={`space-y-4 text-sm text-gray-500 transition-all duration-300 ease-in-out overflow-hidden ${openSections.services ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} md:max-h-none md:opacity-100 md:block`}>
-                <li><Link to={'/find-jobs'} className="hover:text-[var(--primary-color)]">Jobs</Link></li>
+                <li><Link to={'/jobs'} className="hover:text-[var(--primary-color)]">Jobs</Link></li>
                 <li><Link to={'/companies'} className="hover:text-[var(--primary-color)]">Companies</Link></li>
                 <li><Link to={'/candidates'} className="hover:text-[var(--primary-color)]">Candidates</Link></li>
                 <li><Link to={'/pricing'} className="hover:text-[var(--primary-color)]">Pricing</Link></li>

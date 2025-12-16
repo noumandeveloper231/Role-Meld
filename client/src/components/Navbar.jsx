@@ -7,7 +7,6 @@ import { FiMenu, FiX } from "react-icons/fi";
 import Loading from "./Loading";
 import Img from "./Image"; // Assuming this is a local component for image rendering
 import { AnimatePresence, motion } from "framer-motion";
-import Search from "./Search";
 
 // React iCONS
 import { Gauge, HelpCircle, Building2, UserCircle, LogOut, User, FileText } from "lucide-react";
@@ -27,7 +26,7 @@ import {
 // --- Configuration ---
 const USER_NAV_LINKS = [
   { to: "/", icon: Gauge, label: "Home" },
-  { to: "/find-jobs", icon: Briefcase, label: "Find Jobs" },
+  { to: "/jobs", icon: Briefcase, label: "Find Jobs" },
   { to: "/candidates", icon: Building2, label: "Candidates" },
   { to: "/companies", icon: HelpCircle, label: "Companies" },
 ];

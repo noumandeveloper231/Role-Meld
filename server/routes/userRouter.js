@@ -15,6 +15,7 @@ import {
   updateBanner,
   followedAccountsDetails,
   uploadCompanyImages,
+  uploadProjectImages,
   deleteCompanyImage,
   searchCandidate,
   getFollowing,
@@ -104,6 +105,10 @@ userRouter.get("/getFollowers", userAuth, getFollowers);
 // Company images
 userRouter.post("/upload-company-images", userAuth, upload.array("companyImages", 10), uploadCompanyImages);
 userRouter.post("/delete-company-image", userAuth, deleteCompanyImage);
+
+// Project images (applicant profile)
+userRouter.post("/upload-project-images", userAuth, upload.array("projectImages", 10), uploadProjectImages);
+
 userRouter.post("/search-candidates", searchCandidate);
 
 export default userRouter;

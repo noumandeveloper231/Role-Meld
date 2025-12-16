@@ -42,7 +42,7 @@ const Search = ({ Param }) => {
   const handleSubmit = (e) => {
     if (!searchJob.trim()) return;
     e.preventDefault();
-    let url = `/find-jobs?job=${encodeURIComponent(searchJob)}`;
+    let url = `/jobs?job=${encodeURIComponent(searchJob)}`;
     if (searchLocation && searchLocation !== 'All Cities') {
       url += `/${encodeURIComponent(searchLocation)}`;
     }

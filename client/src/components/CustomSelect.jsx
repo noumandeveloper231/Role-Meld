@@ -1,74 +1,157 @@
-import React, { useState, useRef, useEffect, forwardRef } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { ChevronDown } from "lucide-react";
 
-const CustomSelect = forwardRef(({ name, value, onChange, children, className }, ref) => {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef();
+const DROPDOWN_HEIGHT = 240;
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+const CustomSelect = forwardRef(
+  (
+    {
+      name,
+      value,
+      onChange,
+      children,
+      className = "",
+      placeholder = "Select an option",
+      disabled = false,
+    },
+    ref
+  ) => {
+    const [open, setOpen] = useState(false);
+    const [direction, setDirection] = useState("bottom");
+    const [highlighted, setHighlighted] = useState(false);
+
+    const wrapperRef = useRef(null);
+    const buttonRef = useRef(null);
+    const timeoutRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+      highlight: () => {
+        if (disabled) return;
+
+        buttonRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
+        setHighlighted(true);
+
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          setHighlighted(false);
+        }, 900);
+      },
+      focus: () => buttonRef.current?.focus(),
+    }));
+
+    useEffect(() => {
+      return () => clearTimeout(timeoutRef.current);
+    }, []);
+
+    useEffect(() => {
+      const handleClickOutside = (e) => {
+        if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const options = React.Children.toArray(children).filter(
+      (child) => React.isValidElement(child) && child.type === "option"
+    );
+
+    const selectedOption = options.find(
+      (opt) => opt.props.value === value
+    );
+
+    const decideDirection = () => {
+      if (!wrapperRef.current) return;
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      setDirection(
+        spaceBelow < DROPDOWN_HEIGHT && spaceAbove > spaceBelow
+          ? "top"
+          : "bottom"
+      );
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
-  const options = React.Children.toArray(children).filter(
-    (child) => child.type === "option"
-  );
+    const handleToggle = () => {
+      if (disabled) return;
+      decideDirection();
+      setOpen((p) => !p);
+    };
 
-  const selectedOption = options.find((opt) => opt.props.value === value);
+    const handleSelect = (optionValue) => {
+      if (disabled) return;
+      onChange?.({ target: { name, value: optionValue } });
+      setOpen(false);
+    };
 
-  const handleSelect = (optionValue) => {
-    if (onChange) {
-      onChange({ target: { name, value: optionValue } }); // mimic native select event
-    }
-    setOpen(false);
-  };
-
-  return (
-    <div ref={(el) => {
-      menuRef.current = el;
-      if (ref) ref.current = el; // forward the ref
-    }} className={`relative text-sm ${className || ""}`}>
-      {/* Display Button */}
-      <div
-        onClick={() => setOpen(!open)}
-        className="capitalize w-full flex items-center justify-between px-6 py-2.5 border border-gray-300 rounded-md cursor-pointer"
-      >
-        <span
-          className={`truncate ${value ? "text-gray-800" : "text-gray-700"}`}
+    return (
+      <div ref={wrapperRef} className={`relative text-sm ${className}`}>
+        {/* Button */}
+        <div
+          ref={buttonRef}
+          tabIndex={disabled ? -1 : 0}
+          onClick={handleToggle}
+          className={`w-full flex items-center justify-between px-6 py-2.5 border rounded-md transition-all outline-none
+            ${
+              highlighted
+                ? "ring-2 ring-blue-500 border-blue-500"
+                : disabled
+                ? "bg-gray-100 cursor-not-allowed text-gray-400"
+                : "cursor-pointer border-gray-300"
+            }
+          `}
         >
-          {selectedOption?.props.children ||
-            `Select an Option`}
-        </span>
+          <span
+            className={`truncate ${
+              value ? "text-gray-800" : "text-gray-500"
+            }`}
+          >
+            {selectedOption?.props.children || placeholder}
+          </span>
 
-        <ChevronDown className="text-gray-500" size={18} />
-      </div>
-
-      {/* Options Dropdown */}
-      {open && (
-        <div className="absolute z-999 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
-          {options.map((opt) => (
-            <div
-              key={opt.props.value}
-              onClick={() => handleSelect(opt.props.value)}
-              className={`px-4 py-2.5 cursor-pointer 
-                ${opt.props.value === value
-                  ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
-                  : "text-gray-700 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]"
-                }
-              `}
-            >
-              {opt.props.children}
-            </div>
-          ))}
+          <ChevronDown size={18} className="text-gray-500" />
         </div>
-      )}
-    </div>
-  );
-});
+
+        {/* Dropdown */}
+        {open && !disabled && (
+          <div
+            className={`absolute z-[999] w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto
+              ${direction === "bottom" ? "mt-1 top-full" : "mb-1 bottom-full"}
+            `}
+          >
+            {options.map((opt) => (
+              <div
+                key={opt.props.value}
+                onClick={() => handleSelect(opt.props.value)}
+                className={`px-4 py-2.5 cursor-pointer capitalize
+                  ${
+                    opt.props.value === value
+                      ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
+                      : "text-gray-700 hover:bg-[var(--accent-color)] hover:text-[var(--primary-color)]"
+                  }
+                `}
+              >
+                {opt.props.children}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 export default CustomSelect;

@@ -8,7 +8,7 @@ jobsRouter.post("/addjob", userAuth, addJob);
 jobsRouter.post("/getJob", getJob);
 jobsRouter.get('/getjobbyslug/:slug', getJobBySlug)
 jobsRouter.get('/getalljobs', getAllJobs);
-jobsRouter.get('/getcompanyjobs/:companyId', getCompanyJobs);
+jobsRouter.get('/getcompanyjobs/:slug', getCompanyJobs);
 jobsRouter.get('/getsavedjobs', userAuth, getSavedJobs);
 jobsRouter.patch('/updatejobstatus', updateJobStatus);
 jobsRouter.get('/getapprovedjobs', getApprovedJobs);

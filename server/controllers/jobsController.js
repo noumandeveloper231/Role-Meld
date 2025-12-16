@@ -77,7 +77,7 @@ export const getJobBySlug = async (req, res) => {
     }
 
     try {
-        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy', 'name email contactNumber members website foundedIn city country category authId about profilePicture company');
+        const job = await jobsModel.findOne({ slug: slug }).populate('postedBy');
 
         if (!job) {
             return res.json({ success: false, message: "Job Not Found, Expired" })
@@ -97,7 +97,7 @@ export const getJob = async (req, res) => {
     }
 
     try {
-        const job = await jobsModel.findById(id).populate('postedBy', 'name email contactNumber members website foundedDate city country industry authId about profilePicture company');
+        const job = await jobsModel.findById(id).populate('postedBy');
 
         if (!job) {
             return res.json({ success: false, message: "Job Not Found, Expired" })
@@ -112,7 +112,7 @@ export const getJob = async (req, res) => {
 
 export const getAllJobs = async (req, res) => {
     try {
-        const jobs = await jobsModel.find().populate('postedBy', 'name email phone members website foundedAt about profilePicture company');
+        const jobs = await jobsModel.find().populate('postedBy');
 
         if (!jobs || jobs.length < 0) {
             return res.json({ success: false, message: "No Jobs Found" })
@@ -125,16 +125,14 @@ export const getAllJobs = async (req, res) => {
 }
 
 export const getCompanyJobs = async (req, res) => {
-    const { companyId } = req.params;
+    const { slug } = req.params;
 
-    if (!companyId) {
+    if (!slug) {
         return res.json({ success: false, message: "No Company Found" });
     }
 
     try {
-        const companyJobs = await jobsModel.find({ postedBy: companyId, isActive: true, approved: "approved" });
-
-        console.log(companyJobs);
+        const companyJobs = await jobsModel.find({ slug, isActive: true, approved: "approved" });
 
         if (!companyJobs || companyJobs.length <= 0) {
             return res.json({ success: false, message: "No Jobs Found" });

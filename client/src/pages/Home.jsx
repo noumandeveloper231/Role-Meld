@@ -14,8 +14,7 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
-import { Bell, Code, FileText, Timer, X } from "lucide-react";
-import { Briefcase, Palette, PenTool, Headphones } from "lucide-react";
+import { Bell, FileText, Timer, X } from "lucide-react";
 import Announcementbar from "../components/Announcementbar";
 import CompanySection from "../components/CompanySection";
 import AnimatedText from "../components/AnimatedText";
@@ -58,7 +57,7 @@ const Home = () => {
     try {
       const { data } = await axios.get(backendUrl + '/api/jobs/getalljobs');
       if (data.success) {
-        setJobs(data.jobs)
+        setJobs(data.jobs.filter(job => job.approved === "approved"))
         setLoading(false)
       } else {
         toast.error(data.message)
@@ -125,7 +124,7 @@ const Home = () => {
                       <div
                         key={index}
                         className={`${index % 2 === 0 ? 'ml-10' : 'mr-10'} w-112 rounded-2xl flex flex-col p-4 cursor-pointer gap-2 ${bgClass}`}
-                        onClick={() => navigate(`/find-jobs?job=${encodeURIComponent(job.title)}`)}
+                        onClick={() => navigate(`/jobs?job=${encodeURIComponent(job.title)}`)}
                       >
                         <span className="text-gray-600 text-sm">{job.location}</span>
                         <h4 className="text-black font-semibold text-xl capitalize">{job.title}</h4>

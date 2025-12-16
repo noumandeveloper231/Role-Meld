@@ -3,7 +3,6 @@ import userProfileModel from "../models/userProfileModel.js"
 import authModel from "../models/authModels.js";
 import jobsModel from "../models/jobsModel.js";
 import applicationModel from "../models/applicationModel.js";
-import fs from 'fs';
 import cloudinary from '../config/cloudinary.js';
 import companyReviewModel from "../models/companyReviewModel.js";
 import ProfileView from "../models/profileViewModel.js";
@@ -1012,6 +1011,52 @@ export const deleteCompanyImage = async (req, res) => {
             message: "Server Error",
             error: error.message,
         });
+    }
+};
+
+export const uploadProjectImages = async (req, res) => {
+    const userId = req.user._id;
+    const { projectIdx } = req.body;
+
+    // Validate input
+    if (projectIdx === undefined) {
+        return res.status(400).json({ success: false, message: "Project index is required" });
+    }
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ success: false, message: "No images uploaded" });
+    }
+
+    try {
+        const user = await userProfileModel.findOne({ authId: userId });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User profile not found" });
+        }
+
+        const idx = parseInt(projectIdx, 10);
+        if (Number.isNaN(idx) || idx < 0 || idx >= user.projects.length) {
+            return res.status(400).json({ success: false, message: "Invalid project index" });
+        }
+
+        // Multer-Cloudinary already uploaded files. Each file.path is the secure URL
+        const imageUrls = req.files.map(file => file.path);
+
+        // Ensure images array exists
+        if (!Array.isArray(user.projects[idx].images)) {
+            user.projects[idx].images = [];
+        }
+        user.projects[idx].images.push(...imageUrls);
+
+        await user.save();
+
+        return res.json({
+            success: true,
+            message: "Project images uploaded successfully",
+            images: user.projects[idx].images,
+            projectIdx: idx,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Server Error", error: error.message });
     }
 };
 

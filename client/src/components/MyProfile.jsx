@@ -1,10 +1,10 @@
 import axios from 'axios';
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import { FaCamera, FaPlus, FaTrash, FaVideo, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaYoutube, FaGithub, FaTiktok } from 'react-icons/fa';
-import { Link as LinkIcon, MapPin, Briefcase, Save, Image as ImageIcon, Loader2, Loader, Upload, X, VideoOff } from 'lucide-react'
+import { FaCamera, FaPlus, FaTrash, FaVideo } from 'react-icons/fa';
+import { Save, Image as ImageIcon, Loader, Upload, X } from 'lucide-react'
 import LocationSelector from './LocationSelector';
 import Img from './Image';
 import CustomSelect from './CustomSelect';
@@ -180,21 +180,40 @@ const MyProfile = () => {
     // ---------- Project Images Handlers ----------
     const [uploadingProjectImages, setUploadingProjectImages] = useState({});
 
-    const uploadProjectImages = (files, projectIdx) => {
+    const uploadProjectImages = async (files, projectIdx) => {
         if (!files || files.length === 0) return;
 
         setUploadingProjectImages(prev => ({ ...prev, [projectIdx]: true }));
 
-        const imagesToAdd = Array.from(files).map(file => URL.createObjectURL(file));
+        try {
+            const formDataUpload = new FormData();
+            Array.from(files).forEach(file => {
+                formDataUpload.append("projectImages", file);
+            });
+            formDataUpload.append("projectIdx", projectIdx);
 
-        setFormData(prev => {
-            const updatedProjects = [...prev.projects];
-            const existingImages = updatedProjects[projectIdx].images || [];
-            updatedProjects[projectIdx].images = [...existingImages, ...imagesToAdd];
-            return { ...prev, projects: updatedProjects };
-        });
+            const { data } = await axios.post(`${backendUrl}/api/user/upload-project-images`, formDataUpload, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-        setUploadingProjectImages(prev => ({ ...prev, [projectIdx]: false }));
+            if (data.success) {
+                setFormData(prev => {
+                    const updatedProjects = [...prev.projects];
+                    updatedProjects[projectIdx].images = data.images;
+                    return { ...prev, projects: updatedProjects };
+                });
+                toast.success("Images uploaded");
+            } else {
+                toast.error(data.message || "Upload failed");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error(err.response?.data?.message || err.message);
+        } finally {
+            setUploadingProjectImages(prev => ({ ...prev, [projectIdx]: false }));
+        }
     };
 
     const deleteProjectImage = (projectIdx, imageUrl) => {
@@ -207,6 +226,12 @@ const MyProfile = () => {
 
     // Save Profile
     const updateProfile = async () => {
+        if (!formData?.videoUrl) {
+            return;
+        } else if (!formData?.videoUrl?.startsWith("https://")) {
+            return toast.warn("Invalid Video Url")
+        }
+
         setLoading(true);
         try {
             const { data } = await axios.post(`${backendUrl}/api/user/updateprofile`, {
@@ -337,6 +362,24 @@ const MyProfile = () => {
         }
     };
 
+    const [candidateCategories, setCandidateCategories] = useState([])
+
+    const getCandidateCategories = async () => {
+        try {
+            const { data } = await axios.get(`${backendUrl}/api/admin/candidate-categories`);
+            if (data.success) {
+                setCandidateCategories(data.categories || []);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    useEffect(() => {
+      getCandidateCategories()
+    }, [])
+    
+
     // Tabs Configuration
     const tabs = [
         { id: "basic", label: "Basic Info" },
@@ -445,6 +488,7 @@ const MyProfile = () => {
                                                     name="name"
                                                     value={formData.name}
                                                     onChange={handleChange}
+                                                    placeholder='First Name'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
@@ -455,6 +499,7 @@ const MyProfile = () => {
                                                     name="lastName"
                                                     value={formData.lastName}
                                                     onChange={handleChange}
+                                                    placeholder='Last Name'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
@@ -465,6 +510,7 @@ const MyProfile = () => {
                                                     value={formData.email}
                                                     disabled
                                                     className='w-full border border-gray-300 rounded-lg bg-gray-50 text-gray-500'
+                                                    placeholder='Email'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
@@ -475,6 +521,7 @@ const MyProfile = () => {
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}
+                                                    placeholder='Phone Number'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
@@ -485,7 +532,7 @@ const MyProfile = () => {
                                                     name="currentPosition"
                                                     value={formData.currentPosition}
                                                     onChange={handleChange}
-                                                    placeholder="e.g. Senior Developer"
+                                                    placeholder='Phone Number'
                                                 />
                                             </div>
                                             <div className='space-y-1'>
@@ -497,13 +544,11 @@ const MyProfile = () => {
                                                     className={"mt-1.5"}
                                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                                 >
-                                                    <option value="Web Developer">Web Developer</option>
-                                                    <option value="Designer">Designer</option>
-                                                    <option value="Marketing">Marketing</option>
-                                                    <option value="Business">Business</option>
-                                                    <option value="Data Analyst">Data Analyst</option>
-                                                    <option value="Project Manager">Project Manager</option>
-                                                    <option value="Sales">Sales</option>
+                                                    {
+                                                        candidateCategories?.map(cat => (
+                                                            <option key={cat?._id} value={cat?.slug}>{cat?.name}</option>
+                                                        ))
+                                                    }
                                                 </CustomSelect>
                                             </div>
                                         </div>
@@ -522,6 +567,7 @@ const MyProfile = () => {
                                             name="dob"
                                             value={formData.dob ? new Date(formData.dob).toISOString().split('T')[0] : ''}
                                             onChange={handleChange}
+                                            placeholder={Date.now().toLocaleString()}
                                         />
                                     </div>
                                     <div className='space-y-1'>
@@ -588,6 +634,7 @@ const MyProfile = () => {
                                     <div className='space-y-1'>
                                         <label className=''>Experience <span className='text-red-500'>*</span></label>
                                         <CustomSelect
+                                            ref={el => fieldRefs.current['experienceYears'] = el}
                                             className={"mt-1.5"}
                                             name="experienceYears"
                                             value={formData.experienceYears}
@@ -621,6 +668,7 @@ const MyProfile = () => {
                                             Salary Type <span className='text-red-500'>*</span>
                                         </label>
                                         <CustomSelect
+                                            ref={el => fieldRefs.current['salaryType'] = el}
                                             label="salaryType"
                                             name="salaryType"
                                             value={formData.salaryType || ""}
@@ -1135,13 +1183,14 @@ const MyProfile = () => {
                                                 <label className=''>Project Images</label>
                                                 <div className='flex flex-col gap-4'>
                                                     {proj.images?.length > 0 && (
-                                                        <div className="w-full grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                                        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                                             {proj.images.map((image, imageIdx) => (
                                                                 <div key={imageIdx} className="relative group flex flex-col items-center">
-                                                                    <img
+                                                                    <Img
+                                                                        willOpen
                                                                         src={image}
                                                                         alt={`Project ${idx + 1} - ${imageIdx + 1}`}
-                                                                        className="w-full h-full object-cover rounded-md border border-gray-200"
+                                                                        style="w-full object-cover rounded-2xl border border-gray-200 h-40"
                                                                     />
                                                                     <button
                                                                         type="button"

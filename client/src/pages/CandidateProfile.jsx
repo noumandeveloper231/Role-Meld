@@ -71,7 +71,7 @@ const CandidateProfile = () => {
                                         {/* Details Row */}
                                         <div className="flex flex-wrap items-center space-x-3 text-sm text-gray-500 mt-1">
                                             {/* Role */}
-                                            <Link to={`/candidates?cat=/${candidate?.category}`} className="text-[var(--primary-color)] font-medium">{slugToName(candidate?.category)}</Link>
+                                            <Link to={`/candidates?cat=${candidate?.category}`} className="text-[var(--primary-color)] font-medium">{slugToName(candidate?.category)}</Link>
 
                                             {/* Separator Dot/Circle (using text-xs for a small dot) */}
                                             <span className="text-xs">•</span>
