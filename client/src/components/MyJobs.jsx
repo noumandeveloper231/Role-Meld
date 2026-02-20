@@ -138,8 +138,6 @@ const MyJobs = () => {
         }
     };
 
-
-
     return (
         <div className="bg-white w-full min-h-screen rounded-lg overflow-y-auto border border-gray-200 p-6">
             <div className='rounded-lg'>

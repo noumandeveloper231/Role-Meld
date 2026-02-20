@@ -70,7 +70,7 @@ const LoginModel = ({ setStep }) => {
                 </div>
 
                 <p>
-                  Password: <span onClick={() => { toast.success("Copied to Clipboard"); copy('Alfa_Careers') }} className="font-semibold text-green-700 cursor-pointer">Alfa_Careers</span>
+                  Password: <span onClick={() => { toast.success("Copied to Clipboard"); copy('Alfa_Careers123') }} className="font-semibold text-green-700 cursor-pointer">Alfa_Careers123</span>
                 </p>
               </div>
             </div>

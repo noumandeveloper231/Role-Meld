@@ -11,7 +11,7 @@ const AboutUs = () => {
     <div>
       <Navbar />
       <main>
-        <section className='max-w-5xl mx-auto px-4 py-12'>
+        <section classN ame='max-w-5xl mx-auto px-4 py-12'>
           <p className='text-sm font-semibold text-black text-center'>ABOUT US</p>
           <h4 className='text-2xl font-bold text-black leading-tight text-center mt-2'>We are transforming the way healthcare hires</h4>
           <div className='mt-8 grid grid-cols-1 sm:grid-cols-7 gap-4'>

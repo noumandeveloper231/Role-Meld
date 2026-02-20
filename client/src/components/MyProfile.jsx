@@ -15,6 +15,7 @@ import { Editor } from '@tinymce/tinymce-react';
 
 // Predefined Skills List
 import SkillsSelector from './SkillsSelector';
+import PhoneInputField from './PhoneInputField';
 
 const MyProfile = () => {
     const { userData, backendUrl, setUserData } = useContext(AppContext);
@@ -101,7 +102,8 @@ const MyProfile = () => {
         experience: [],
         skills: [],
         projects: [],
-        awards: []
+        awards: [],
+        isPhoneVerified: false
     });
 
     // Load data from userData
@@ -110,6 +112,7 @@ const MyProfile = () => {
             setFormData(prev => ({
                 ...prev,
                 ...userData,
+                isPhoneVerified: userData?.isPhoneVerified || false,
                 // Ensure arrays are initialized
                 language: userData.language || [],
                 customSocialNetworks: userData.customSocialNetworks || [],
@@ -197,7 +200,7 @@ const MyProfile = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-
+rr
             if (data.success) {
                 setFormData(prev => {
                     const updatedProjects = [...prev.projects];
@@ -230,6 +233,10 @@ const MyProfile = () => {
             return;
         } else if (!formData?.videoUrl?.startsWith("https://")) {
             return toast.warn("Invalid Video Url")
+        }
+
+        if (userData?.phone !== formData?.phone ) {
+            setFormData(prev => ({ ...prev, isPhoneVerified: false }))
         }
 
         setLoading(true);
@@ -515,9 +522,10 @@ const MyProfile = () => {
                                             </div>
                                             <div className='space-y-1'>
                                                 <label className=''>Phone</label>
-                                                <input
+                                                <PhoneInputField
                                                     ref={el => fieldRefs.current['phone'] = el}
                                                     type="tel"
+                                                    setFormData={setFormData}
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}

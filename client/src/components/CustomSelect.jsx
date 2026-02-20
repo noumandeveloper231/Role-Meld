@@ -98,13 +98,13 @@ const CustomSelect = forwardRef(
     };
 
     return (
-      <div ref={wrapperRef} className={`relative text-sm ${className}`}>
+      <div ref={wrapperRef} className={`relative text-sm`}>
         {/* Button */}
         <div
           ref={buttonRef}
           tabIndex={disabled ? -1 : 0}
           onClick={handleToggle}
-          className={`w-full flex items-center justify-between px-6 py-2.5 border rounded-md transition-all outline-none
+          className={`${className} w-full flex items-center justify-between px-6 py-2.5 border rounded-md transition-all outline-none
             ${
               highlighted
                 ? "ring-2 ring-blue-500 border-blue-500"

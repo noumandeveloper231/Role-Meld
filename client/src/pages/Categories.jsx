@@ -5,7 +5,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 // React Icons
-import { FaSearch } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import { getCategoryIcon } from "../utils/categoryIcons";
 import { Search } from "lucide-react";

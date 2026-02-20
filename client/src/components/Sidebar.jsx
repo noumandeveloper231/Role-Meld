@@ -303,7 +303,7 @@ const Sidebar = ({ activeTab }) => {
       { name: "My Resume", key: "resume", icon: <FileText size={20} />, path: "/dashboard/resume" },
       { name: "My Jobs", key: "my-jobs", icon: <Briefcase size={20} />, path: "/dashboard/my-jobs" },
       { name: "My Following", key: "my-following", icon: <Briefcase size={20} />, path: "/dashboard/my-following" },
-      { name: "Setting", key: "setting", icon: <Settings size={20} />, path: "/dashboard/settings" },
+      { name: "Settings", key: "settings", icon: <Settings size={20} />, path: "/dashboard/settings" },
       { name: "Logout", key: "logout", icon: <LogOut size={20} /> },
     ];
   }
@@ -337,9 +337,8 @@ const Sidebar = ({ activeTab }) => {
     <div className="overflow-auto">
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className={`mobile-menu-btn fixed top-1/2 translate-y-1/2 z-9999 lg:hidden bg-[var(--primary-color)] text-white p-2 rounded-r-lg shadow-lg ${
-          isMobileOpen ? "left-64" : "left-0"
-        } transition-all duration-300 ease-in-out cursor-pointer`}
+        className={`mobile-menu-btn fixed top-1/2 translate-y-1/2 z-9999 lg:hidden bg-[var(--primary-color)] text-white p-2 rounded-r-lg shadow-lg ${isMobileOpen ? "left-64" : "left-0"
+          } transition-all duration-300 ease-in-out cursor-pointer`}
       >
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -363,9 +362,8 @@ const Sidebar = ({ activeTab }) => {
             className="cursor-pointer hidden lg:flex items-center justify-center p-2 rounded-lg"
           >
             <FaArrowLeft
-              className={`text-gray-600 transition-transform ${
-                isSidebarOpen ? "rotate-180" : ""
-              }`}
+              className={`text-gray-600 transition-transform ${isSidebarOpen ? "rotate-180" : ""
+                }`}
             />
           </span>
 
@@ -384,10 +382,9 @@ const Sidebar = ({ activeTab }) => {
                 <span
                   onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-3xl cursor-pointer transition-colors 
-                    ${
-                      activeTab === item.key
-                        ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ${activeTab === item.key
+                      ? "bg-[var(--accent-color)] text-[var(--primary-color)]"
+                      : `text-gray-600 hover:bg-gray-50 hover:text-gray-900 ${item.key === "logout" ? "hover:text-red-500" : ""}`
                     }`}
                 >
                   {item.icon}
@@ -397,25 +394,28 @@ const Sidebar = ({ activeTab }) => {
             ))}
           </ul>
 
-          {userData?.role !== "recruiter" && (
-            <div className="mt-5 pl-3 text-black">
-              <div className="flex items-center gap-2">
-                Profile Strength:{" "}
-                <span className="font-medium text-[var(--primary-color)]">
-                  {userData?.profileScore}%
-                </span>
+          {
+            !isSidebarOpen &&
+            userData?.role !== "recruiter" && (
+              <div className="mt-5 pl-3 text-black">
+                <div className="flex items-center gap-2">
+                  Profile Strength:{" "}
+                  <span className="font-medium text-[var(--primary-color)]">
+                    {userData?.profileScore}%
+                  </span>
+                </div>
+                <div className="relative w-full h-1.5 bg-gray-300 rounded-2xl mt-2">
+                  <div
+                    className="absolute top-0 left-0 h-full rounded-2xl"
+                    style={{
+                      width: `${userData?.profileScore}%`,
+                      backgroundColor: "var(--primary-color)",
+                    }}
+                  />
+                </div>
               </div>
-              <div className="relative w-full h-1.5 bg-gray-300 rounded-2xl mt-2">
-                <div
-                  className="absolute top-0 left-0 h-full rounded-2xl"
-                  style={{
-                    width: `${userData?.profileScore}%`,
-                    backgroundColor: "var(--primary-color)",
-                  }}
-                />
-              </div>
-            </div>
-          )}
+            )
+          }
         </nav>
       </div>
     </div>

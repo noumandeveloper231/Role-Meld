@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import slugify from 'slugify';
-import { FaBloggerB } from "react-icons/fa";
 import { toast } from 'react-toastify';
 import { Editor } from "@tinymce/tinymce-react";
 import axios from 'axios';
@@ -17,7 +16,6 @@ const AdminBlog = () => {
   const search = new URLSearchParams(window.location.search);
   const editBlog = search.get("edit");
 
-  console.log('editBlog', editBlog)
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

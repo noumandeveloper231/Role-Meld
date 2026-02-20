@@ -165,7 +165,7 @@ const EmployeeDashboard = () => {
   }, [])
 
   return (
-    <div className='flex flex-col w-full p-4 md:p-6 bg-white rounded-lg min-h-screen overflow-y-auto border border-gray-300'>
+    <div className='overflow-y-hidden flex flex-col w-full p-4 md:p-6 bg-white rounded-lg min-h-screen border border-gray-300'>
       {/* Profile Section */}
       <div className='flex items-center gap-6 pb-4'>
         <div className="relative w-20 h-20">
